@@ -34,5 +34,5 @@ Of course!
 
 == Arbitrary section ==
 
+Thank you!
 
-`<?php code(); // goes in backticks ?>`
