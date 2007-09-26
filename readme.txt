@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: 
 Donate link: 
-Tags: stats, statistics, visits, visitors, pageview, user, agent, referrer
+Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer
 Requires at least: 2.0.2
 Tested up to: 2.3
 Stable Tag: 0.5
