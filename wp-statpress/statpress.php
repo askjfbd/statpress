@@ -2,13 +2,11 @@
 /*
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
-Description: Simple stats for your blog
-Version: 0.5
+Description: Stats for your blog
+Version: 0.5.1
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
-
-$statpressversion="0.5";
 
 function iri_add_pages() {
     add_submenu_page('index.php', 'StatPress', 'StatPress', 8, 'statpress', 'iriStatPress');
