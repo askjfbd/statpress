@@ -16,6 +16,8 @@ StatPress also includes a widget one can possibly add to a sidebar.
 Una volta attivato il plugin StatPress inizia subito a memorizzare i visitatori non loggati al blog. Nel menu Dashboard trovate la pagina “StatPress” dove consultare le statistiche.
 StatPress include anche un widget personalizzabile da inserire eventualmente in una sidebar.
 
+http://www.irisco.it/?page_id=28
+
 == Installation ==
 
 Upload wp-statpress directory in ‘/wp-content/plugins/’. Then just activate it on your plugin management page.
