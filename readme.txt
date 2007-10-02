@@ -35,4 +35,5 @@ http://www.irisco.it/wp-content/uploads/screenshot1.jpg
 http://www.irisco.it/wp-content/uploads/stats.jpg
 
 == Arbitrary section ==
-Update from 0.1 to 0.2- Layout update- iPhone and other new defsUpdate from 0.2 to 0.3 (15 Jul 2007)- Rss Feeds support!- Layout update- New defsUpdate from 0.3 to 0.4 (14 Sep 2007)- Customizable widget- New defsUpdate from 0.4 to 0.5 (25 Sep 2007)- New “Overview”- New defsUpdate from 0.5 to 0.5.2 (3 Oct 2007)- Solved (rare) compatibility issues
+Update from 0.1 to 0.2- Layout update- iPhone and other new defsUpdate from 0.2 to 0.3 (15 Jul 2007)- Rss Feeds support!- Layout update- New defsUpdate from 0.3 to 0.4 (14 Sep 2007)- Customizable widget- New defsUpdate from 0.4 to 0.5 (25 Sep 2007)- New “Overview”- New defsUpdate from 0.5 to 0.5.2 (3 Oct 2007)- Solved (rare) compatibility issues - Thanks to Carlo A.
+
