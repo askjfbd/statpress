@@ -35,10 +35,10 @@ Of course!
 
 == Screenshots ==
 <a href="http://www.irisco.it/wp-content/uploads/screenshot1.jpg">
-<im src="http://www.irisco.it/wp-content/uploads/screenshot1.jpg" border=0 width=100</a>
+<img src="http://www.irisco.it/wp-content/uploads/screenshot1.jpg" border=0 width=150</a>
 
 <a href="http://www.irisco.it/wp-content/uploads/stats.jpg">
-<im src="http://www.irisco.it/wp-content/uploads/stats.jpg" border=0 width=100</a>
+<img src="http://www.irisco.it/wp-content/uploads/stats.jpg" border=0 width=150</a>
 
 
 
@@ -55,7 +55,7 @@ Update from 0.3 to 0.4 (14 Sep 2007)<br>
 - Customizable widget<br>
 - New defs<br><br>
 Update from 0.4 to 0.5 (25 Sep 2007)<br>
-- New “Overview”<br>
+- New "Overview"<br>
 - New defs<br><br>
 Update from 0.5 to 0.5.2 (3 Oct 2007)<br>
 - Solved (rare) compatibility issues - Thanks to Carlo A.<br><br>
