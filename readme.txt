@@ -4,25 +4,24 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer
 Requires at least: 2.0.2
 Tested up to: 2.3
-Stable Tag: 0.5.1
+Stable Tag: 0.5.2
 
 StatPress is the free plug-in for WordPress dedicated to the management of statistics about blog visits.
 == Description ==
 
 Once the plugin StatPress has been activated it immediately starts to collect the unlogged blog visitors.
-In the Dashboard menu you‚Äôll find the ‚ÄúStatPress‚Äù page where you could look up the statistics.
+In the Dashboard menu you‚Äôll find the StatPress page where you could look up the statistics.
 StatPress also includes a widget one can possibly add to a sidebar.
 
-Una volta attivato il plugin StatPress inizia subito a memorizzare i visitatori non loggati al blog. Nel menu Dashboard trovate la pagina ‚ÄúStatPress‚Äù dove consultare le statistiche.
+Una volta attivato il plugin StatPress inizia subito a memorizzare i visitatori non loggati al blog. Nel menu Dashboard trovate la pagina StatPress dove consultare le statistiche.
 StatPress include anche un widget personalizzabile da inserire eventualmente in una sidebar.
-
-http://www.irisco.it/?page_id=28
 
 == Installation ==
 
-Upload wp-statpress directory in ‚Äò/wp-content/plugins/‚Äô. Then just activate it on your plugin management page.
+Upload wp-statpress directory in /wp-content/plugins/ . Then just activate it on your plugin management page.
 StatPress creates the database table automatically.
 
+UpdateUpload new wp-statpress version. In the Dashboard click “StatPressUP” menu. You are ready!“StatPressUP” will update your database content if you edit the “def” files (to add a new OS, browser,…). If you have some new useful definition, please share it!
 
 == Frequently Asked Questions ==
 
@@ -32,9 +31,8 @@ Of course!
 
 
 == Screenshots ==
-
+http://www.irisco.it/wp-content/uploads/screenshot1.jpg
+http://www.irisco.it/wp-content/uploads/stats.jpg
 
 == Arbitrary section ==
-
-Thank you!
-
+Update from 0.1 to 0.2- Layout update- iPhone and other new defsUpdate from 0.2 to 0.3 (15 Jul 2007)- Rss Feeds support!- Layout update- New defsUpdate from 0.3 to 0.4 (14 Sep 2007)- Customizable widget- New defsUpdate from 0.4 to 0.5 (25 Sep 2007)- New “Overview”- New defsUpdate from 0.5 to 0.5.2 (3 Oct 2007)- Solved (rare) compatibility issues

@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Stats for your blog
-Version: 0.5.1
+Version: 0.5.2
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -418,6 +418,7 @@ function iriGetSpider($agent = null){
 
 function iriCreateTable() {
 	global $wpdb;
+	global $wp_db_version;
 	$table_name = $wpdb->prefix . "statpress";
 	$sql_createtable = "CREATE TABLE " . $table_name . " (
 	id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -436,7 +437,9 @@ function iriCreateTable() {
 	feed text,
 	UNIQUE KEY id (id)
 	);";
-	require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
+	if($wp_db_version >= 5540)	$page = 'wp-admin/include/upgrade.php';  
+								else $page = 'wp-admin/upgrade'.'-functions.php';
+	require_once(ABSPATH . $page);
 	dbDelta($sql_createtable);	
 }
 
