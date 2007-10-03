@@ -437,7 +437,7 @@ function iriCreateTable() {
 	feed text,
 	UNIQUE KEY id (id)
 	);";
-	if($wp_db_version >= 5540)	$page = 'wp-admin/include/upgrade.php';  
+	if($wp_db_version >= 5540)	$page = 'wp-admin/includes/upgrade.php';  
 								else $page = 'wp-admin/upgrade'.'-functions.php';
 	require_once(ABSPATH . $page);
 	dbDelta($sql_createtable);	

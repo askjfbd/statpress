@@ -4,7 +4,7 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer
 Requires at least: 2.0.2
 Tested up to: 2.3
-Stable Tag: 0.5.2
+Stable Tag: 0.5.3
 
 StatPress is the free plug-in for WordPress dedicated to the management of statistics about blog visits.
 == Description ==
