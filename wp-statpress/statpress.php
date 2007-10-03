@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Stats for your blog
-Version: 0.5.2
+Version: 0.5.3
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
