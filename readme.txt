@@ -36,12 +36,8 @@ Of course!
 
 
 == Screenshots ==
-<a href="http://www.irisco.it/wp-content/uploads/screenshot1.jpg">
-<img src="http://www.irisco.it/wp-content/uploads/screenshot1.jpg" border=0 width=150></a>
-
-<a href="http://www.irisco.it/wp-content/uploads/stats.jpg">
-<img src="http://www.irisco.it/wp-content/uploads/stats.jpg" border=0 width=150></a>
-
+&middot; <a href="http://www.irisco.it/wp-content/uploads/screenshot1.jpg">screenshot-1</a><br>
+&middit;<a href="http://www.irisco.it/wp-content/uploads/stats.jpg">screenshot-2</a>
 
 
 == Arbitrary section ==
