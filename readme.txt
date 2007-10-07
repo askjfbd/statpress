@@ -37,7 +37,7 @@ Of course!
 
 == Screenshots ==
 &middot; <a href="http://www.irisco.it/wp-content/uploads/screenshot1.jpg">screenshot-1</a><br>
-&middit;<a href="http://www.irisco.it/wp-content/uploads/stats.jpg">screenshot-2</a>
+&middot; <a href="http://www.irisco.it/wp-content/uploads/stats.jpg">screenshot-2</a>
 
 
 == Arbitrary section ==
