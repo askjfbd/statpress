@@ -6,7 +6,7 @@ Requires at least: 2.0.2
 Tested up to: 2.3
 Stable Tag: 0.5.3
 
-StatPress is the free plug-in for WordPress dedicated to the management of statistics about blog visits.
+StatPress is the plug-in dedicated to the management of statistics about blog visits. It collects information about visits, spiders, search keywords, feeds, browsers etc.
 
 
 == Description ==
