@@ -21,7 +21,7 @@ StatPress include anche un widget personalizzabile da inserire eventualmente in 
 == Installation ==
 
 Upload wp-statpress directory in /wp-content/plugins/ . Then just activate it on your plugin management page.
-StatPress creates the database table automatically.
+In the Dashboard click "StatPressUP" menu. You are ready!
 
 Update
 
