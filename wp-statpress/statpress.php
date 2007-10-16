@@ -3,34 +3,79 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Stats for your blog
-Version: 0.5.3
+Version: 0.6
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
 
+
+if ($_GET['statpress_action'] == 'exportnow') {
+	iriStatPressExportNow();
+}
+
+
 function iri_add_pages() {
     add_submenu_page('index.php', 'StatPress', 'StatPress', 8, 'statpress', 'iriStatPress');
-    add_submenu_page('index.php', 'StatPressUP', 'StatPressUP', 8, 'statpressup', 'iriStatPressUpdate');
 }
 
 
 function iriStatPress() {
+?>
+<ul id="submenu" style='border-top:1px dotted #83b4d8'>
+    <li><a href='?page=statpress'>Overview</a></li>
+    <li><a href='?page=statpress&statpress_action=details'>Details</a></li>
+    <li><a href='?page=statpress&statpress_action=export'>Export</a></li>
+    <li><a href='?page=statpress&statpress_action=up'>StatPressUpdate</a></li>
+</ul>
+
+<?php
+	if ($_GET['statpress_action'] == 'export') {
+		iriStatPressExport();
+	} elseif ($_GET['statpress_action'] == 'up') {
+		iriStatPressUpdate();
+	} elseif ($_GET['statpress_action'] == 'details') {
+		iriStatPressDetails();
+	} elseif(1) {
+		iriStatPressMain();
+	}
+}
+
+
+function iriStatPressExport() {
+?>
+	<div class='wrap'><h2>Export stats to text file (csv)</h2>
+	<form method=get><table>
+	<tr><td>From</td><td><input type=text name=from> (format YYYYMMDD)</td></tr>
+	<tr><td>To</td><td><input type=text name=to> (format YYYYMMDD)</td></tr>
+	<tr><td></td><td><input type=submit value=Export></td></tr>
+	<input type=hidden name=page value=statpress><input type=hidden name=statpress_action value=exportnow>
+	</table></form>
+	</div>
+<?php
+}
+
+
+function iriStatPressExportNow() {
+	global $wpdb;
+	$table_name = $wpdb->prefix . "statpress";
+	$filename=get_bloginfo('title' )."-statpress_".$_GET['from']."-".$_GET['to'].".csv";
+	header('Content-Description: File Transfer');
+	header("Content-Disposition: attachment; filename=$filename");
+	header('Content-Type: text/plain charset=' . get_option('blog_charset'), true);
+    $qry = $wpdb->get_results("SELECT * FROM $table_name WHERE date>='".$_GET['from']."' AND date<='".$_GET['to']."';");
+	print "date;time;ip;urlrequested;agent;referrer;search;nation;os;browser;searchengine;spider;feed\n";
+	foreach ($qry as $rk) {
+		print '"'.$rk->date.'";"'.$rk->time.'";"'.$rk->ip.'";"'.$rk->urlrequested.'";"'.$rk->agent.'";"'.$rk->referrer.'";"'.$rk->search.'";"'.$rk->nation.'";"'.$rk->os.'";"'.$rk->browser.'";"'.$rk->searchengine.'";"'.$rk->spider.'";"'.$rk->feed.'"'."\n";
+	}
+	die();
+}
+
+function iriStatPressMain() {
 	global $wpdb;
 	$table_name = $wpdb->prefix . "statpress";
 	
 	$querylimit="LIMIT 10";
-	
-?>
-<ul id="submenu">
-	<li><a href='#lasthits'>Last Hits</a></li>
-	<li><a href='#feeds'>Feeds</a></li>
-	<li><a href='#searchterms'>SearchTerms</a></li>
-	<li><a href='#referrers'>Referrers</a></li>
-	<li><a href='#spiders'>Spiders</a></li>
-</ul>
-
-<?php
-    
+	    
 	# Tabella OVERVIEW
 	$web_color="#3377B6";
 	$rss_color="#f38f36";
@@ -140,20 +185,7 @@ function iriStatPress() {
 
     print "</tr></table>";
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+   
     # last 30 days graph
     print "<table width=100% border=0><tr><td>";
 	$qry = $wpdb->get_row("SELECT count(date) as pageview, date FROM $table_name GROUP BY date HAVING date >= '".date('Ymd', time()-86400*30)."' ORDER BY pageview DESC LIMIT 1");
@@ -190,8 +222,18 @@ function iriStatPress() {
 	}
 	print "</td></tr></table>";
 	print "</div>";
+	print "<br />";
+	print "&nbsp;<i>StatPress table size: ".iritablesize($wpdb->prefix . "statpress")."</i>";
+	
+}	
 
 
+function iriStatPressDetails() {
+	global $wpdb;
+	$table_name = $wpdb->prefix . "statpress";
+	
+	$querylimit="LIMIT 10";
+	    
 	# Tabella LAST
 	print "<a name=lasthits></a>";
 	print "<div class='wrap'><h2>Last hits</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>IP</th><th scope='col'>Domain</th><th scope='col'>Page</th><th scope='col'>OS</th><th scope='col'>Browser</th><th scope='col'>Feed</th></tr></thead>";
@@ -307,6 +349,17 @@ function iriStatPress() {
 function irihdate($dt = "00000000") {
 	return mysql2date(get_option('date_format'), substr($dt,0,4)."-".substr($dt,4,2)."-".substr($dt,6,2));
 }
+
+function iritablesize($table) {
+	global $wpdb;
+	$res = $wpdb->get_results("SHOW TABLE STATUS LIKE '$table'");
+	foreach ($res as $fstatus) {
+		$data_lenght = $fstatus->Data_length;
+		$data_rows = $fstatus->Rows;
+	}
+	return number_format(($data_lenght/1024/1024), 2, ",", " ")." Mb ($data_rows records)";
+}
+
 
 function irirgbhex($red, $green, $blue) {
     $red = 0x10000 * max(0,min(255,$red+0));
@@ -538,7 +591,6 @@ function iriStatPressUpdate() {
 		list($searchengine,$search_phrase)=explode("|",iriGetSE($rk->referrer));
 		if($searchengine <> '') {
 			$q="UPDATE $table_name SET searchengine = '$searchengine', search='$search_phrase' WHERE id=".$rk->id;
-			print " - $q<br>";
 			$wpdb->query($q);
 		}
 	}
