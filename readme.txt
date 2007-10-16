@@ -25,9 +25,10 @@ In the Dashboard click "StatPress" and then "StatPressUpdate" menu. You are read
 "StatPressUpdate" will add/update your database table.
 
 == Frequently Asked Questions ==
-= I've a problem. Where can I get help?
 
-Please post you messages to <a href="http://www.irisco.it/forums/forum.php?id=1">statpress forum</a>
+= I've a problem. Where can I get help? =
+
+Please post your messages to <a href="http://www.irisco.it/forums/forum.php?id=1">statpress forum</a>
 
 = Is it wp_2.3 compatible? =
 
