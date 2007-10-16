@@ -25,7 +25,6 @@ In the Dashboard click "StatPress" and then "StatPressUpdate" menu. You are read
 "StatPressUpdate" will add/update your database table.
 
 == Frequently Asked Questions ==
-
 = I've a problem. Where can I get help?
 
 Please post you messages to <a href="http://www.irisco.it/forums/forum.php?id=1">statpress forum</a>
@@ -42,26 +41,26 @@ Of course!
 
 == Updates ==
 
-Update from 0.1 to 0.2<br>
+<b>Update from 0.1 to 0.2</b><br>
 - Layout update<br>
 - iPhone and other new defs<br><br>
-Update from 0.2 to 0.3 (15 Jul 2007)<br>
+<b>Update from 0.2 to 0.3 (15 Jul 2007)</b><br>
 - Rss Feeds support!<br>
 - Layout update<br>
 - New defs<br><br>
-Update from 0.3 to 0.4 (14 Sep 2007)<br>
+<b>Update from 0.3 to 0.4 (14 Sep 2007)</b><br>
 - Customizable widget<br>
 - New defs<br><br>
-Update from 0.4 to 0.5 (25 Sep 2007)<br>
+<b>Update from 0.4 to 0.5 (25 Sep 2007)</b><br>
 - New "Overview"<br>
 - New defs<br><br>
-Update from 0.5 to 0.5.2 (3 Oct 2007)<br>
+<b>Update from 0.5 to 0.5.2 (3 Oct 2007)</b><br>
 - Solved (rare) compatibility issues - Thanks to Carlo A.<br><br>
-Update from 0.5.2 to 0.5.3 (4 Oct 2007)<br>
+<b>Update from 0.5.2 to 0.5.3 (4 Oct 2007)</b><br>
 - Solved setup compatibility issues - Thanks to Andrew<br><br>
-Update from 0.5.3 to 0.6 (17 Oct 2007)<br>
-- New interface
-- Export to CSV
-- MySQL table size in Overview
+<b>Update from 0.5.3 to 0.6 (17 Oct 2007)</b><br>
+- New interface layout<br>
+- Export to CSV<br>
+- MySQL table size in Overview<br>
 
 <br><br>
