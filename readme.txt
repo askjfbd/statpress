@@ -62,7 +62,7 @@ Of course!
 <b>Update from 0.5.3 to 0.6 (17 Oct 2007)</b><br>
 - New interface layout<br>
 - Export to CSV<br>
-- MySQL table size in Overview<br>
+- MySQL table size in Overview<br><br>
 <b>Update from 0.6 to 0.7 (22 Oct 2007)</b><br>
 - Unique visitors<br>
 - New graphs (and screenshots)<br>
