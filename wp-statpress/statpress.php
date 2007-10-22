@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Stats for your blog
-Version: 0.6
+Version: 0.7
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -21,6 +21,7 @@ function iri_add_pages() {
 
 function iriStatPress() {
 ?>
+
 <ul id="submenu" style='border-top:1px dotted #83b4d8'>
     <li><a href='?page=statpress'>Overview</a></li>
     <li><a href='?page=statpress&statpress_action=details'>Details</a></li>
@@ -73,10 +74,9 @@ function iriStatPressExportNow() {
 function iriStatPressMain() {
 	global $wpdb;
 	$table_name = $wpdb->prefix . "statpress";
-	
-	$querylimit="LIMIT 10";
 	    
 	# Tabella OVERVIEW
+	$unique_color="#114477";
 	$web_color="#3377B6";
 	$rss_color="#f38f36";
 	$spider_color="#83b4d8";
@@ -85,6 +85,30 @@ function iriStatPressMain() {
 	print "<div class='wrap'><h2>Overview</h2>";
 	print "<table class='widefat'><thead><tr><th scope='col'></th><th scope='col'>Total</th><th scope='col'>Last month</th><th scope='col'>This month</th><th scope='col'>Yesterday</th><th scope='col'>Today</th></tr></thead>";
 	print "<tbody id='the-list'>";
+
+	###### Unique
+    print "<tr><td><div style='background:$unique_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>Visitors</td>";
+	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='';");
+	print "<td>".count($qry)."</td>\n";
+    $prec=0;
+	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date LIKE '".$lastmonth."%';");
+    $prec=count($qry);
+	print "<td>".$prec."</td>\n";
+	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date LIKE '".date("Ym")."%';");
+	print "<td>".count($qry);
+	if($prec<>0) {
+		print " (";
+		$pc=round( 100 * (count($qry) / $prec ) - 100,1);
+		if($pc>=0) { print "+"; }
+		print $pc."%)";
+	}
+	print "</td>\n";
+	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".$yesterday."';");
+	print "<td>".count($qry)."</td>\n";
+	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".date("Ymd")."';");
+	print "<td>".count($qry)."</td>\n";
+    print "</tr>";
+
 	###### Pageviews
     print "<tr><td><div style='background:$web_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>Pageviews</td>";
 	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider='';");
@@ -183,47 +207,42 @@ function iriStatPressMain() {
 		print "<td>".$rk->pageview."</td>\n";
 	}
 
-    print "</tr></table>";
+    print "</tr></table><br />";
     
-   
-    # last 30 days graph
+   	
+	# last 30 days graph  NEW
     print "<table width=100% border=0><tr><td>";
 	$qry = $wpdb->get_row("SELECT count(date) as pageview, date FROM $table_name GROUP BY date HAVING date >= '".date('Ymd', time()-86400*30)."' ORDER BY pageview DESC LIMIT 1");
 	$maxxday=$qry->pageview;
 	if($maxxday == 0) { $maxxday = 1; }
 	# Y
-	$qry = $wpdb->get_results("SELECT date, feed, spider FROM $table_name WHERE date >= '".date('Ymd', time()-86400*30)."';");
 	for($gg=30;$gg>=0;$gg--) {
-		$tot_web=0; $tot_rss=0; $tot_spider=0; $tot=0;
-		foreach ($qry as $rk) {
-			if($rk->date == date('Ymd', time()-86400*$gg)) {
-				$tot++;
-				if($rk->feed == '') {
-					if(empty($rk->spider) OR is_null($rk->spider)) {
-						$tot_web++;
-					} else {
-						$tot_spider++;
-					}
-				} else {
-					$tot_rss++;
-				}
-			}
-		}
+
+		$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".date('Ymd', time()-86400*$gg)."';");
+		$tot_unique=count($qry);
+		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".date('Ymd', time()-86400*$gg)."';");
+		$tot_web=count($qry)-$tot_unique;
+		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed='' AND spider NOT LIKE '' AND date = '".date('Ymd', time()-86400*$gg)."';");
+		$tot_spider=count($qry);
+		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed NOT LIKE '' AND spider='' AND date = '".date('Ymd', time()-86400*$gg)."';");
+		$tot_rss=count($qry);
 		print "<!a href='/?m=".$rk->date."' target=_new><div style='float:left;font-family:Helvetica;font-size:7pt;text-align:center;'>";
-		print "<div style='background:#ffffff;width:30px;height:".(($maxxday-$tot_web-$tot_rss-$tot_spider)*100/$maxxday)."px;margin-right:2px;'></div>";
+		print "<div style='background:#ffffff;width:30px;height:".(($maxxday-$tot_unique-$tot_web-$tot_rss-$tot_spider)*100/$maxxday)."px;margin-right:2px;'></div>";
 		print "<div style='background:$rss_color;width:30px;height:".($tot_rss*100/$maxxday)."px;margin-right:2px;'></div>";
 		print "<div style='background:$spider_color;width:30px;height:".($tot_spider*100/$maxxday)."px;margin-right:2px;'></div>";
 		print "<div style='background:$web_color;width:30px;height:".($tot_web*100/$maxxday)."px;margin-right:2px;'></div>";
-				
+		print "<div style='background:$unique_color;width:30px;height:".($tot_unique*100/$maxxday)."px;margin-right:2px;'></div>";
 		print "<div style='background:#448abd;width:32px;height:2px;'></div>";
 		print "<!/a><br>";		
 		print date('d/m', time()-86400*$gg);
 	    print "</div>";
 	}
 	print "</td></tr></table>";
+	
 	print "</div>";
 	print "<br />";
 	print "&nbsp;<i>StatPress table size: ".iritablesize($wpdb->prefix . "statpress")."</i>";
+	
 	
 }	
 
@@ -601,7 +620,10 @@ function iriStatPressUpdate() {
 	print "<br>&nbsp;<h1>Updated!</h1>";
 }
 
-    
+function iri_statpress_head() {
+	if (stripslashes($_GET['page']) == 'statpress') {
+	}
+}
     
 function widget_statpress_init($args) {
 	// Check for the required API functions
@@ -658,7 +680,7 @@ function widget_statpress_init($args) {
 
 }
 
-  
+#add_action('admin_head', 'iri_statpress_head');
 add_action('admin_menu', 'iri_add_pages');
 add_action('plugins_loaded', 'widget_statpress_init');
 add_action('wp_head', 'iriStatAppend');

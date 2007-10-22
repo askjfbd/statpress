@@ -4,9 +4,9 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer
 Requires at least: 2.0.2
 Tested up to: 2.3
-Stable Tag: 0.6
+Stable Tag: 0.7
 
-StatPress is the plug-in dedicated to the management of statistics about blog visits. It collects information about visits, spiders, search keywords, feeds, browsers etc.
+StatPress is the real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
 
 == Description ==
@@ -36,8 +36,8 @@ Of course!
 
 
 == Screenshots ==
-&middot; <a href="http://www.irisco.it/wp-content/uploads/screenshot1.jpg">screenshot-1</a><br>
-&middot; <a href="http://www.irisco.it/wp-content/uploads/stats.jpg">screenshot-2</a>
+&middot; <a href="http://www.irisco.it/wp-content/uploads/overview.jpg">screenshot-1</a><br>
+&middot; <a href="http://www.irisco.it/wp-content/uploads/details.jpg">screenshot-2</a>
 
 
 == Updates ==
@@ -63,5 +63,9 @@ Of course!
 - New interface layout<br>
 - Export to CSV<br>
 - MySQL table size in Overview<br>
+<b>Update from 0.6 to 0.7 (22 Oct 2007)</b><br>
+- Unique visitors<br>
+- New graphs (and screenshots)<br>
+
 
 <br><br>
