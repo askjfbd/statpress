@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Stats for your blog
-Version: 0.7
+Version: 0.7.1
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -15,6 +15,13 @@ if ($_GET['statpress_action'] == 'exportnow') {
 
 
 function iri_add_pages() {
+	# Crea/aggiorna tabella se non esiste
+	global $wpdb;
+	$table_name = $wpdb->prefix . "statpress";
+	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+		iriCreateTable();
+	}
+	# add submenu
     add_submenu_page('index.php', 'StatPress', 'StatPress', 8, 'statpress', 'iriStatPress');
 }
 
@@ -74,7 +81,7 @@ function iriStatPressExportNow() {
 function iriStatPressMain() {
 	global $wpdb;
 	$table_name = $wpdb->prefix . "statpress";
-	    
+	
 	# Tabella OVERVIEW
 	$unique_color="#114477";
 	$web_color="#3377B6";

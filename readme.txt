@@ -4,7 +4,7 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer
 Requires at least: 2.0.2
 Tested up to: 2.3
-Stable Tag: 0.7
+Stable Tag: 0.7.1
 
 StatPress is the real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -66,6 +66,6 @@ Of course!
 <b>Update from 0.6 to 0.7 (22 Oct 2007)</b><br>
 - Unique visitors<br>
 - New graphs (and screenshots)<br>
-
-
+<b>Update from 0.7 to 0.7.1 (27 Oct 2007)</b><br>
+- (one time) Automatically database table creation<br>
 <br><br>
