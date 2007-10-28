@@ -21,8 +21,12 @@ StatPress include anche un widget personalizzabile da inserire eventualmente in 
 == Installation ==
 
 Upload wp-statpress directory in /wp-content/plugins/ . Then just activate it on your plugin management page.
-In the Dashboard click "StatPress" and then "StatPressUpdate" menu. You are ready!
-"StatPressUpdate" will add/update your database table.
+You are ready!
+
+== Update ==
+
+Override wp-statpress directory in /wp-content/plugins/ . Then just re-activate it on your plugin management page.
+In the Dashboard click "StatPress" and then "StatPressUpdate" menu: "StatPressUpdate" will add/update your database table and its content.
 
 == Frequently Asked Questions ==
 

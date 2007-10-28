@@ -527,7 +527,8 @@ function iriStatAppend($feed='') {
 	$table_name = $wpdb->prefix . "statpress";
 	# Raccoglie le informazioni
     $ipAddress = $_SERVER['REMOTE_ADDR'];
-    $urlRequested = (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '' );
+    $urlRequested = (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '' );      # Get REQUEST_URI
+    $urlRequested = (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '' );    # but overide with QUERY_STRING
     $referrer = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
     $userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
     
