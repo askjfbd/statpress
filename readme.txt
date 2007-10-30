@@ -3,8 +3,8 @@ Contributors:
 Donate link: 
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer
 Requires at least: 2.0.2
-Tested up to: 2.3
-Stable Tag: 0.7.1
+Tested up to: 2.3.1
+Stable Tag: 0.7.2
 
 StatPress is the real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -23,7 +23,8 @@ StatPress include anche un widget personalizzabile da inserire eventualmente in 
 Upload wp-statpress directory in /wp-content/plugins/ . Then just activate it on your plugin management page.
 You are ready!
 
-== Update ==
+
+Update
 
 Override wp-statpress directory in /wp-content/plugins/ . Then just re-activate it on your plugin management page.
 In the Dashboard click "StatPress" and then "StatPressUpdate" menu: "StatPressUpdate" will add/update your database table and its content.
@@ -34,7 +35,7 @@ In the Dashboard click "StatPress" and then "StatPressUpdate" menu: "StatPressUp
 
 Please post your messages to <a href="http://www.irisco.it/forums/forum.php?id=1">statpress forum</a>
 
-= Is it wp_2.3 compatible? =
+= Is it wp_2.3.x compatible? =
 
 Of course!
 
@@ -70,6 +71,11 @@ Of course!
 <b>Update from 0.6 to 0.7 (22 Oct 2007)</b><br>
 - Unique visitors<br>
 - New graphs (and screenshots)<br>
+<br>
 <b>Update from 0.7 to 0.7.1 (27 Oct 2007)</b><br>
 - (one time) Automatically database table creation<br>
-<br><br>
+<br>
+<b>Update from 0.7.1 to 0.7.2 (30 Oct 2007)</b><br>
+- Now "Last Pages" and "Pages" sections don't count spiders hits - Thanks to Maddler<br>
+- Page title decoded<br>
+- New spider defs - Thanks to Maddler<br>

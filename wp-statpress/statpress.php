@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Stats for your blog
-Version: 0.7.1
+Version: 0.7.2
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -272,7 +272,7 @@ function iriStatPressDetails() {
 		print "<td>". $fivesdraft->time ."</td>";
 		print "<td>". $fivesdraft->ip ."</td>";
 		print "<td>". $fivesdraft->nation ."</td>";
-		print "<td>". $fivesdraft->urlrequested ."</td>";
+		print "<td>". iri_StatPress_Decode($fivesdraft->urlrequested) ."</td>";
 		print "<td>". $fivesdraft->os . "</td>";
 		print "<td>". $fivesdraft->browser . "</td>";
 		print "<td>". $fivesdraft->feed . "</td>";
@@ -341,35 +341,38 @@ function iriStatPressDetails() {
 	# Last pages
 	print "<div class='wrap'><h2>Last Pages</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>Page</th><th scope='col'>What</th></tr></thead>";
 	print "<tbody id='the-list'>";	
-	$qry = $wpdb->get_results("SELECT date,time,urlrequested,os,browser,spider FROM $table_name WHERE (urlrequested <>'') ORDER BY id DESC $querylimit");
+	$qry = $wpdb->get_results("SELECT date,time,urlrequested,os,browser,spider FROM $table_name WHERE (urlrequested <>'') AND (spider='') ORDER BY id DESC $querylimit");
 	foreach ($qry as $rk) {
-		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td>".$rk->urlrequested."</td><td> ".$rk->os. " ".$rk->browser." ".$rk->spider."</td></tr>\n";
+		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td>".iri_StatPress_Decode($rk->urlrequested)."</td><td> ".$rk->os. " ".$rk->browser." ".$rk->spider."</td></tr>\n";
 	}
 	print "</table></div>";
     
 	# Page requested
 	print "<div class='wrap'><h2>Pages</h2><table class='widefat'><thead><tr><th scope='col'>Address</th><th scope='col'>Visits</th></tr></thead>";
 	print "<tbody id='the-list'>";	
-	$qry = $wpdb->get_results("SELECT count(urlrequested) as pageview,urlrequested FROM $table_name GROUP BY urlrequested ORDER BY pageview DESC $querylimit");
+	$qry = $wpdb->get_results("SELECT count(urlrequested) as pageview,urlrequested FROM $table_name WHERE ((spider='') AND (feed='')) GROUP BY urlrequested ORDER BY pageview DESC $querylimit");
 	foreach ($qry as $rk) {
-		$out_url=$rk->urlrequested;
-		if($out_url == '') { $out_url=get_bloginfo('url'); }
-		if(substr($out_url,0,4)=="cat=") { $out_url="Category: ".get_cat_name(substr($out_url,4)); }
-		if(substr($out_url,0,2)=="m=") { $out_url="Calendar: ".substr($out_url,6,2)."/".substr($out_url,2,4); }
-		if(substr($out_url,0,2)=="p=") {
-			$post_id_7 = get_post(substr($out_url,2), ARRAY_A);
-			$out_url = $post_id_7['post_title'];
-		}
-		if(substr($out_url,0,8)=="page_id=") {
-			$post_id_7=get_page(substr($out_url,8), ARRAY_A);
-			#$out_url = "Page: ".$post_id_7['page_title'];
-			$out_url = "Page: ".substr($out_url,8);
-		}
-		print "<tr><td>".$out_url."</td><td>" .$rk->pageview ."</td></tr>\n";
+		print "<tr><td>".iri_StatPress_Decode($rk->urlrequested)."</td><td>" .$rk->pageview ."</td></tr>\n";
 	}
 	print "</table></div>";
 
 }
+
+function iri_StatPress_Decode($out_url) {
+	if($out_url == '') { $out_url="Page: Home"; }
+	if(substr($out_url,0,4)=="cat=") { $out_url="Category: ".get_cat_name(substr($out_url,4)); }
+	if(substr($out_url,0,2)=="m=") { $out_url="Calendar: ".substr($out_url,6,2)."/".substr($out_url,2,4); }
+	if(substr($out_url,0,2)=="p=") {
+		$post_id_7 = get_post(substr($out_url,2), ARRAY_A);
+		$out_url = $post_id_7['post_title'];
+	}
+	if(substr($out_url,0,8)=="page_id=") {
+		$post_id_7=get_page(substr($out_url,8), ARRAY_A);
+		$out_url = "Page: ".$post_id_7['post_title'];
+	}
+	return $out_url;
+}
+
 
 # Converte da data us to default format di Wordpress
 function irihdate($dt = "00000000") {
