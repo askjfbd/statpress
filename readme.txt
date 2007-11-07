@@ -88,3 +88,5 @@ Of course!
 - New IP banning (new file def/banips.dat)
 - Functions updated, bugs resolved - Thanks to Maddler<br>
 - New "Overview"<br>
+- New defs<br>
+<br>
