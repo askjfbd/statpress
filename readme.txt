@@ -4,16 +4,20 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer
 Requires at least: 2.0.2
 Tested up to: 2.3.1
-Stable Tag: 0.7.2
+Stable Tag: 0.7.3
 
 StatPress is the real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
 
 == Description ==
 
+StatPress is the real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
+
 Once the plugin StatPress has been activated it immediately starts to collect the unlogged blog visitors.
 In the Dashboard menu you will find the StatPress page where you could look up the statistics (overview or detailed).
 StatPress also includes a widget one can possibly add to a sidebar.
+
+Now you could ban IP list!
 
 Una volta attivato il plugin StatPress inizia subito a memorizzare i visitatori non loggati al blog. Nel menu Dashboard trovate la pagina StatPress dove consultare le statistiche (sintentiche o dettagliate "Details").
 StatPress include anche un widget personalizzabile da inserire eventualmente in una sidebar.
@@ -79,3 +83,8 @@ Of course!
 - Now "Last Pages" and "Pages" sections don't count spiders hits - Thanks to Maddler<br>
 - Page title decoded<br>
 - New spider defs - Thanks to Maddler<br>
+<br>
+<b>Update from 0.7.2 to 0.7.3 (8 Nov 2007)</b><br>
+- New IP banning (new file def/banips.dat)
+- Functions updated, bugs resolved - Thanks to Maddler<br>
+- New "Overview"<br>

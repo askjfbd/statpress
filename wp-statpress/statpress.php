@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Stats for your blog
-Version: 0.7.2
+Version: 0.7.3
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -247,21 +247,11 @@ function iriStatPressMain() {
 	print "</td></tr></table>";
 	
 	print "</div>";
-	print "<br />";
-	print "&nbsp;<i>StatPress table size: ".iritablesize($wpdb->prefix . "statpress")."</i>";
 	
-	
-}	
-
-
-function iriStatPressDetails() {
-	global $wpdb;
-	$table_name = $wpdb->prefix . "statpress";
 	
 	$querylimit="LIMIT 10";
 	    
 	# Tabella LAST
-	print "<a name=lasthits></a>";
 	print "<div class='wrap'><h2>Last hits</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>IP</th><th scope='col'>Domain</th><th scope='col'>Page</th><th scope='col'>OS</th><th scope='col'>Browser</th><th scope='col'>Feed</th></tr></thead>";
 	print "<tbody id='the-list'>";	
 
@@ -280,26 +270,8 @@ function iriStatPressDetails() {
 	}
 	print "</table></div>";
 	
-	# Feeds
-	print "<a name=feeds></a>";
-    iriValueTable("feed","Feeds",5);
-    
-	# Top days
-    iriValueTable("date","Top days",5);
-
-	# O.S.
-    iriValueTable("os","O.S.");
-
-	# Browser
-    iriValueTable("browser","Browser");
 	
-	# SE
-    iriValueTable("searchengine","Search engines");
-
-	# Search terms
-	print "<a name=searchterms></a>";
-    iriValueTable("search","Top search terms",20);
-
+	# Last Search terms
 	print "<div class='wrap'><h2>Last search terms</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>Terms</th><th scope='col'>Engine</th><th scope='col'>Result</th></tr></thead>";
 	print "<tbody id='the-list'>";	
 	$qry = $wpdb->get_results("SELECT date,time,referrer,urlrequested,search,searchengine FROM $table_name WHERE search<>'' ORDER BY id DESC $querylimit");
@@ -307,11 +279,8 @@ function iriStatPressDetails() {
 		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td><a href='".$rk->referrer."'>".$rk->search."</a></td><td>".$rk->searchengine."</td><td><a href='".get_bloginfo('url')."/?".$rk->urlrequested."'>page viewed</a></td></tr>\n";
 	}
 	print "</table></div>";
-
-	# Top referrer
-	print "<a name=referrers></a>";
-    iriValueTable("referrer","Top referrer",15);
-    
+	
+	
 	# Referrer
 	print "<div class='wrap'><h2>Last Referrers</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>URL</th><th scope='col'>Result</th></tr></thead>";
 	print "<tbody id='the-list'>";	
@@ -320,7 +289,7 @@ function iriStatPressDetails() {
 		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td><a href='".$rk->referrer."'>".substr($rk->referrer,0,70)."...</a></td><td><a href='".get_bloginfo('url')."/?".$rk->urlrequested."'>page viewed</a></td></tr>\n";
 	}
 	print "</table></div>";
-
+	
 	# Last Agents
 	print "<div class='wrap'><h2>Last Agents</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>Agent</th><th scope='col'>What</th></tr></thead>";
 	print "<tbody id='the-list'>";	
@@ -330,32 +299,67 @@ function iriStatPressDetails() {
 	}
 	print "</table></div>";
 	
-	
-	# Countries
-    iriValueTable("nation","Countries (domains)",10);
-
-	# Spider
-	print "<a name=spiders></a>";
-    iriValueTable("spider","Spiders");
 
 	# Last pages
 	print "<div class='wrap'><h2>Last Pages</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>Page</th><th scope='col'>What</th></tr></thead>";
 	print "<tbody id='the-list'>";	
-	$qry = $wpdb->get_results("SELECT date,time,urlrequested,os,browser,spider FROM $table_name WHERE (urlrequested <>'') AND (spider='') ORDER BY id DESC $querylimit");
+	$qry = $wpdb->get_results("SELECT date,time,urlrequested,os,browser,spider FROM $table_name WHERE (spider='' AND feed='') ORDER BY id DESC $querylimit");
 	foreach ($qry as $rk) {
 		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td>".iri_StatPress_Decode($rk->urlrequested)."</td><td> ".$rk->os. " ".$rk->browser." ".$rk->spider."</td></tr>\n";
 	}
 	print "</table></div>";
-    
-	# Page requested
-	print "<div class='wrap'><h2>Pages</h2><table class='widefat'><thead><tr><th scope='col'>Address</th><th scope='col'>Visits</th></tr></thead>";
-	print "<tbody id='the-list'>";	
-	$qry = $wpdb->get_results("SELECT count(urlrequested) as pageview,urlrequested FROM $table_name WHERE ((spider='') AND (feed='')) GROUP BY urlrequested ORDER BY pageview DESC $querylimit");
-	foreach ($qry as $rk) {
-		print "<tr><td>".iri_StatPress_Decode($rk->urlrequested)."</td><td>" .$rk->pageview ."</td></tr>\n";
-	}
-	print "</table></div>";
+	
+	print "<br />";
+	print "&nbsp;<i>StatPress table size: ".iritablesize($wpdb->prefix . "statpress")."</i>";	
+	
+}	
 
+
+function iriStatPressDetails() {
+	global $wpdb;
+	$table_name = $wpdb->prefix . "statpress";
+
+	$querylimit="LIMIT 10";
+	
+	# Top days
+    iriValueTable("date","Top days",5);
+
+	# O.S.
+    iriValueTable("os","O.S.",0,"","","AND feed='' AND spider='' AND os<>''");
+
+	# Browser
+    iriValueTable("browser","Browser",0,"","","AND feed='' AND spider='' AND browser<>''");	
+	
+	# Feeds
+    iriValueTable("feed","Feeds",5,"","","AND feed<>''");
+    
+	# SE
+    iriValueTable("searchengine","Search engines",10,"","","AND searchengine<>''");
+
+	# Search terms
+    iriValueTable("search","Top search terms",20,"","","AND search<>''");
+
+	# Top referrer
+    iriValueTable("referrer","Top referrer",10,"","","AND referrer<>'' AND referrer NOT LIKE '%".get_bloginfo('url')."%'");
+ 	
+	# Countries
+    iriValueTable("nation","Countries (domains)",10,"","","AND nation<>''");
+
+	# Spider
+    iriValueTable("spider","Spiders",10,"","","AND spider<>''");
+
+	# Top Pages
+    iriValueTable("urlrequested","Top pages",5,"","urlrequested","AND feed='' and spider=''");
+	
+	
+	# Top Days - Unique visitors
+    iriValueTable("date","Top Days - Unique visitors",5,"distinct","ip","AND feed='' and spider=''"); /* Maddler 04112007: required patching iriValueTable */
+
+    # Top Days - Pageviews
+    iriValueTable("date","Top Days - Pageviews",5,"","urlrequested","AND feed='' and spider=''"); /* Maddler 04112007: required patching iriValueTable */
+
+    # Top IPs - Pageviews
+    iriValueTable("ip","Top IPs - Pageviews",5,"","urlrequested","AND feed='' and spider=''"); /* Maddler 04112007: required patching iriValueTable */
 }
 
 function iri_StatPress_Decode($out_url) {
@@ -398,22 +402,24 @@ function irirgbhex($red, $green, $blue) {
     return "#".str_pad(strtoupper(dechex($red + $green + $blue)),6,"0",STR_PAD_LEFT);
 }
 
-function iriValueTable($fld,$fldtitle,$limit = 0) {
+
+function iriValueTable($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $exclude= "") { /* Maddler 04112007: param addedd */
 	global $wpdb;
 	$table_name = $wpdb->prefix . "statpress";
+	
+	if ($queryfld == '') { $queryfld = $fld; }
 	print "<div class='wrap'><h2>$fldtitle</h2><table class='widefat'><thead><tr><th scope='col' width=300>$fldtitle</th><th scope='col' width=150>Visits</th><th scope='col' width=150>%</th><th></th></tr></thead>";
 	print "<tbody id='the-list'>";
-	$rks = $wpdb->get_var("SELECT count($fld) as rks FROM $table_name WHERE $fld<>'';");
+	$rks = $wpdb->get_var("SELECT count($param $queryfld) as rks FROM $table_name WHERE 1=1 $exclude;"); 
 	if($rks > 0) {
-		$sql="SELECT count($fld) as pageview, $fld FROM $table_name WHERE $fld<>'' GROUP BY $fld ORDER BY pageview DESC";
+		$sql="SELECT count($param $queryfld) as pageview, $fld FROM $table_name WHERE 1=1 $exclude  GROUP BY $fld ORDER BY pageview DESC";
 		if($limit > 0) { $sql=$sql." LIMIT $limit"; }
 		$qry = $wpdb->get_results($sql);
-#	    $tdwidth=450; $red=0; $green=200; $blue=0; $deltacolor=round(250/count($qry),0);
 	    $tdwidth=450; $red=131; $green=180; $blue=216; $deltacolor=round(250/count($qry),0);
-
 		foreach ($qry as $rk) {
 			$pc=round(($rk->pageview*100/$rks),1);
 			if($fld == 'date') { $rk->$fld = irihdate($rk->$fld); }
+			if($fld == 'urlrequested') { $rk->$fld = iri_StatPress_Decode($rk->$fld); }
         	print "<tr><td>".$rk->$fld."</td><td>".$rk->pageview."</td><td>$pc%</td><td>";
 	        print "<div style='text-align:right;font-family:helvetica;font-size:7pt;font-weight:bold;height:10px;width:".($tdwidth*$pc/100)."px;background:".irirgbhex($red,$green,$blue).";border-top:2px solid ".irirgbhex($red+20,$green+20,$blue).";border-right:2px solid ".irirgbhex($red+30,$green+30,$blue).";border-bottom:2px solid ".irirgbhex($red-20,$green-20,$blue).";'>&nbsp;$pc%&nbsp;</div>";
     	    print "</td></tr>\n";
@@ -422,6 +428,7 @@ function iriValueTable($fld,$fldtitle,$limit = 0) {
 	}
 	print "</table></div>";
 }
+
 
 
 function iriDomain($ip) {
@@ -466,6 +473,15 @@ function iriGetBrowser($arg){
     	return $nome; // riconosciuto
 	}
     return '';
+}
+
+function iriCheckBanIP($arg){
+	$lines = file(ABSPATH.'wp-content/plugins/wp-statpress/def/banips.dat');
+	foreach($lines as $line_num => $banip) {
+		if(strpos($arg,rtrim($banip,"\n"))===FALSE) continue;
+    	return ''; // riconosciuto, da scartare
+	}
+    return $arg;
 }
 
 function iriGetSE($referrer = null){
@@ -530,8 +546,13 @@ function iriStatAppend($feed='') {
 	$table_name = $wpdb->prefix . "statpress";
 	# Raccoglie le informazioni
     $ipAddress = $_SERVER['REMOTE_ADDR'];
-    $urlRequested = (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '' );      # Get REQUEST_URI
+    if(iriCheckBanIP($ipAddress) == '') { return ''; }
     $urlRequested = (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '' );    # but overide with QUERY_STRING
+	if ( $urlRequested == "" ) { // SEO problem!
+	    $urlRequested = (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '' );      # Get REQUEST_URI
+	}
+	if(substr($urlRequested,0,2) == '/?') { $urlRequested=substr($urlRequested,2); }
+	if($urlRequested == '/') { $urlRequested=''; }
     $referrer = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
     $userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
     
@@ -625,7 +646,7 @@ function iriStatPressUpdate() {
 		}
 	}
 	print "done<br>";
-	
+
 	$wpdb->hide_errors();
 	
 	print "<br>&nbsp;<h1>Updated!</h1>";
