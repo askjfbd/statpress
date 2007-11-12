@@ -4,7 +4,7 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer
 Requires at least: 2.0.2
 Tested up to: 2.3.1
-Stable Tag: 0.7.3
+Stable Tag: 0.7.4
 
 StatPress is the real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -88,5 +88,9 @@ Of course!
 - New IP banning (new file def/banips.dat)
 - Functions updated, bugs resolved - Thanks to Maddler<br>
 - New "Overview"<br>
-- New defs<br>
+- Updated defs<br>
+<br>
+<b>Update from 0.7.3 to 0.7.4 (12 Nov 2007)</b><br>
+- New Spy section<br>
+- Updated defs<br>
 <br>

@@ -16,6 +16,7 @@ Windows NT 4|WindowsNT|
 Windows 3.1|Win3.1|
 Windows CE|WindowsCE|
 Windows CE|WinCE|
+Windows|Win32|
 iPhone|iPhone|
 iPod|iPod|
 Mac OS X|MacOSX|
@@ -23,9 +24,13 @@ Mac|Mac|
 SunOS|SunOS|
 FreeBSD|FreeBSD|
 OpenBSD|OpenBSD|
+Linux Debian|Debian|
+Linux Ubuntu|Ubuntu|
 Linux|Linux|
 Linux|linux|
 Linux|X11|
 WebTV|WebTV|
 Amiga|Amiga|
 Symbian|Symbian|
+Mac OS X|Vienna|
+Mac OS X|Ensemble2|

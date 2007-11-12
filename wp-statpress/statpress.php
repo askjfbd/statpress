@@ -2,8 +2,8 @@
 /*
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
-Description: Stats for your blog
-Version: 0.7.3
+Description: Real time stats for your blog
+Version: 0.7.4
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -30,10 +30,11 @@ function iriStatPress() {
 ?>
 
 <ul id="submenu" style='border-top:1px dotted #83b4d8'>
-    <li><a href='?page=statpress'>Overview</a></li>
-    <li><a href='?page=statpress&statpress_action=details'>Details</a></li>
-    <li><a href='?page=statpress&statpress_action=export'>Export</a></li>
-    <li><a href='?page=statpress&statpress_action=up'>StatPressUpdate</a></li>
+    <li><a href='?page=statpress' <?php if($_GET['statpress_action'] == '') { print "class=current"; } ?>>Overview</a></li>
+    <li><a href='?page=statpress&statpress_action=details' <?php if($_GET['statpress_action'] == 'details') { print "class=current"; } ?>>Details</a></li>
+    <li><a href='?page=statpress&statpress_action=spy' <?php if($_GET['statpress_action'] == 'spy') { print "class=current"; } ?>>Spy</a></li>
+    <li><a href='?page=statpress&statpress_action=export' <?php if($_GET['statpress_action'] == 'export') { print "class=current"; } ?>>Export</a></li>
+    <li><a href='?page=statpress&statpress_action=up' <?php if($_GET['statpress_action'] == 'up') { print "class=current"; } ?>>StatPressUpdate</a></li>
 </ul>
 
 <?php
@@ -41,6 +42,8 @@ function iriStatPress() {
 		iriStatPressExport();
 	} elseif ($_GET['statpress_action'] == 'up') {
 		iriStatPressUpdate();
+	} elseif ($_GET['statpress_action'] == 'spy') {
+		iriStatPressSpy();
 	} elseif ($_GET['statpress_action'] == 'details') {
 		iriStatPressDetails();
 	} elseif(1) {
@@ -233,7 +236,7 @@ function iriStatPressMain() {
 		$tot_spider=count($qry);
 		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed NOT LIKE '' AND spider='' AND date = '".date('Ymd', time()-86400*$gg)."';");
 		$tot_rss=count($qry);
-		print "<!a href='/?m=".$rk->date."' target=_new><div style='float:left;font-family:Helvetica;font-size:7pt;text-align:center;'>";
+		print "<!a href='/?m=".$rk->date."' target=_blank><div style='float:left;font-family:Helvetica;font-size:7pt;text-align:center;'>";
 		print "<div style='background:#ffffff;width:30px;height:".(($maxxday-$tot_unique-$tot_web-$tot_rss-$tot_spider)*100/$maxxday)."px;margin-right:2px;'></div>";
 		print "<div style='background:$rss_color;width:30px;height:".($tot_rss*100/$maxxday)."px;margin-right:2px;'></div>";
 		print "<div style='background:$spider_color;width:30px;height:".($tot_spider*100/$maxxday)."px;margin-right:2px;'></div>";
@@ -247,11 +250,11 @@ function iriStatPressMain() {
 	print "</td></tr></table>";
 	
 	print "</div>";
-	
-	
+
+
 	$querylimit="LIMIT 10";
 	    
-	# Tabella LAST
+	# Tabella Last hits
 	print "<div class='wrap'><h2>Last hits</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>IP</th><th scope='col'>Domain</th><th scope='col'>Page</th><th scope='col'>OS</th><th scope='col'>Browser</th><th scope='col'>Feed</th></tr></thead>";
 	print "<tbody id='the-list'>";	
 
@@ -343,7 +346,7 @@ function iriStatPressDetails() {
     iriValueTable("referrer","Top referrer",10,"","","AND referrer<>'' AND referrer NOT LIKE '%".get_bloginfo('url')."%'");
  	
 	# Countries
-    iriValueTable("nation","Countries (domains)",10,"","","AND nation<>''");
+    iriValueTable("nation","Countries (domains)",10,"","","AND nation<>'' AND spider=''");
 
 	# Spider
     iriValueTable("spider","Spiders",10,"","","AND spider<>''");
@@ -362,10 +365,68 @@ function iriStatPressDetails() {
     iriValueTable("ip","Top IPs - Pageviews",5,"","urlrequested","AND feed='' and spider=''"); /* Maddler 04112007: required patching iriValueTable */
 }
 
+
+function iriStatPressSpy() {
+	global $wpdb;
+	$table_name = $wpdb->prefix . "statpress";
+	
+	# Spy
+	$today = date('Ymd', time());
+	$yesterday = date('Ymd', time()-86400);
+	print "<div class='wrap'><h2>Spy</h2>";
+	$sql="SELECT ip,nation,os,browser,agent FROM $table_name WHERE (spider='' AND feed='') AND (date BETWEEN '$yesterday' AND '$today') GROUP BY ip ORDER BY id DESC LIMIT 20";
+	$qry = $wpdb->get_results($sql);
+	
+?>
+<script>
+function ttogle(thediv){
+if (document.getElementById(thediv).style.display=="inline") {
+document.getElementById(thediv).style.display="none"
+} else {document.getElementById(thediv).style.display="inline"}
+}
+</script>
+<div align="center">
+<table id="mainspytab" name="mainspytab" width="99%" border="0" cellspacing="0" cellpadding="4">
+<?php
+	foreach ($qry as $rk) {
+		print "<tr><td colspan='2' bgcolor='#dedede'><div align='left'><strong><span><font size='2' color='#7b7b7b'>".$rk->ip."</font></span></strong> ";
+		print "<span style='color:#006dca;cursor:pointer;border-bottom:1px dotted #AFD5F9;font-size:8pt;' onClick=ttogle('".$rk->ip."');>more info</span></div>";
+		print "<div id='".$rk->ip."' name='".$rk->ip."'>".$rk->os.", ".$rk->browser;
+		print "<br><iframe style='overflow:hide;border:0px;width:100%;height:15px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://showip.fakap.net/txt/".$rk->ip."></iframe>";
+		if($rk->nation) {
+			print "<br>".$rk->nation;
+			print "<br><small>".gethostbyaddr($rk->ip)."</small>";
+		}
+		print "<br><small>".$rk->agent."</small>";
+		print "</div>";
+		print "<script>document.getElementById('".$rk->ip."').style.display='none';</script>";
+		print "</td></tr>";
+		$qry2=$wpdb->get_results("SELECT * FROM $table_name WHERE ip='".$rk->ip."' AND (date BETWEEN '$yesterday' AND '$today') order by id LIMIT 10");
+		foreach ($qry2 as $details) {
+			print "<tr>";
+			print "<td valign='top' width='151'><div><font size='1' color='#3B3B3B'><strong>".irihdate($details->date)." ".$details->time."</strong></font></div></td>";
+			print "<td><div><a href='".$details->urlrequested."' target=_blank>".iri_StatPress_Decode($details->urlrequested)."</a>";
+			if($details->searchengine != '') {
+				print "<br><small>from <b>".$details->searchengine."</b> searching <a href='".$details->referrer."' target=_blank>".$details->search."</a></small>";
+			} elseif($details->referrer != '' && strpos($details->referrer,get_settings('siteurl'))===FALSE) {
+				print "<br><small>from <a href='".$details->referrer."' target=_blank>".$details->referrer."</a></small>";
+			}
+			print "</div></td>";
+			print "</tr>\n";
+		}
+	}
+?>
+</table>
+</div>
+<?php
+}
+
+
 function iri_StatPress_Decode($out_url) {
 	if($out_url == '') { $out_url="Page: Home"; }
 	if(substr($out_url,0,4)=="cat=") { $out_url="Category: ".get_cat_name(substr($out_url,4)); }
 	if(substr($out_url,0,2)=="m=") { $out_url="Calendar: ".substr($out_url,6,2)."/".substr($out_url,2,4); }
+	if(substr($out_url,0,2)=="s=") { $out_url="Search: ".substr($out_url,2); }
 	if(substr($out_url,0,2)=="p=") {
 		$post_id_7 = get_post(substr($out_url,2), ARRAY_A);
 		$out_url = $post_id_7['post_title'];
@@ -378,10 +439,22 @@ function iri_StatPress_Decode($out_url) {
 }
 
 
+function iri_StatPress_URL() {
+    $urlRequested = (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '' );
+	if ( $urlRequested == "" ) { // SEO problem!
+	    $urlRequested = (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '' );
+	}
+	if(substr($urlRequested,0,2) == '/?') { $urlRequested=substr($urlRequested,2); }
+	if($urlRequested == '/') { $urlRequested=''; }
+	return $urlRequested;
+}
+
+
 # Converte da data us to default format di Wordpress
 function irihdate($dt = "00000000") {
 	return mysql2date(get_option('date_format'), substr($dt,0,4)."-".substr($dt,4,2)."-".substr($dt,6,2));
 }
+
 
 function iritablesize($table) {
 	global $wpdb;
@@ -546,13 +619,12 @@ function iriStatAppend($feed='') {
 	$table_name = $wpdb->prefix . "statpress";
 	# Raccoglie le informazioni
     $ipAddress = $_SERVER['REMOTE_ADDR'];
+
     if(iriCheckBanIP($ipAddress) == '') { return ''; }
-    $urlRequested = (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '' );    # but overide with QUERY_STRING
-	if ( $urlRequested == "" ) { // SEO problem!
-	    $urlRequested = (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '' );      # Get REQUEST_URI
-	}
-	if(substr($urlRequested,0,2) == '/?') { $urlRequested=substr($urlRequested,2); }
-	if($urlRequested == '/') { $urlRequested=''; }
+
+	$urlRequested=iri_StatPress_URL();
+	if (eregi("favicon.ico", $urlRequested)) { return ''; }
+
     $referrer = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
     $userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
     
@@ -678,7 +750,7 @@ function widget_statpress_init($args) {
 		// the form
 		echo '<p style="text-align:right;"><label for="statpress-title">' . __('Title:') . ' <input style="width: 250px;" id="statpress-title" name="statpress-title" type="text" value="'.$title.'" /></label></p>';
 		echo '<p style="text-align:right;"><label for="statpress-body"><div>' . __('Body:', 'widgets') . '</div><textarea style="width: 288px;height:100px;" id="statpress-body" name="statpress-body" type="textarea">'.$body.'</textarea></label></p>';
-		echo '<input type="hidden" id="statpress-submit" name="statpress-submit" value="1" />Use %visits% %os% %browser% %ip%';
+		echo '<input type="hidden" id="statpress-submit" name="statpress-submit" value="1" />Use %totalvisits% %visits% %thistotalvisits% %os% %browser% %ip% %since%';
 	}
 	
 	// main widget function
@@ -693,17 +765,35 @@ function widget_statpress_init($args) {
     	echo $before_widget;
     	print($before_title . $title . $after_title);
 		# Query table...
-		$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as pageview FROM $table_name WHERE date = '".date("Ymd")."';");
-		foreach ($qry as $rk) {
-			$body = str_replace("%visits%", $rk->pageview, $body);
+		if(strpos(strtolower($body),"%visits%") !== FALSE) {
+			$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as pageview FROM $table_name WHERE date = '".date("Ymd")."' and spider='' and feed='';");
+			$body = str_replace("%visits%", $qry[0]->pageview, $body);
 		}
-        $userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
-       	$os=iriGetOS($userAgent);
-       	$body = str_replace("%os%", $os, $body);
-		$browser=iriGetBrowser($userAgent);
-       	$body = str_replace("%browser%", $browser, $body);
-   	    $ipAddress = $_SERVER['REMOTE_ADDR'];
-       	$body = str_replace("%ip%", $ipAddress, $body);
+		if(strpos(strtolower($body),"%totalvisits%") !== FALSE) {
+			$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as pageview FROM $table_name WHERE spider='' and feed='';");
+			$body = str_replace("%totalvisits%", $qry[0]->pageview, $body);
+		}
+		if(strpos(strtolower($body),"%thistotalvisits%") !== FALSE) {
+			$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as pageview FROM $table_name WHERE spider='' and feed='' AND urlrequested='".iri_StatPress_URL()."';");
+			$body = str_replace("%thistotalvisits%", $qry[0]->pageview, $body);
+		}
+		if(strpos(strtolower($body),"%since%") !== FALSE) {
+			$qry = $wpdb->get_results("SELECT date FROM $table_name ORDER BY date LIMIT 1;");
+			$body = str_replace("%since%", irihdate($qry[0]->date), $body);
+		}
+		if(strpos(strtolower($body),"%os%") !== FALSE) {
+	        $userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
+    	   	$os=iriGetOS($userAgent);
+	       	$body = str_replace("%os%", $os, $body);
+	    }
+		if(strpos(strtolower($body),"%browser%") !== FALSE) {
+			$browser=iriGetBrowser($userAgent);
+    	   	$body = str_replace("%browser%", $browser, $body);
+    	}
+ 		if(strpos(strtolower($body),"%ip%") !== FALSE) { 	
+	   	    $ipAddress = $_SERVER['REMOTE_ADDR'];
+    	   	$body = str_replace("%ip%", $ipAddress, $body);
+    	}
 		print $body;
 	    echo $after_widget;
     }
