@@ -17,10 +17,21 @@ Once the plugin StatPress has been activated it immediately starts to collect th
 In the Dashboard menu you will find the StatPress page where you could look up the statistics (overview or detailed).
 StatPress also includes a widget one can possibly add to a sidebar.
 
-Now you could ban IP list!
+Now you could ban IP list editing banips.dat!
 
-Una volta attivato il plugin StatPress inizia subito a memorizzare i visitatori non loggati al blog. Nel menu Dashboard trovate la pagina StatPress dove consultare le statistiche (sintentiche o dettagliate "Details").
-StatPress include anche un widget personalizzabile da inserire eventualmente in una sidebar.
+
+<b>StatPress Widget</b>
+
+Widget is customizable. These are the available variables:
+
+%thistotalvisits% - this page, total visits
+%since% - Date of the first hit
+%visits% - Today visits
+%totalvisits% - Total visits
+%os% - Operative system
+%browser% - Browser
+%ip% - IP address
+
 
 == Installation ==
 
