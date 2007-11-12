@@ -19,18 +19,18 @@ StatPress also includes a widget one can possibly add to a sidebar.
 
 Now you could ban IP list editing banips.dat!
 
-
+<br><br><hr><br>
 <b>StatPress Widget</b>
 
 Widget is customizable. These are the available variables:
 
-%thistotalvisits% - this page, total visits
-%since% - Date of the first hit
-%visits% - Today visits
-%totalvisits% - Total visits
-%os% - Operative system
-%browser% - Browser
-%ip% - IP address
+%thistotalvisits% - this page, total visits<br>
+%since% - Date of the first hit<br>
+%visits% - Today visits<br>
+%totalvisits% - Total visits<br>
+%os% - Operative system<br>
+%browser% - Browser<br>
+%ip% - IP address<br>
 
 
 == Installation ==
@@ -56,8 +56,9 @@ Of course!
 
 
 == Screenshots ==
-&middot; <a href="http://www.irisco.it/wp-content/uploads/overview.jpg">screenshot-1</a><br>
-&middot; <a href="http://www.irisco.it/wp-content/uploads/details.jpg">screenshot-2</a>
+&middot; <a href="http://www.irisco.it/wp-content/uploads/overview.jpg">screenshot-1 - Overview</a><br>
+&middot; <a href="http://www.irisco.it/wp-content/uploads/details.jpg">screenshot-2 - Details</a><br>
+&middot; <a href="http://www.irisco.it/wp-content/uploads/widget.jpg">screenshot-3 - Widget</a><br>
 
 
 == Updates ==
