@@ -17,6 +17,8 @@ Once the plugin StatPress has been activated it immediately starts to collect th
 In the Dashboard menu you will find the StatPress page where you could look up the statistics (overview or detailed).
 StatPress also includes a widget one can possibly add to a sidebar.
 
+New SPY section!
+
 Now you could ban IP list editing banips.dat!
 
 <br><br><hr><br>
@@ -59,7 +61,7 @@ Of course!
 &middot; <a href="http://www.irisco.it/wp-content/uploads/overview.jpg">screenshot-1 - Overview</a><br>
 &middot; <a href="http://www.irisco.it/wp-content/uploads/details.jpg">screenshot-2 - Details</a><br>
 &middot; <a href="http://www.irisco.it/wp-content/uploads/widget.jpg">screenshot-3 - Widget</a><br>
-
+&middot; <a href="http://www.irisco.it/wp-content/uploads/spy.jpg">screenshot-3 - Spy</a><br>
 
 == Updates ==
 
