@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 0.7.4
+Version: 0.7.5
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -481,7 +481,7 @@ function iriValueTable($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $e
 	$table_name = $wpdb->prefix . "statpress";
 	
 	if ($queryfld == '') { $queryfld = $fld; }
-	print "<div class='wrap'><h2>$fldtitle</h2><table class='widefat'><thead><tr><th scope='col' width=300>$fldtitle</th><th scope='col' width=150>Visits</th><th scope='col' width=150>%</th><th></th></tr></thead>";
+	print "<div class='wrap'><h2>$fldtitle</h2><table style='width:100%;padding:0px;margin:0px;' cellpadding=0 cellspacing=0><thead><tr><th style='width:400px;background-color:white;'></th><th style='width:150px;background-color:white;'><u>Visits</u></th><th style='background-color:white;'></th></tr></thead>";
 	print "<tbody id='the-list'>";
 	$rks = $wpdb->get_var("SELECT count($param $queryfld) as rks FROM $table_name WHERE 1=1 $exclude;"); 
 	if($rks > 0) {
@@ -493,8 +493,10 @@ function iriValueTable($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $e
 			$pc=round(($rk->pageview*100/$rks),1);
 			if($fld == 'date') { $rk->$fld = irihdate($rk->$fld); }
 			if($fld == 'urlrequested') { $rk->$fld = iri_StatPress_Decode($rk->$fld); }
-        	print "<tr><td>".$rk->$fld."</td><td>".$rk->pageview."</td><td>$pc%</td><td>";
-	        print "<div style='text-align:right;font-family:helvetica;font-size:7pt;font-weight:bold;height:10px;width:".($tdwidth*$pc/100)."px;background:".irirgbhex($red,$green,$blue).";border-top:2px solid ".irirgbhex($red+20,$green+20,$blue).";border-right:2px solid ".irirgbhex($red+30,$green+30,$blue).";border-bottom:2px solid ".irirgbhex($red-20,$green-20,$blue).";'>&nbsp;$pc%&nbsp;</div>";
+        	print "<tr><td style='width:400px;overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>".substr($rk->$fld,0,50);
+        	if(strlen("$rk->fld")>=50) { print "..."; }
+        	print "</td><td style='text-align:center;'>".$rk->pageview."</td>";  // <td style='text-align:right'>$pc%</td>";
+	        print "<td><div style='text-align:right;padding:2px;font-family:helvetica;font-size:7pt;font-weight:bold;height:16px;width:".($tdwidth*$pc/100)."px;background:".irirgbhex($red,$green,$blue).";border-top:1px solid ".irirgbhex($red+20,$green+20,$blue).";border-right:1px solid ".irirgbhex($red+30,$green+30,$blue).";border-bottom:1px solid ".irirgbhex($red-20,$green-20,$blue).";'>$pc%</div>";
     	    print "</td></tr>\n";
         	$red=$red+$deltacolor; $blue=$blue-($deltacolor/2);
 		}
