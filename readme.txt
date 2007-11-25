@@ -1,39 +1,43 @@
 === Plugin Name ===
 Contributors: 
 Donate link: 
-Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer
+Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts
 Requires at least: 2.0.2
 Tested up to: 2.3.1
-Stable Tag: 0.7.5
+Stable Tag: 0.7.6
 
-StatPress is the real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
+The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
 
 == Description ==
 
-StatPress is the real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
+The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
 Once the plugin StatPress has been activated it immediately starts to collect the unlogged blog visitors.
 In the Dashboard menu you will find the StatPress page where you could look up the statistics (overview or detailed).
-StatPress also includes a widget one can possibly add to a sidebar.
+StatPress also includes a widget one can possibly add to a sidebar (or easy PHP code if you can't!).
 
-New SPY section!
+*New SEARCH section!*
+*New SPY section!*
 
-Now you could ban IP list editing banips.dat!
 
-<br><br><hr><br>
-<b>StatPress Widget</b>
+You could ban IP list editing banips.dat!
+
+
+= StatPress Widget / StatPress_Print function =
 
 Widget is customizable. These are the available variables:
 
-%thistotalvisits% - this page, total visits<br>
-%since% - Date of the first hit<br>
-%visits% - Today visits<br>
-%totalvisits% - Total visits<br>
-%os% - Operative system<br>
-%browser% - Browser<br>
-%ip% - IP address<br>
+* %thistotalvisits% - this page, total visits
+* %since% - Date of the first hit
+* %visits% - Today visits
+* %totalvisits% - Total visits
+* %os% - Operative system
+* %browser% - Browser
+* %ip% - IP address
 
+Now you could add these values everywhere! StatPress >=0.7.6 offers a new PHP function *StatPress_Print()*.
+* i.e. <?php StatPress_Print("%totalvisits% total visits."); ?>
 
 == Installation ==
 
@@ -62,53 +66,64 @@ Of course!
 &middot; <a href="http://www.irisco.it/wp-content/uploads/details.jpg">screenshot-2 - Details</a><br>
 &middot; <a href="http://www.irisco.it/wp-content/uploads/widget.jpg">screenshot-3 - Widget</a><br>
 &middot; <a href="http://www.irisco.it/wp-content/uploads/spy.jpg">screenshot-3 - Spy</a><br>
+&middot; <a href="http://www.irisco.it/wp-content/uploads/search.jpg">screenshot-4 - Search</a><br>
 
 == Updates ==
 
-<b>Update from 0.1 to 0.2</b><br>
-- Layout update<br>
-- iPhone and other new defs<br><br>
-<b>Update from 0.2 to 0.3 (15 Jul 2007)</b><br>
-- Rss Feeds support!<br>
-- Layout update<br>
-- New defs<br><br>
-<b>Update from 0.3 to 0.4 (14 Sep 2007)</b><br>
-- Customizable widget<br>
-- New defs<br><br>
-<b>Update from 0.4 to 0.5 (25 Sep 2007)</b><br>
-- New "Overview"<br>
-- New defs<br><br>
-<b>Update from 0.5 to 0.5.2 (3 Oct 2007)</b><br>
-- Solved (rare) compatibility issues - Thanks to Carlo A.<br><br>
-<b>Update from 0.5.2 to 0.5.3 (4 Oct 2007)</b><br>
-- Solved setup compatibility issues - Thanks to Andrew<br><br>
-<b>Update from 0.5.3 to 0.6 (17 Oct 2007)</b><br>
-- New interface layout<br>
-- Export to CSV<br>
-- MySQL table size in Overview<br><br>
-<b>Update from 0.6 to 0.7 (22 Oct 2007)</b><br>
-- Unique visitors<br>
-- New graphs (and screenshots)<br>
-<br>
-<b>Update from 0.7 to 0.7.1 (27 Oct 2007)</b><br>
-- (one time) Automatically database table creation<br>
-<br>
-<b>Update from 0.7.1 to 0.7.2 (30 Oct 2007)</b><br>
-- Now "Last Pages" and "Pages" sections don't count spiders hits - Thanks to Maddler<br>
-- Page title decoded<br>
-- New spider defs - Thanks to Maddler<br>
-<br>
-<b>Update from 0.7.2 to 0.7.3 (8 Nov 2007)</b><br>
-- New IP banning (new file def/banips.dat)
-- Functions updated, bugs resolved - Thanks to Maddler<br>
-- New "Overview"<br>
-- Updated defs<br>
-<br>
-<b>Update from 0.7.3 to 0.7.4 (12 Nov 2007)</b><br>
-- New Spy section<br>
-- Updated defs<br>
-<br>
-<b>Update from 0.7.4 to 0.7.5 (14 Nov 2007)</b><br>
-- New gfx look<br>
-- Updated defs<br>
-<br>
+*Update from 0.1 to 0.2*
+* Layout update
+* iPhone and other new defs
+
+*Update from 0.2 to 0.3 (15 Jul 2007)*
+* Rss Feeds support!
+* Layout update
+* New defs
+
+*Update from 0.3 to 0.4 (14 Sep 2007)*
+* Customizable widget
+* New defs
+
+*Update from 0.4 to 0.5 (25 Sep 2007)*
+* New "Overview"
+* New defs
+
+*Update from 0.5 to 0.5.2 (3 Oct 2007)*
+* Solved (rare) compatibility issues - Thanks to Carlo A.
+
+*Update from 0.5.2 to 0.5.3 (4 Oct 2007)*
+* Solved setup compatibility issues - Thanks to Andrew
+
+*Update from 0.5.3 to 0.6 (17 Oct 2007)*
+* New interface layout
+* Export to CSV
+* MySQL table size in Overview
+
+*Update from 0.6 to 0.7 (22 Oct 2007)*
+* Unique visitors
+* New graphs (and screenshots)
+
+*Update from 0.7 to 0.7.1 (27 Oct 2007)*
+* (one time) Automatically database table creation
+
+*Update from 0.7.1 to 0.7.2 (30 Oct 2007)*
+* Now "Last Pages" and "Pages" sections don't count spiders hits - Thanks to Maddler
+* Page title decoded
+* New spider defs - Thanks to Maddler
+
+*Update from 0.7.2 to 0.7.3 (8 Nov 2007)*
+* New IP banning (new file def/banips.dat)
+* Functions updated, bugs resolved - Thanks to Maddler
+* New "Overview"
+* Updated defs
+
+*Update from 0.7.3 to 0.7.4 (12 Nov 2007)*
+* New Spy section
+* Updated defs
+
+*Update from 0.7.4 to 0.7.5 (14 Nov 2007)*
+* New gfx look
+* Updated defs
+
+*Update from 0.7.5 to 0.7.6 (25 Nov 2007)*
+* New SEARCH section!
+* New StatPress_Print() function

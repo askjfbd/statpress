@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 0.7.5
+Version: 0.7.6
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -33,6 +33,7 @@ function iriStatPress() {
     <li><a href='?page=statpress' <?php if($_GET['statpress_action'] == '') { print "class=current"; } ?>>Overview</a></li>
     <li><a href='?page=statpress&statpress_action=details' <?php if($_GET['statpress_action'] == 'details') { print "class=current"; } ?>>Details</a></li>
     <li><a href='?page=statpress&statpress_action=spy' <?php if($_GET['statpress_action'] == 'spy') { print "class=current"; } ?>>Spy</a></li>
+    <li><a href='?page=statpress&statpress_action=search' <?php if($_GET['statpress_action'] == 'search') { print "class=current"; } ?>>Search</a></li>
     <li><a href='?page=statpress&statpress_action=export' <?php if($_GET['statpress_action'] == 'export') { print "class=current"; } ?>>Export</a></li>
     <li><a href='?page=statpress&statpress_action=up' <?php if($_GET['statpress_action'] == 'up') { print "class=current"; } ?>>StatPressUpdate</a></li>
 </ul>
@@ -44,6 +45,8 @@ function iriStatPress() {
 		iriStatPressUpdate();
 	} elseif ($_GET['statpress_action'] == 'spy') {
 		iriStatPressSpy();
+	} elseif ($_GET['statpress_action'] == 'search') {
+		iriStatPressSearch();
 	} elseif ($_GET['statpress_action'] == 'details') {
 		iriStatPressDetails();
 	} elseif(1) {
@@ -287,7 +290,7 @@ function iriStatPressMain() {
 	# Referrer
 	print "<div class='wrap'><h2>Last Referrers</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>URL</th><th scope='col'>Result</th></tr></thead>";
 	print "<tbody id='the-list'>";	
-	$qry = $wpdb->get_results("SELECT date,time,referrer FROM $table_name WHERE ((referrer NOT LIKE '".get_settings('siteurl')."%') AND (referrer <>'')) ORDER BY id DESC $querylimit");
+	$qry = $wpdb->get_results("SELECT date,time,referrer FROM $table_name WHERE ((referrer NOT LIKE '".get_settings('siteurl')."%') AND (referrer <>'') AND (searchengine='')) ORDER BY id DESC $querylimit");
 	foreach ($qry as $rk) {
 		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td><a href='".$rk->referrer."'>".substr($rk->referrer,0,70)."...</a></td><td><a href='".get_bloginfo('url')."/?".$rk->urlrequested."'>page viewed</a></td></tr>\n";
 	}
@@ -419,6 +422,136 @@ document.getElementById(thediv).style.display="none"
 </table>
 </div>
 <?php
+}
+
+
+function iriStatPressSearch($what='') {
+	global $wpdb;
+	$table_name = $wpdb->prefix . "statpress";
+	
+	$f['urlrequested']="URL Requested";
+	$f['agent']="Agent";
+	$f['referrer']="Referrer";
+	$f['search']="Search terms";
+	$f['searchengine']="Search engine";
+	$f['os']="Operative System";	
+	$f['browser']="Browser";
+	$f['spider']="Spider";
+?>
+	<div class='wrap'><h2>Search</h2>
+	<form method=get><table>
+	<?php
+		for($i=1;$i<=3;$i++) {
+			print "<tr>";
+			print "<td>Field <select name=where$i><option value=''></option>";
+			foreach ( array_keys($f) as $k ) {
+				print "<option value='$k'";
+				if($_GET["where$i"] == $k) { print " SELECTED "; }
+				print ">".$f[$k]."</option>";
+			}
+			print "</select></td>";
+			print "<td><input type=checkbox name=groupby$i value='checked' ".$_GET["groupby$i"]."> Group by</td>";
+			print "<td><input type=checkbox name=sortby$i value='checked' ".$_GET["sortby$i"]."> Sort by</td>";
+			print "<td>, if contains <input type=text name=what$i value='".$_GET["what$i"]."'></td>";
+			print "</tr>";
+		}
+	?>
+	</table>
+	<br>
+	<table>
+	<tr>
+		<td>
+			<table>
+				<tr><td><input type=checkbox name=oderbycount value=checked <?php print $_GET['oderbycount'] ?>> sort by count if grouped</td></tr>
+				<tr><td><input type=checkbox name=spider value=checked <?php print $_GET['spider'] ?>> include spiders/crawlers/bot</td></tr>
+				<tr><td><input type=checkbox name=feed value=checked <?php print $_GET['feed'] ?>> include feed</td></tr>
+			</table>
+		</td>
+		<td width=15> </td>
+		<td>
+			<table>
+				<tr>
+					<td>Limit results to
+						<select name=limitquery><?php if($_GET['limitquery'] >0) { print "<option>".$_GET['limitquery']."</option>";} ?><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option></select>
+					</td>
+				</tr>
+				<tr><td>&nbsp;</td></tr>
+				<tr>
+					<td align=right><input type=submit value=Search name=searchsubmit></td>
+				</tr>
+			</table>
+		</td>
+	</tr>		
+	</table>	
+	<input type=hidden name=page value=statpress><input type=hidden name=statpress_action value=search>
+	</form><br>
+<?php
+
+ if(isset($_GET['searchsubmit'])) {
+	# query builder
+	$qry="";
+	# FIELDS
+	$fields="";
+	for($i=1;$i<=3;$i++) {
+		if($_GET["where$i"] != '') {
+			$fields.=$_GET["where$i"].",";
+		}
+	}
+	$fields=rtrim($fields,",");
+	# WHERE
+	$where="WHERE 1=1";
+	if($_GET['spider'] != 'checked') { $where.=" AND spider=''"; }
+	if($_GET['feed'] != 'checked') { $where.=" AND feed=''"; }
+	for($i=1;$i<=3;$i++) {
+		if(($_GET["what$i"] != '') && ($_GET["where$i"] != '')) {
+			$where.=" AND ".$_GET["where$i"]." LIKE '%".$_GET["what$i"]."%'";
+		}
+	}
+	# ORDER BY
+	$orderby="";
+	for($i=1;$i<=3;$i++) {
+		if(($_GET["sortby$i"] == 'checked') && ($_GET["where$i"] != '')) {
+			$orderby.=$_GET["where$i"].',';
+		}
+	}
+		
+	# GROUP BY
+	$groupby="";
+	for($i=1;$i<=3;$i++) {
+		if(($_GET["groupby$i"] == 'checked') && ($_GET["where$i"] != '')) {
+			$groupby.=$_GET["where$i"].',';
+		}
+	}
+	if($groupby != '') {
+		$groupby="GROUP BY ".rtrim($groupby,',');
+		$fields.=",count(*) as totale";
+		if($_GET['oderbycount'] == 'checked') { $orderby="totale DESC,".$orderby; }
+	}
+	
+	if($orderby != '') { $orderby="ORDER BY ".rtrim($orderby,','); }
+	
+
+	$limit="LIMIT ".$_GET['limitquery'];
+
+	# Results
+	print "<h2>Results</h2>";
+	$sql="SELECT $fields FROM $table_name $where $groupby $orderby $limit;";
+//	print "$sql<br>";
+	print "<table class='widefat'><thead><tr>";
+	for($i=1;$i<=3;$i++) { 
+		if($_GET["where$i"] != '') { print "<th scope='col'>".ucfirst($_GET["where$i"])."</th>"; }
+	}
+	if($groupby != '') { print "<th scope='col'>Count</th>"; }
+	print "</tr></thead><tbody id='the-list'>";	
+	$qry=$wpdb->get_results($sql,ARRAY_N);
+	foreach ($qry as $rk) {
+		print "<tr>";
+		for($i=1;$i<=3;$i++) { print "<td>".$rk[$i-1]."</td>"; }
+		print "</tr>";
+	}
+	print "</table></div>";
+ }
+	
 }
 
 
@@ -726,11 +859,51 @@ function iriStatPressUpdate() {
 	print "<br>&nbsp;<h1>Updated!</h1>";
 }
 
-function iri_statpress_head() {
-	if (stripslashes($_GET['page']) == 'statpress') {
-	}
+function StatPress_Widget($w='') {
+
 }
-    
+
+function StatPress_Print($body='') {
+	print iri_StatPress_Vars($body);
+}
+
+
+function iri_StatPress_Vars($body) {
+   	global $wpdb;
+	$table_name = $wpdb->prefix . "statpress";
+	if(strpos(strtolower($body),"%visits%") !== FALSE) {
+		$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as pageview FROM $table_name WHERE date = '".date("Ymd")."' and spider='' and feed='';");
+		$body = str_replace("%visits%", $qry[0]->pageview, $body);
+	}
+	if(strpos(strtolower($body),"%totalvisits%") !== FALSE) {
+		$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as pageview FROM $table_name WHERE spider='' and feed='';");
+		$body = str_replace("%totalvisits%", $qry[0]->pageview, $body);
+	}
+	if(strpos(strtolower($body),"%thistotalvisits%") !== FALSE) {
+		$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as pageview FROM $table_name WHERE spider='' and feed='' AND urlrequested='".iri_StatPress_URL()."';");
+		$body = str_replace("%thistotalvisits%", $qry[0]->pageview, $body);
+	}
+	if(strpos(strtolower($body),"%since%") !== FALSE) {
+		$qry = $wpdb->get_results("SELECT date FROM $table_name ORDER BY date LIMIT 1;");
+		$body = str_replace("%since%", irihdate($qry[0]->date), $body);
+	}
+	if(strpos(strtolower($body),"%os%") !== FALSE) {
+        $userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
+   	   	$os=iriGetOS($userAgent);
+       	$body = str_replace("%os%", $os, $body);
+    }
+	if(strpos(strtolower($body),"%browser%") !== FALSE) {
+		$browser=iriGetBrowser($userAgent);
+   	   	$body = str_replace("%browser%", $browser, $body);
+   	}
+	if(strpos(strtolower($body),"%ip%") !== FALSE) { 	
+   	    $ipAddress = $_SERVER['REMOTE_ADDR'];
+   	   	$body = str_replace("%ip%", $ipAddress, $body);
+   	}
+   	return $body;
+}
+
+
 function widget_statpress_init($args) {
 	// Check for the required API functions
 	if ( !function_exists('register_sidebar_widget') || !function_exists('register_widget_control') )
@@ -762,41 +935,9 @@ function widget_statpress_init($args) {
 		$title = $options['title'];
 		$body = $options['body'];
 		
-    	global $wpdb;
-   		$table_name = $wpdb->prefix . "statpress";
     	echo $before_widget;
     	print($before_title . $title . $after_title);
-		# Query table...
-		if(strpos(strtolower($body),"%visits%") !== FALSE) {
-			$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as pageview FROM $table_name WHERE date = '".date("Ymd")."' and spider='' and feed='';");
-			$body = str_replace("%visits%", $qry[0]->pageview, $body);
-		}
-		if(strpos(strtolower($body),"%totalvisits%") !== FALSE) {
-			$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as pageview FROM $table_name WHERE spider='' and feed='';");
-			$body = str_replace("%totalvisits%", $qry[0]->pageview, $body);
-		}
-		if(strpos(strtolower($body),"%thistotalvisits%") !== FALSE) {
-			$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as pageview FROM $table_name WHERE spider='' and feed='' AND urlrequested='".iri_StatPress_URL()."';");
-			$body = str_replace("%thistotalvisits%", $qry[0]->pageview, $body);
-		}
-		if(strpos(strtolower($body),"%since%") !== FALSE) {
-			$qry = $wpdb->get_results("SELECT date FROM $table_name ORDER BY date LIMIT 1;");
-			$body = str_replace("%since%", irihdate($qry[0]->date), $body);
-		}
-		if(strpos(strtolower($body),"%os%") !== FALSE) {
-	        $userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
-    	   	$os=iriGetOS($userAgent);
-	       	$body = str_replace("%os%", $os, $body);
-	    }
-		if(strpos(strtolower($body),"%browser%") !== FALSE) {
-			$browser=iriGetBrowser($userAgent);
-    	   	$body = str_replace("%browser%", $browser, $body);
-    	}
- 		if(strpos(strtolower($body),"%ip%") !== FALSE) { 	
-	   	    $ipAddress = $_SERVER['REMOTE_ADDR'];
-    	   	$body = str_replace("%ip%", $ipAddress, $body);
-    	}
-		print $body;
+		print iri_StatPress_Vars($body);
 	    echo $after_widget;
     }
    	register_sidebar_widget('StatPress', 'widget_statpress');
@@ -804,7 +945,6 @@ function widget_statpress_init($args) {
 
 }
 
-#add_action('admin_head', 'iri_statpress_head');
 add_action('admin_menu', 'iri_add_pages');
 add_action('plugins_loaded', 'widget_statpress_init');
 add_action('wp_head', 'iriStatAppend');
