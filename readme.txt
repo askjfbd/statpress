@@ -37,7 +37,7 @@ Widget is customizable. These are the available variables:
 * %ip% - IP address
 
 Now you could add these values everywhere! StatPress >=0.7.6 offers a new PHP function *StatPress_Print()*.
-* i.e. <?php StatPress_Print("%totalvisits% total visits."); ?>
+* i.e. StatPress_Print("%totalvisits% total visits.");
 
 == Installation ==
 
@@ -71,59 +71,73 @@ Of course!
 == Updates ==
 
 *Update from 0.1 to 0.2*
+
 * Layout update
 * iPhone and other new defs
 
 *Update from 0.2 to 0.3 (15 Jul 2007)*
+
 * Rss Feeds support!
 * Layout update
 * New defs
 
 *Update from 0.3 to 0.4 (14 Sep 2007)*
+
 * Customizable widget
 * New defs
 
 *Update from 0.4 to 0.5 (25 Sep 2007)*
+
 * New "Overview"
 * New defs
 
 *Update from 0.5 to 0.5.2 (3 Oct 2007)*
+
 * Solved (rare) compatibility issues - Thanks to Carlo A.
 
 *Update from 0.5.2 to 0.5.3 (4 Oct 2007)*
+
 * Solved setup compatibility issues - Thanks to Andrew
 
 *Update from 0.5.3 to 0.6 (17 Oct 2007)*
+
 * New interface layout
 * Export to CSV
 * MySQL table size in Overview
 
 *Update from 0.6 to 0.7 (22 Oct 2007)*
+
 * Unique visitors
 * New graphs (and screenshots)
 
 *Update from 0.7 to 0.7.1 (27 Oct 2007)*
+
 * (one time) Automatically database table creation
 
 *Update from 0.7.1 to 0.7.2 (30 Oct 2007)*
+
 * Now "Last Pages" and "Pages" sections don't count spiders hits - Thanks to Maddler
 * Page title decoded
 * New spider defs - Thanks to Maddler
 
 *Update from 0.7.2 to 0.7.3 (8 Nov 2007)*
+
 * New IP banning (new file def/banips.dat)
 * Functions updated, bugs resolved - Thanks to Maddler
 * New "Overview"
 * Updated defs
 
 *Update from 0.7.3 to 0.7.4 (12 Nov 2007)*
+
 * New Spy section
 * Updated defs
 
 *Update from 0.7.4 to 0.7.5 (14 Nov 2007)*
+
 * New gfx look
 * Updated defs
 
 *Update from 0.7.5 to 0.7.6 (25 Nov 2007)*
+
 * New SEARCH section!
 * New StatPress_Print() function
