@@ -65,8 +65,8 @@ Of course!
 &middot; <a href="http://www.irisco.it/wp-content/uploads/overview.jpg">screenshot-1 - Overview</a><br>
 &middot; <a href="http://www.irisco.it/wp-content/uploads/details.jpg">screenshot-2 - Details</a><br>
 &middot; <a href="http://www.irisco.it/wp-content/uploads/widget.jpg">screenshot-3 - Widget</a><br>
-&middot; <a href="http://www.irisco.it/wp-content/uploads/spy.jpg">screenshot-3 - Spy</a><br>
-&middot; <a href="http://www.irisco.it/wp-content/uploads/search.jpg">screenshot-4 - Search</a><br>
+&middot; <a href="http://www.irisco.it/wp-content/uploads/spy.jpg">screenshot-4 - Spy</a><br>
+&middot; <a href="http://www.irisco.it/wp-content/uploads/search.jpg">screenshot-5 - Search</a><br>
 
 == Updates ==
 
