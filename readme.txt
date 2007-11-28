@@ -13,7 +13,7 @@ The real-time plugin dedicated to the management of statistics about blog visits
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
-= Check "Other notes" tab to discover updates history! =
+= Check "Other notes" tab to find out updates history! =
 
 Once the plugin StatPress has been activated it immediately starts to collect the unlogged blog visitors.
 In the Dashboard menu you will find the StatPress page where you could look up the statistics (overview or detailed).
@@ -33,8 +33,8 @@ Widget is customizable. These are the available variables:
 * %os% - Operative system
 * %browser% - Browser
 * %ip% - IP address
-* %visitorsonline% - Count all online visitors
-* %usersonline% - Count logged online visitors
+* %visitorsonline% - Counts all online visitors
+* %usersonline% - Counts logged online visitors
 
 Now you could add these values everywhere! StatPress >=0.7.6 offers a new PHP function *StatPress_Print()*.
 * i.e. StatPress_Print("%totalvisits% total visits.");
@@ -50,7 +50,7 @@ You are ready!
 * Deactivate StatPress plugin (no data lost!)
 * Override wp-statpress directory in /wp-content/plugins/
 * Re-activate it on your plugin management page
-* In the Dashboard click "StatPress" and then "StatPressUpdate" and wait while it will add/update db's content
+* In the Dashboard click "StatPress", then "StatPressUpdate" and wait until it will add/update db's content
 
 == Frequently Asked Questions ==
 
