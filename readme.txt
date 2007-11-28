@@ -4,7 +4,7 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts
 Requires at least: 2.0.2
 Tested up to: 2.3.1
-Stable Tag: 0.7.6
+Stable Tag: 0.7.7
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -13,15 +13,13 @@ The real-time plugin dedicated to the management of statistics about blog visits
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
+= Check "Other notes" tab to discover updates history! =
+
 Once the plugin StatPress has been activated it immediately starts to collect the unlogged blog visitors.
 In the Dashboard menu you will find the StatPress page where you could look up the statistics (overview or detailed).
-StatPress also includes a widget one can possibly add to a sidebar (or easy PHP code if you can't!).
+StatPress also includes a widget one can possibly add to a sidebar (or easy PHP code if you can't use widgets!).
 
-*New SEARCH section!*
-*New SPY section!*
-
-
-You could ban IP list editing banips.dat!
+You could ban IP list from stats editing banips.dat!
 
 
 = StatPress Widget / StatPress_Print function =
@@ -35,6 +33,8 @@ Widget is customizable. These are the available variables:
 * %os% - Operative system
 * %browser% - Browser
 * %ip% - IP address
+* %visitorsonline% - Count all online visitors
+* %usersonline% - Count logged online visitors
 
 Now you could add these values everywhere! StatPress >=0.7.6 offers a new PHP function *StatPress_Print()*.
 * i.e. StatPress_Print("%totalvisits% total visits.");
@@ -45,10 +45,12 @@ Upload wp-statpress directory in /wp-content/plugins/ . Then just activate it on
 You are ready!
 
 
-Update
+= Update =
 
-Override wp-statpress directory in /wp-content/plugins/ . Then just re-activate it on your plugin management page.
-In the Dashboard click "StatPress" and then "StatPressUpdate" menu: "StatPressUpdate" will add/update your database table and its content.
+* Deactivate StatPress plugin (no data lost!)
+* Override wp-statpress directory in /wp-content/plugins/
+* Re-activate it on your plugin management page
+* In the Dashboard click "StatPress" and then "StatPressUpdate" and wait while it will add/update db's content
 
 == Frequently Asked Questions ==
 
@@ -141,3 +143,10 @@ Of course!
 
 * New SEARCH section!
 * New StatPress_Print() function
+
+*Update from 0.7.6 to 0.7.7 (28 Nov 2007)*
+
+* New SEARCH section!
+* New Options panel
+* (Optionally) StatPress collects data about logged users
+* New Widget variables: VISITORSONLINE and USERSONLINE

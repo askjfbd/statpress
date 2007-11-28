@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 0.7.6
+Version: 0.7.7
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -19,7 +19,7 @@ function iri_add_pages() {
 	global $wpdb;
 	$table_name = $wpdb->prefix . "statpress";
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-		iriCreateTable();
+		iri_StatPress_CreateTable();
 	}
 	# add submenu
     add_submenu_page('index.php', 'StatPress', 'StatPress', 8, 'statpress', 'iriStatPress');
@@ -35,6 +35,7 @@ function iriStatPress() {
     <li><a href='?page=statpress&statpress_action=spy' <?php if($_GET['statpress_action'] == 'spy') { print "class=current"; } ?>>Spy</a></li>
     <li><a href='?page=statpress&statpress_action=search' <?php if($_GET['statpress_action'] == 'search') { print "class=current"; } ?>>Search</a></li>
     <li><a href='?page=statpress&statpress_action=export' <?php if($_GET['statpress_action'] == 'export') { print "class=current"; } ?>>Export</a></li>
+    <li><a href='?page=statpress&statpress_action=options' <?php if($_GET['statpress_action'] == 'options') { print "class=current"; } ?>>Options</a></li>
     <li><a href='?page=statpress&statpress_action=up' <?php if($_GET['statpress_action'] == 'up') { print "class=current"; } ?>>StatPressUpdate</a></li>
 </ul>
 
@@ -49,9 +50,36 @@ function iriStatPress() {
 		iriStatPressSearch();
 	} elseif ($_GET['statpress_action'] == 'details') {
 		iriStatPressDetails();
+	} elseif ($_GET['statpress_action'] == 'options') {
+		iriStatPressOptions();
 	} elseif(1) {
 		iriStatPressMain();
 	}
+}
+
+function iriStatPressOptions() {
+	if($_POST['saveit'] == 'yes') {
+		update_option('statpress_collectloggeduser', $_POST['statpress_collectloggeduser']);
+		# update database too
+		iri_StatPress_CreateTable();
+		print "<br>&nbsp;Options saved!";
+	} else {
+?>
+	<div class='wrap'><h2>Options</h2>
+	<form method=post><table>
+<?php
+	print "<tr><td><input type=checkbox name='statpress_collectloggeduser' value='checked' ".get_option('statpress_collectloggeduser')."> Collect data about logged users, too.</td></tr>";
+?>
+	<tr><td><br><input type=submit value="Save options"></td></tr>
+	</tr>
+	</table>
+	<input type=hidden name=saveit value=yes>
+	<input type=hidden name=page value=statpress><input type=hidden name=statpress_action value=options>
+	</form>
+	</div>
+<?php
+
+	} # chiude saveit
 }
 
 
@@ -722,7 +750,7 @@ function iriGetSpider($agent = null){
 	return null;
 }
 
-function iriCreateTable() {
+function iri_StatPress_CreateTable() {
 	global $wpdb;
 	global $wp_db_version;
 	$table_name = $wpdb->prefix . "statpress";
@@ -741,6 +769,8 @@ function iriCreateTable() {
 	searchengine text,
 	spider text,
 	feed text,
+	user text,
+	timestamp text,
 	UNIQUE KEY id (id)
 	);";
 	if($wp_db_version >= 5540)	$page = 'wp-admin/includes/upgrade.php';  
@@ -752,7 +782,10 @@ function iriCreateTable() {
 function iriStatAppend($feed='') {
 	global $wpdb;
 	$table_name = $wpdb->prefix . "statpress";
+	global $userdata;
+    get_currentuserinfo();
 	# Raccoglie le informazioni
+	$timestamp  = time();
     $ipAddress = $_SERVER['REMOTE_ADDR'];
 
     if(iriCheckBanIP($ipAddress) == '') { return ''; }
@@ -771,15 +804,15 @@ function iriStatAppend($feed='') {
 	list($searchengine,$search_phrase)=explode("|",iriGetSE($referrer));
 	$spider=iriGetSpider($userAgent);
 	if($spider != '') { $os=''; $browser=''; }
-    if ( !is_user_logged_in() ) {
+    if ((!is_user_logged_in()) OR (get_option('statpress_collectloggeduser')=='checked')) {
 		# Crea/aggiorna tabella se non esiste
 		$table_name = $wpdb->prefix . "statpress";
 		if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-			iriCreateTable();
+			iri_StatPress_CreateTable();
 		}
 		$insert = "INSERT INTO " . $table_name .
-            " (date, time, ip, urlrequested, agent, referrer, search,nation,os,browser,searchengine,spider,feed) " .
-            "VALUES ('$vdate','$vtime','$ipAddress','$urlRequested','$userAgent','$referrer','$search_phrase','".iriDomain($ipAddress)."','$os','$browser','$searchengine','$spider','$feed')";
+            " (date, time, ip, urlrequested, agent, referrer, search,nation,os,browser,searchengine,spider,feed,user,timestamp) " .
+            "VALUES ('$vdate','$vtime','$ipAddress','$urlRequested','$userAgent','$referrer','$search_phrase','".iriDomain($ipAddress)."','$os','$browser','$searchengine','$spider','$feed','$userdata->user_login','$timestamp')";
 		$results = $wpdb->query( $insert );
 	}
 }
@@ -797,7 +830,7 @@ function iriStatPressUpdate() {
 	$wpdb->show_errors();
 	# update table
 	print "Updating table struct $table_name... ";
-	iriCreateTable();
+	iri_StatPress_CreateTable();
 	print "done<br>";
 	
 	# Update OS
@@ -900,6 +933,19 @@ function iri_StatPress_Vars($body) {
    	    $ipAddress = $_SERVER['REMOTE_ADDR'];
    	   	$body = str_replace("%ip%", $ipAddress, $body);
    	}
+	if(strpos(strtolower($body),"%visitorsonline%") !== FALSE) { 	
+		$to_time = time();
+		$from_time = strtotime('-4 minutes', $to_time);
+		$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as visitors FROM $table_name WHERE spider='' and feed='' AND timestamp BETWEEN $from_time AND $to_time;");
+   	   	$body = str_replace("%visitorsonline%", $qry[0]->visitors, $body);
+   	}
+	if(strpos(strtolower($body),"%usersonline%") !== FALSE) { 	
+		$to_time = time();
+		$from_time = strtotime('-4 minutes', $to_time);
+		$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as users FROM $table_name WHERE spider='' and feed='' AND user<>'' AND timestamp BETWEEN $from_time AND $to_time;");
+   	   	$body = str_replace("%usersonline%", $qry[0]->users, $body);
+   	}
+		
    	return $body;
 }
 
@@ -925,7 +971,7 @@ function widget_statpress_init($args) {
 		// the form
 		echo '<p style="text-align:right;"><label for="statpress-title">' . __('Title:') . ' <input style="width: 250px;" id="statpress-title" name="statpress-title" type="text" value="'.$title.'" /></label></p>';
 		echo '<p style="text-align:right;"><label for="statpress-body"><div>' . __('Body:', 'widgets') . '</div><textarea style="width: 288px;height:100px;" id="statpress-body" name="statpress-body" type="textarea">'.$body.'</textarea></label></p>';
-		echo '<input type="hidden" id="statpress-submit" name="statpress-submit" value="1" />Use %totalvisits% %visits% %thistotalvisits% %os% %browser% %ip% %since%';
+		echo '<input type="hidden" id="statpress-submit" name="statpress-submit" value="1" /><div style="font-size:7pt;">Use %totalvisits% %visits% %thistotalvisits% %os% %browser% %ip% %since% %visitorsonline% %usersonline%</div>';
 	}
 	
 	// main widget function
@@ -954,5 +1000,6 @@ add_action('rss2_head','iriStatAppendRSS2');
 add_action('rdf_header','iriStatAppendRDF');
 add_action('atom_head','iriStatAppendATOM');
 
+register_activation_hook(__FILE__,'iri_StatPress_CreateTable');
 
 ?>
