@@ -15,7 +15,7 @@ The real-time plugin dedicated to the management of statistics about blog visits
 
 = Check "Other notes" tab to find out updates history! =
 
-Once the plugin StatPress has been activated it immediately starts to collect the unlogged blog visitors.
+Once the plugin StatPress has been activated it immediately starts to collect statistic information about blog visitors.
 In the Dashboard menu you will find the StatPress page where you could look up the statistics (overview or detailed).
 StatPress also includes a widget one can possibly add to a sidebar (or easy PHP code if you can't use widgets!).
 
