@@ -21,7 +21,7 @@ StatPress also includes a widget one can possibly add to a sidebar (or easy PHP 
 
 You could ban IP list from stats editing banips.dat!
 
-StatPress could automatically delete older records to allow the insertion of newer records when limited space is present.
+StatPress can automatically delete older records to allow the insertion of newer records when limited space is present.
 
 = StatPress Widget / StatPress_Print function =
 
