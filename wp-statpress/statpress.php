@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 0.7.7
+Version: 0.8
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -60,6 +60,7 @@ function iriStatPress() {
 function iriStatPressOptions() {
 	if($_POST['saveit'] == 'yes') {
 		update_option('statpress_collectloggeduser', $_POST['statpress_collectloggeduser']);
+		update_option('statpress_autodelete', $_POST['statpress_autodelete']);
 		# update database too
 		iri_StatPress_CreateTable();
 		print "<br>&nbsp;Options saved!";
@@ -70,6 +71,15 @@ function iriStatPressOptions() {
 <?php
 	print "<tr><td><input type=checkbox name='statpress_collectloggeduser' value='checked' ".get_option('statpress_collectloggeduser')."> Collect data about logged users, too.</td></tr>";
 ?>
+	<tr><td>Automatically delete visits older than
+	<select name="statpress_autodelete">
+	<option value="" <?php if(get_option('statpress_autodelete') =='' ) print "selected"; ?>>Never delete!</option>
+	<option value="1 month" <?php if(get_option('statpress_autodelete') == "1 month") print "selected"; ?>>1 month</option>
+	<option value="3 months" <?php if(get_option('statpress_autodelete') == "3 months") print "selected"; ?>>3 months</option>
+	<option value="6 months" <?php if(get_option('statpress_autodelete') == "6 months") print "selected"; ?>>6 months</option>
+	<option value="1 year" <?php if(get_option('statpress_autodelete') == "1 year") print "selected"; ?>>1 year</option>
+	</select></td></tr>
+	
 	<tr><td><br><input type=submit value="Save options"></td></tr>
 	</tr>
 	</table>
@@ -805,10 +815,13 @@ function iriStatAppend($feed='') {
 	$spider=iriGetSpider($userAgent);
 	if($spider != '') { $os=''; $browser=''; }
     if ((!is_user_logged_in()) OR (get_option('statpress_collectloggeduser')=='checked')) {
-		# Crea/aggiorna tabella se non esiste
-		$table_name = $wpdb->prefix . "statpress";
 		if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 			iri_StatPress_CreateTable();
+		}
+		// Auto-delete visits if...
+		if(get_option('statpress_autodelete') != '') {
+			$t=date("Ymd",strtotime('-'.get_option('statpress_autodelete')));
+			$results =	$wpdb->query( "DELETE FROM " . $table_name . " WHERE date < '" . $t . "'");
 		}
 		$insert = "INSERT INTO " . $table_name .
             " (date, time, ip, urlrequested, agent, referrer, search,nation,os,browser,searchengine,spider,feed,user,timestamp) " .

@@ -4,7 +4,7 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts
 Requires at least: 2.0.2
 Tested up to: 2.3.1
-Stable Tag: 0.7.7
+Stable Tag: 0.8
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -21,6 +21,7 @@ StatPress also includes a widget one can possibly add to a sidebar (or easy PHP 
 
 You could ban IP list from stats editing banips.dat!
 
+StatPress could automatically delete older records to allow the insertion of newer records when limited space is present.
 
 = StatPress Widget / StatPress_Print function =
 
@@ -150,3 +151,7 @@ Of course!
 * New Options panel
 * (Optionally) StatPress collects data about logged users
 * New Widget variables: VISITORSONLINE and USERSONLINE
+
+*Update from 0.7.7 to 0.8 (3 Dec 2007)*
+
+* "Automatically delete visits older than..." option
