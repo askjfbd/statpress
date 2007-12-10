@@ -156,7 +156,7 @@ Of course!
 
 * "Automatically delete visits older than..." option
 
-*Update from 0.8 to 0.9 (9 Dec 2007)*
+*Update from 0.8 to 0.9 (10 Dec 2007)*
 
 * Added search by IP
 * New IP lookup service: hostip.info (spy with flags!)
