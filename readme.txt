@@ -4,7 +4,7 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts
 Requires at least: 2.0.2
 Tested up to: 2.3.1
-Stable Tag: 0.8
+Stable Tag: 0.9
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -155,3 +155,10 @@ Of course!
 *Update from 0.7.7 to 0.8 (3 Dec 2007)*
 
 * "Automatically delete visits older than..." option
+
+*Update from 0.8 to 0.9 (9 Dec 2007)*
+
+* Added search by IP
+* New IP lookup service: hostip.info (spy with flags!)
+* New spiders
+* "Support" link in dashboard

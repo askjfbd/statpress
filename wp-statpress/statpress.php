@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 0.8
+Version: 0.9
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -30,13 +30,14 @@ function iriStatPress() {
 ?>
 
 <ul id="submenu" style='border-top:1px dotted #83b4d8'>
-    <li><a href='?page=statpress' <?php if($_GET['statpress_action'] == '') { print "class=current"; } ?>>Overview</a></li>
-    <li><a href='?page=statpress&statpress_action=details' <?php if($_GET['statpress_action'] == 'details') { print "class=current"; } ?>>Details</a></li>
-    <li><a href='?page=statpress&statpress_action=spy' <?php if($_GET['statpress_action'] == 'spy') { print "class=current"; } ?>>Spy</a></li>
-    <li><a href='?page=statpress&statpress_action=search' <?php if($_GET['statpress_action'] == 'search') { print "class=current"; } ?>>Search</a></li>
-    <li><a href='?page=statpress&statpress_action=export' <?php if($_GET['statpress_action'] == 'export') { print "class=current"; } ?>>Export</a></li>
-    <li><a href='?page=statpress&statpress_action=options' <?php if($_GET['statpress_action'] == 'options') { print "class=current"; } ?>>Options</a></li>
+    <li><a href='?page=statpress' <?php if($_GET['statpress_action'] == '') { print "class=current"; } ?>><?php _e('Overview','statpress'); ?></a></li>
+    <li><a href='?page=statpress&statpress_action=details' <?php if($_GET['statpress_action'] == 'details') { print "class=current"; } ?>><?php _e('Details','statpress'); ?></a></li>
+    <li><a href='?page=statpress&statpress_action=spy' <?php if($_GET['statpress_action'] == 'spy') { print "class=current"; } ?>><?php _e('Spy','statpress'); ?></a></li>
+    <li><a href='?page=statpress&statpress_action=search' <?php if($_GET['statpress_action'] == 'search') { print "class=current"; } ?>><?php _e('Search','statpress'); ?></a></li>
+    <li><a href='?page=statpress&statpress_action=export' <?php if($_GET['statpress_action'] == 'export') { print "class=current"; } ?>><?php _e('Export','statpress'); ?></a></li>
+    <li><a href='?page=statpress&statpress_action=options' <?php if($_GET['statpress_action'] == 'options') { print "class=current"; } ?>><?php _e('Options','statpress'); ?></a></li>
     <li><a href='?page=statpress&statpress_action=up' <?php if($_GET['statpress_action'] == 'up') { print "class=current"; } ?>>StatPressUpdate</a></li>
+    <li><a href='http://www.irisco.it/forums/forum.php?id=1' target='_blank'>Support</a></li>
 </ul>
 
 <?php
@@ -63,24 +64,24 @@ function iriStatPressOptions() {
 		update_option('statpress_autodelete', $_POST['statpress_autodelete']);
 		# update database too
 		iri_StatPress_CreateTable();
-		print "<br>&nbsp;Options saved!";
+		print "<br />&nbsp;"._e('Saved','statpress')."!";
 	} else {
 ?>
-	<div class='wrap'><h2>Options</h2>
-	<form method=post><table>
+	<div class='wrap'><h2><?php _e('Options','statpress'); ?></h2>
+	<form method=post><table width=100%>
 <?php
-	print "<tr><td><input type=checkbox name='statpress_collectloggeduser' value='checked' ".get_option('statpress_collectloggeduser')."> Collect data about logged users, too.</td></tr>";
+	print "<tr><td><input type=checkbox name='statpress_collectloggeduser' value='checked' ".get_option('statpress_collectloggeduser')."> "._e('Collect data about logged users, too.','statpress')."</td></tr>";
 ?>
-	<tr><td>Automatically delete visits older than
+	<tr><td><?php _e('Automatically delete visits older than','statpress'); ?>
 	<select name="statpress_autodelete">
-	<option value="" <?php if(get_option('statpress_autodelete') =='' ) print "selected"; ?>>Never delete!</option>
-	<option value="1 month" <?php if(get_option('statpress_autodelete') == "1 month") print "selected"; ?>>1 month</option>
-	<option value="3 months" <?php if(get_option('statpress_autodelete') == "3 months") print "selected"; ?>>3 months</option>
-	<option value="6 months" <?php if(get_option('statpress_autodelete') == "6 months") print "selected"; ?>>6 months</option>
-	<option value="1 year" <?php if(get_option('statpress_autodelete') == "1 year") print "selected"; ?>>1 year</option>
+	<option value="" <?php if(get_option('statpress_autodelete') =='' ) print "selected"; ?>><?php _e('Never delete!','statpress'); ?></option>
+	<option value="1 month" <?php if(get_option('statpress_autodelete') == "1 month") print "selected"; ?>>1 <?php _e('month','statpress'); ?></option>
+	<option value="3 months" <?php if(get_option('statpress_autodelete') == "3 months") print "selected"; ?>>3 <?php _e('months','statpress'); ?></option>
+	<option value="6 months" <?php if(get_option('statpress_autodelete') == "6 months") print "selected"; ?>>6 <?php _e('months','statpress'); ?></option>
+	<option value="1 year" <?php if(get_option('statpress_autodelete') == "1 year") print "selected"; ?>>1 <?php _e('year','statpress'); ?></option>
 	</select></td></tr>
 	
-	<tr><td><br><input type=submit value="Save options"></td></tr>
+	<tr><td><br><input type=submit value="<?php _e('Save options','statpress'); ?>"></td></tr>
 	</tr>
 	</table>
 	<input type=hidden name=saveit value=yes>
@@ -95,11 +96,11 @@ function iriStatPressOptions() {
 
 function iriStatPressExport() {
 ?>
-	<div class='wrap'><h2>Export stats to text file (csv)</h2>
+	<div class='wrap'><h2><?php _e('Export stats to text file','statpress'); ?> (csv)</h2>
 	<form method=get><table>
-	<tr><td>From</td><td><input type=text name=from> (format YYYYMMDD)</td></tr>
-	<tr><td>To</td><td><input type=text name=to> (format YYYYMMDD)</td></tr>
-	<tr><td></td><td><input type=submit value=Export></td></tr>
+	<tr><td><?php _e('From','statpress'); ?></td><td><input type=text name=from> (YYYYMMDD)</td></tr>
+	<tr><td><?php _e('To','statpress'); ?></td><td><input type=text name=to> (YYYYMMDD)</td></tr>
+	<tr><td></td><td><input type=submit value=<?php _e('Export','statpress'); ?>></td></tr>
 	<input type=hidden name=page value=statpress><input type=hidden name=statpress_action value=exportnow>
 	</table></form>
 	</div>
@@ -133,12 +134,12 @@ function iriStatPressMain() {
 	$spider_color="#83b4d8";
     $lastmonth = date('Ym', mktime(0, 0, 0, date("m")-1 , date("d") - 1, date("Y")));
     $yesterday = date('Ymd', time()-86400);
-	print "<div class='wrap'><h2>Overview</h2>";
-	print "<table class='widefat'><thead><tr><th scope='col'></th><th scope='col'>Total</th><th scope='col'>Last month</th><th scope='col'>This month</th><th scope='col'>Yesterday</th><th scope='col'>Today</th></tr></thead>";
+	print "<div class='wrap'><h2>". __('Overview','statpress'). "</h2>";
+	print "<table class='widefat'><thead><tr><th scope='col'></th><th scope='col'>". __('Total','statpress'). "</th><th scope='col'>". __('Last month','statpress'). "</th><th scope='col'>". __('This month','statpress'). "</th><th scope='col'>". __('Yesterday','statpress'). "</th><th scope='col'>". __('Today','statpress'). "</th></tr></thead>";
 	print "<tbody id='the-list'>";
 
 	###### Unique
-    print "<tr><td><div style='background:$unique_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>Visitors</td>";
+    print "<tr><td><div style='background:$unique_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>". __('Visitors','statpress'). "</td>";
 	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='';");
 	print "<td>".count($qry)."</td>\n";
     $prec=0;
@@ -161,7 +162,7 @@ function iriStatPressMain() {
     print "</tr>";
 
 	###### Pageviews
-    print "<tr><td><div style='background:$web_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>Pageviews</td>";
+    print "<tr><td><div style='background:$web_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>". __('Pageviews','statpress'). "</td>";
 	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider='';");
 	foreach ($qry as $rk) {
 		print "<td>".$rk->pageview."</td>\n";
@@ -296,7 +297,7 @@ function iriStatPressMain() {
 	$querylimit="LIMIT 10";
 	    
 	# Tabella Last hits
-	print "<div class='wrap'><h2>Last hits</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>IP</th><th scope='col'>Domain</th><th scope='col'>Page</th><th scope='col'>OS</th><th scope='col'>Browser</th><th scope='col'>Feed</th></tr></thead>";
+	print "<div class='wrap'><h2>". __('Last hits','statpress'). "</h2><table class='widefat'><thead><tr><th scope='col'>". __('Date','statpress'). "</th><th scope='col'>". __('Time','statpress'). "</th><th scope='col'>IP</th><th scope='col'>". __('Domain','statpress'). "</th><th scope='col'>". __('Page','statpress'). "</th><th scope='col'>OS</th><th scope='col'>Browser</th><th scope='col'>Feed</th></tr></thead>";
 	print "<tbody id='the-list'>";	
 
 	$fivesdrafts = $wpdb->get_results("SELECT * FROM $table_name WHERE (os<>'' OR feed<>'') order by id DESC $querylimit");
@@ -316,26 +317,26 @@ function iriStatPressMain() {
 	
 	
 	# Last Search terms
-	print "<div class='wrap'><h2>Last search terms</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>Terms</th><th scope='col'>Engine</th><th scope='col'>Result</th></tr></thead>";
+	print "<div class='wrap'><h2>" . __('Last search terms','statpress') . "</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('Terms','statpress')."</th><th scope='col'>". __('Engine','statpress'). "</th><th scope='col'>". __('Result','statpress'). "</th></tr></thead>";
 	print "<tbody id='the-list'>";	
 	$qry = $wpdb->get_results("SELECT date,time,referrer,urlrequested,search,searchengine FROM $table_name WHERE search<>'' ORDER BY id DESC $querylimit");
 	foreach ($qry as $rk) {
-		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td><a href='".$rk->referrer."'>".$rk->search."</a></td><td>".$rk->searchengine."</td><td><a href='".get_bloginfo('url')."/?".$rk->urlrequested."'>page viewed</a></td></tr>\n";
+		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td><a href='".$rk->referrer."'>".$rk->search."</a></td><td>".$rk->searchengine."</td><td><a href='".get_bloginfo('url')."/?".$rk->urlrequested."'>". __('page viewed','statpress'). "</a></td></tr>\n";
 	}
 	print "</table></div>";
 	
 	
 	# Referrer
-	print "<div class='wrap'><h2>Last Referrers</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>URL</th><th scope='col'>Result</th></tr></thead>";
+	print "<div class='wrap'><h2>".__('Last referrers','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('URL','statpress')."</th><th scope='col'>".__('Result','statpress')."</th></tr></thead>";
 	print "<tbody id='the-list'>";	
 	$qry = $wpdb->get_results("SELECT date,time,referrer FROM $table_name WHERE ((referrer NOT LIKE '".get_settings('siteurl')."%') AND (referrer <>'') AND (searchengine='')) ORDER BY id DESC $querylimit");
 	foreach ($qry as $rk) {
-		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td><a href='".$rk->referrer."'>".substr($rk->referrer,0,70)."...</a></td><td><a href='".get_bloginfo('url')."/?".$rk->urlrequested."'>page viewed</a></td></tr>\n";
+		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td><a href='".$rk->referrer."'>".substr($rk->referrer,0,70)."...</a></td><td><a href='".get_bloginfo('url')."/?".$rk->urlrequested."'>". __('page viewed','statpress'). "</a></td></tr>\n";
 	}
 	print "</table></div>";
 	
 	# Last Agents
-	print "<div class='wrap'><h2>Last Agents</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>Agent</th><th scope='col'>What</th></tr></thead>";
+	print "<div class='wrap'><h2>".__('Last agents','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('Agent','statpress')."</th><th scope='col'>".__('What','statpress')."</th></tr></thead>";
 	print "<tbody id='the-list'>";	
 	$qry = $wpdb->get_results("SELECT date,time,agent,os,browser,spider FROM $table_name WHERE (agent <>'') ORDER BY id DESC $querylimit");
 	foreach ($qry as $rk) {
@@ -345,7 +346,7 @@ function iriStatPressMain() {
 	
 
 	# Last pages
-	print "<div class='wrap'><h2>Last Pages</h2><table class='widefat'><thead><tr><th scope='col'>Date</th><th scope='col'>Time</th><th scope='col'>Page</th><th scope='col'>What</th></tr></thead>";
+	print "<div class='wrap'><h2>".__('Last pages','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('Page','statpress')."</th><th scope='col'>".__('What','statpress')."</th></tr></thead>";
 	print "<tbody id='the-list'>";	
 	$qry = $wpdb->get_results("SELECT date,time,urlrequested,os,browser,spider FROM $table_name WHERE (spider='' AND feed='') ORDER BY id DESC $querylimit");
 	foreach ($qry as $rk) {
@@ -354,7 +355,8 @@ function iriStatPressMain() {
 	print "</table></div>";
 	
 	print "<br />";
-	print "&nbsp;<i>StatPress table size: ".iritablesize($wpdb->prefix . "statpress")."</i>";	
+	print "&nbsp;<i>StatPress table size: <b>".iritablesize($wpdb->prefix . "statpress")."</b></i><br />";
+	print "&nbsp;<i>StatPress current time: <b>".current_time('mysql')."</b></i><br />";
 	
 }	
 
@@ -414,7 +416,7 @@ function iriStatPressSpy() {
 	# Spy
 	$today = date('Ymd', time());
 	$yesterday = date('Ymd', time()-86400);
-	print "<div class='wrap'><h2>Spy</h2>";
+	print "<div class='wrap'><h2>".__('Spy','statpress')."</h2>";
 	$sql="SELECT ip,nation,os,browser,agent FROM $table_name WHERE (spider='' AND feed='') AND (date BETWEEN '$yesterday' AND '$today') GROUP BY ip ORDER BY id DESC LIMIT 20";
 	$qry = $wpdb->get_results($sql);
 	
@@ -430,12 +432,19 @@ document.getElementById(thediv).style.display="none"
 <table id="mainspytab" name="mainspytab" width="99%" border="0" cellspacing="0" cellpadding="4">
 <?php
 	foreach ($qry as $rk) {
-		print "<tr><td colspan='2' bgcolor='#dedede'><div align='left'><strong><span><font size='2' color='#7b7b7b'>".$rk->ip."</font></span></strong> ";
-		print "<span style='color:#006dca;cursor:pointer;border-bottom:1px dotted #AFD5F9;font-size:8pt;' onClick=ttogle('".$rk->ip."');>more info</span></div>";
+		print "<tr><td colspan='2' bgcolor='#dedede'><div align='left'>";
+		print "<IMG SRC='http://api.hostip.info/flag.php?ip=".$rk->ip."' border=0 width=18 height=12>";
+		print " <strong><span><font size='2' color='#7b7b7b'>".$rk->ip."</font></span></strong> ";
+		print "<span style='color:#006dca;cursor:pointer;border-bottom:1px dotted #AFD5F9;font-size:8pt;' onClick=ttogle('".$rk->ip."');>".__('more info','statpress')."</span></div>";
 		print "<div id='".$rk->ip."' name='".$rk->ip."'>".$rk->os.", ".$rk->browser;
-		print "<br><iframe style='overflow:hide;border:0px;width:100%;height:15px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://showip.fakap.net/txt/".$rk->ip."></iframe>";
+//		print "<br><iframe style='overflow:hide;border:0px;width:100%;height:15px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://showip.fakap.net/txt/".$rk->ip."></iframe>";
+		$w=iri_StatPress_Where($rk->ip);
+		if(($w[0].$w[1]) != '') {
+			print "$w[0]<br>";
+		} else {
+			print "<br><iframe style='overflow:hide;border:0px;width:100%;height:26px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://api.hostip.info/get_html.php?ip=".$rk->ip."></iframe>";
+		}
 		if($rk->nation) {
-			print "<br>".$rk->nation;
 			print "<br><small>".gethostbyaddr($rk->ip)."</small>";
 		}
 		print "<br><small>".$rk->agent."</small>";
@@ -448,9 +457,9 @@ document.getElementById(thediv).style.display="none"
 			print "<td valign='top' width='151'><div><font size='1' color='#3B3B3B'><strong>".irihdate($details->date)." ".$details->time."</strong></font></div></td>";
 			print "<td><div><a href='".$details->urlrequested."' target=_blank>".iri_StatPress_Decode($details->urlrequested)."</a>";
 			if($details->searchengine != '') {
-				print "<br><small>from <b>".$details->searchengine."</b> searching <a href='".$details->referrer."' target=_blank>".$details->search."</a></small>";
+				print "<br><small>".__('arrived from','statpress')." <b>".$details->searchengine."</b> ".__('searching','statpress')." <a href='".$details->referrer."' target=_blank>".$details->search."</a></small>";
 			} elseif($details->referrer != '' && strpos($details->referrer,get_settings('siteurl'))===FALSE) {
-				print "<br><small>from <a href='".$details->referrer."' target=_blank>".$details->referrer."</a></small>";
+				print "<br><small>".__('arrived from','statpress')." <a href='".$details->referrer."' target=_blank>".$details->referrer."</a></small>";
 			}
 			print "</div></td>";
 			print "</tr>\n";
@@ -467,30 +476,31 @@ function iriStatPressSearch($what='') {
 	global $wpdb;
 	$table_name = $wpdb->prefix . "statpress";
 	
-	$f['urlrequested']="URL Requested";
-	$f['agent']="Agent";
-	$f['referrer']="Referrer";
-	$f['search']="Search terms";
-	$f['searchengine']="Search engine";
-	$f['os']="Operative System";	
+	$f['urlrequested']=__('URL Requested','statpress');
+	$f['agent']=__('Agent','statpress');
+	$f['referrer']=__('Referrer','statpress');
+	$f['search']=__('Search terms','statpress');
+	$f['searchengine']=__('Search engine','statpress');
+	$f['os']=__('Operative system','statpress');	
 	$f['browser']="Browser";
 	$f['spider']="Spider";
+	$f['ip']="IP";
 ?>
-	<div class='wrap'><h2>Search</h2>
+	<div class='wrap'><h2><?php _e('Search','statpress'); ?></h2>
 	<form method=get><table>
 	<?php
 		for($i=1;$i<=3;$i++) {
 			print "<tr>";
-			print "<td>Field <select name=where$i><option value=''></option>";
+			print "<td>".__('Field','statpress')." <select name=where$i><option value=''></option>";
 			foreach ( array_keys($f) as $k ) {
 				print "<option value='$k'";
 				if($_GET["where$i"] == $k) { print " SELECTED "; }
 				print ">".$f[$k]."</option>";
 			}
 			print "</select></td>";
-			print "<td><input type=checkbox name=groupby$i value='checked' ".$_GET["groupby$i"]."> Group by</td>";
-			print "<td><input type=checkbox name=sortby$i value='checked' ".$_GET["sortby$i"]."> Sort by</td>";
-			print "<td>, if contains <input type=text name=what$i value='".$_GET["what$i"]."'></td>";
+			print "<td><input type=checkbox name=groupby$i value='checked' ".$_GET["groupby$i"]."> ".__('Group by','statpress')."</td>";
+			print "<td><input type=checkbox name=sortby$i value='checked' ".$_GET["sortby$i"]."> ".__('Sort by','statpress')."</td>";
+			print "<td>, ".__('if contains','statpress')." <input type=text name=what$i value='".$_GET["what$i"]."'></td>";
 			print "</tr>";
 		}
 	?>
@@ -500,22 +510,22 @@ function iriStatPressSearch($what='') {
 	<tr>
 		<td>
 			<table>
-				<tr><td><input type=checkbox name=oderbycount value=checked <?php print $_GET['oderbycount'] ?>> sort by count if grouped</td></tr>
-				<tr><td><input type=checkbox name=spider value=checked <?php print $_GET['spider'] ?>> include spiders/crawlers/bot</td></tr>
-				<tr><td><input type=checkbox name=feed value=checked <?php print $_GET['feed'] ?>> include feed</td></tr>
+				<tr><td><input type=checkbox name=oderbycount value=checked <?php print $_GET['oderbycount'] ?>> <?php _e('sort by count if grouped','statpress'); ?></td></tr>
+				<tr><td><input type=checkbox name=spider value=checked <?php print $_GET['spider'] ?>> <?php _e('include spiders/crawlers/bot','statpress'); ?></td></tr>
+				<tr><td><input type=checkbox name=feed value=checked <?php print $_GET['feed'] ?>> <?php _e('include feed','statpress'); ?></td></tr>
 			</table>
 		</td>
 		<td width=15> </td>
 		<td>
 			<table>
 				<tr>
-					<td>Limit results to
+					<td><?php _e('Limit results to','statpress'); ?>
 						<select name=limitquery><?php if($_GET['limitquery'] >0) { print "<option>".$_GET['limitquery']."</option>";} ?><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option></select>
 					</td>
 				</tr>
 				<tr><td>&nbsp;</td></tr>
 				<tr>
-					<td align=right><input type=submit value=Search name=searchsubmit></td>
+					<td align=right><input type=submit value=<?php _e('Search','statpress'); ?> name=searchsubmit></td>
 				</tr>
 			</table>
 		</td>
@@ -572,14 +582,14 @@ function iriStatPressSearch($what='') {
 	$limit="LIMIT ".$_GET['limitquery'];
 
 	# Results
-	print "<h2>Results</h2>";
+	print "<h2>".__('Results','statpress')."</h2>";
 	$sql="SELECT $fields FROM $table_name $where $groupby $orderby $limit;";
 //	print "$sql<br>";
 	print "<table class='widefat'><thead><tr>";
 	for($i=1;$i<=3;$i++) { 
 		if($_GET["where$i"] != '') { print "<th scope='col'>".ucfirst($_GET["where$i"])."</th>"; }
 	}
-	if($groupby != '') { print "<th scope='col'>Count</th>"; }
+	if($groupby != '') { print "<th scope='col'>".__('Count','statpress')."</th>"; }
 	print "</tr></thead><tbody id='the-list'>";	
 	$qry=$wpdb->get_results($sql,ARRAY_N);
 	foreach ($qry as $rk) {
@@ -593,18 +603,30 @@ function iriStatPressSearch($what='') {
 }
 
 
+function iri_StatPress_Where($ip) {
+	$url = "http://api.hostip.info/get_html.php?ip=$ip";
+	$res = file_get_contents($url);
+	if($res === FALSE) { return(array('','')); }
+	$res = str_replace("Country: ","",$res);
+	$res = str_replace("\nCity: ",", ",$res);
+	$nation = preg_split('/\(|\)/',$res);
+	print "( $ip $res )";
+	return(array($res,$nation[1]));
+}
+
+
 function iri_StatPress_Decode($out_url) {
-	if($out_url == '') { $out_url="Page: Home"; }
-	if(substr($out_url,0,4)=="cat=") { $out_url="Category: ".get_cat_name(substr($out_url,4)); }
-	if(substr($out_url,0,2)=="m=") { $out_url="Calendar: ".substr($out_url,6,2)."/".substr($out_url,2,4); }
-	if(substr($out_url,0,2)=="s=") { $out_url="Search: ".substr($out_url,2); }
+	if($out_url == '') { $out_url=__('Page','statpress').": Home"; }
+	if(substr($out_url,0,4)=="cat=") { $out_url=__('Category','statpress').": ".get_cat_name(substr($out_url,4)); }
+	if(substr($out_url,0,2)=="m=") { $out_url=__('Calendar','statpress').": ".substr($out_url,6,2)."/".substr($out_url,2,4); }
+	if(substr($out_url,0,2)=="s=") { $out_url=__('Search','statpress').": ".substr($out_url,2); }
 	if(substr($out_url,0,2)=="p=") {
 		$post_id_7 = get_post(substr($out_url,2), ARRAY_A);
 		$out_url = $post_id_7['post_title'];
 	}
 	if(substr($out_url,0,8)=="page_id=") {
 		$post_id_7=get_page(substr($out_url,8), ARRAY_A);
-		$out_url = "Page: ".$post_id_7['post_title'];
+		$out_url = __('Page','statpress').": ".$post_id_7['post_title'];
 	}
 	return $out_url;
 }
@@ -652,7 +674,7 @@ function iriValueTable($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $e
 	$table_name = $wpdb->prefix . "statpress";
 	
 	if ($queryfld == '') { $queryfld = $fld; }
-	print "<div class='wrap'><h2>$fldtitle</h2><table style='width:100%;padding:0px;margin:0px;' cellpadding=0 cellspacing=0><thead><tr><th style='width:400px;background-color:white;'></th><th style='width:150px;background-color:white;'><u>Visits</u></th><th style='background-color:white;'></th></tr></thead>";
+	print "<div class='wrap'><h2>$fldtitle</h2><table style='width:100%;padding:0px;margin:0px;' cellpadding=0 cellspacing=0><thead><tr><th style='width:400px;background-color:white;'></th><th style='width:150px;background-color:white;'><u>".__('Visits','statpress')."</u></th><th style='background-color:white;'></th></tr></thead>";
 	print "<tbody id='the-list'>";
 	$rks = $wpdb->get_var("SELECT count($param $queryfld) as rks FROM $table_name WHERE 1=1 $exclude;"); 
 	if($rks > 0) {
@@ -844,7 +866,7 @@ function iriStatPressUpdate() {
 	# update table
 	print "Updating table struct $table_name... ";
 	iri_StatPress_CreateTable();
-	print "done<br>";
+	print "".__('done','statpress')."<br>";
 	
 	# Update OS
 	print "Updating OSes... ";
@@ -855,7 +877,7 @@ function iriStatPressUpdate() {
 		$qry="UPDATE $table_name SET os = '$nome_os' WHERE os='' AND replace(agent,' ','') LIKE '%".$id_os."%';";
 		$wpdb->query($qry);
 	}
-	print "done<br>";
+	print "".__('done','statpress')."<br>";
 	
 	# Update Browser
 	print "Updating Browsers... ";
@@ -866,7 +888,7 @@ function iriStatPressUpdate() {
 		$qry="UPDATE $table_name SET browser = '$nome' WHERE browser='' AND replace(agent,' ','') LIKE '%".$id."%';";
 		$wpdb->query($qry);
 	}
-	print "done<br>";
+	print "".__('done','statpress')."<br>";
 
 	# Update Spider
 	print "Updating Spiders... ";
@@ -877,7 +899,7 @@ function iriStatPressUpdate() {
 		$qry="UPDATE $table_name SET spider = '$nome',os='',browser='' WHERE spider='' AND replace(agent,' ','') LIKE '%".$id."%';";
 		$wpdb->query($qry);
 	}
-	print "done<br>";
+	print "".__('done','statpress')."<br>";
 
 	# Update feed to ''
 	print "Updating Feeds... ";
@@ -898,11 +920,11 @@ function iriStatPressUpdate() {
 			$wpdb->query($q);
 		}
 	}
-	print "done<br>";
+	print "".__('done','statpress')."<br>";
 
 	$wpdb->hide_errors();
 	
-	print "<br>&nbsp;<h1>Updated!</h1>";
+	print "<br>&nbsp;<h1>".__('Updated','statpress')."!</h1>";
 }
 
 function StatPress_Widget($w='') {
@@ -984,7 +1006,7 @@ function widget_statpress_init($args) {
 		// the form
 		echo '<p style="text-align:right;"><label for="statpress-title">' . __('Title:') . ' <input style="width: 250px;" id="statpress-title" name="statpress-title" type="text" value="'.$title.'" /></label></p>';
 		echo '<p style="text-align:right;"><label for="statpress-body"><div>' . __('Body:', 'widgets') . '</div><textarea style="width: 288px;height:100px;" id="statpress-body" name="statpress-body" type="textarea">'.$body.'</textarea></label></p>';
-		echo '<input type="hidden" id="statpress-submit" name="statpress-submit" value="1" /><div style="font-size:7pt;">Use %totalvisits% %visits% %thistotalvisits% %os% %browser% %ip% %since% %visitorsonline% %usersonline%</div>';
+		echo '<input type="hidden" id="statpress-submit" name="statpress-submit" value="1" /><div style="font-size:7pt;">%totalvisits% %visits% %thistotalvisits% %os% %browser% %ip% %since% %visitorsonline% %usersonline%</div>';
 	}
 	
 	// main widget function
@@ -1003,6 +1025,8 @@ function widget_statpress_init($args) {
 	register_widget_control(array('StatPress', 'widgets'), 'widget_statpress_control', 300, 200);
 
 }
+
+load_plugin_textdomain('statpress', 'wp-content/plugins/wp-statpress/locale');
 
 add_action('admin_menu', 'iri_add_pages');
 add_action('plugins_loaded', 'widget_statpress_init');
