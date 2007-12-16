@@ -4,7 +4,7 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts
 Requires at least: 2.0.2
 Tested up to: 2.3.1
-Stable Tag: 0.9.5
+Stable Tag: 0.9.6
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -174,4 +174,11 @@ Of course!
 * Update Overview graph with optional num.of days
 * Update queries slashed
 
+*Update from 0.9.5 to 0.9.6 (17 Dec 2007)*
 
+* Spanish translation available (Thanks to nv1962)
+
+
+I'm working on...
+
+* WP Date and Time settings support (UTC + timezone offset)
