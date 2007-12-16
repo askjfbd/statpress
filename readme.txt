@@ -4,7 +4,7 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts
 Requires at least: 2.0.2
 Tested up to: 2.3.1
-Stable Tag: 0.9
+Stable Tag: 0.9.5
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -14,6 +14,10 @@ The real-time plugin dedicated to the management of statistics about blog visits
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
 = Check "Other notes" tab to find out updates history! =
+
+= Could you translate StatPress in your language? Thank you! =
+( please post to http://www.irisco.it/forums/forum.php?id=1 )
+
 
 Once the plugin StatPress has been activated it immediately starts to collect statistic information about blog visitors.
 In the Dashboard menu you will find the StatPress page where you could look up the statistics (overview or detailed).
@@ -162,3 +166,12 @@ Of course!
 * New IP lookup service: hostip.info (spy with flags!)
 * New spiders
 * "Support" link in dashboard
+
+*Update from 0.8 to 0.9.5 (16 Dec 2007)*
+
+* Multilanguage (support English and Italian... could you help me?)
+* Spy links fixed
+* Update Overview graph with optional num.of days
+* Update queries slashed
+
+

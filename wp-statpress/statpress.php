@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 0.9
+Version: 0.9.5
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -62,15 +62,16 @@ function iriStatPressOptions() {
 	if($_POST['saveit'] == 'yes') {
 		update_option('statpress_collectloggeduser', $_POST['statpress_collectloggeduser']);
 		update_option('statpress_autodelete', $_POST['statpress_autodelete']);
+		update_option('statpress_daysinoverviewgraph', $_POST['statpress_daysinoverviewgraph']);
 		# update database too
 		iri_StatPress_CreateTable();
-		print "<br />&nbsp;"._e('Saved','statpress')."!";
+		print "<br />&nbsp;".__('Saved','statpress')."!";
 	} else {
 ?>
 	<div class='wrap'><h2><?php _e('Options','statpress'); ?></h2>
 	<form method=post><table width=100%>
 <?php
-	print "<tr><td><input type=checkbox name='statpress_collectloggeduser' value='checked' ".get_option('statpress_collectloggeduser')."> "._e('Collect data about logged users, too.','statpress')."</td></tr>";
+	print "<tr><td><input type=checkbox name='statpress_collectloggeduser' value='checked' ".get_option('statpress_collectloggeduser')."> ".__('Collect data about logged users, too.','statpress')."</td></tr>";
 ?>
 	<tr><td><?php _e('Automatically delete visits older than','statpress'); ?>
 	<select name="statpress_autodelete">
@@ -80,7 +81,16 @@ function iriStatPressOptions() {
 	<option value="6 months" <?php if(get_option('statpress_autodelete') == "6 months") print "selected"; ?>>6 <?php _e('months','statpress'); ?></option>
 	<option value="1 year" <?php if(get_option('statpress_autodelete') == "1 year") print "selected"; ?>>1 <?php _e('year','statpress'); ?></option>
 	</select></td></tr>
-	
+
+	<tr><td><?php _e('Days in Overview graph','statpress'); ?>
+	<select name="statpress_daysinoverviewgraph">
+	<option value="7" <?php if(get_option('statpress_daysinoverviewgraph') == 7) print "selected"; ?>>7</option>
+	<option value="10" <?php if(get_option('statpress_daysinoverviewgraph') == 10) print "selected"; ?>>10</option>
+	<option value="20" <?php if(get_option('statpress_daysinoverviewgraph') == 20) print "selected"; ?>>20</option>
+	<option value="30" <?php if(get_option('statpress_daysinoverviewgraph') == 30) print "selected"; ?>>30</option>
+	<option value="50" <?php if(get_option('statpress_daysinoverviewgraph') == 50) print "selected"; ?>>50</option>
+	</select></td></tr>
+
 	<tr><td><br><input type=submit value="<?php _e('Save options','statpress'); ?>"></td></tr>
 	</tr>
 	</table>
@@ -225,7 +235,7 @@ function iriStatPressMain() {
 		print "<td>".$rk->pageview."</td>\n";
 	}
     print "</tr>";
-    
+    ##### Feeds
     print "<tr><td><div style='background:$rss_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>Feeds</td>";
 	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed<>'';");
 	foreach ($qry as $rk) {
@@ -262,14 +272,17 @@ function iriStatPressMain() {
     print "</tr></table><br />";
     
    	
-	# last 30 days graph  NEW
-    print "<table width=100% border=0><tr><td>";
-	$qry = $wpdb->get_row("SELECT count(date) as pageview, date FROM $table_name GROUP BY date HAVING date >= '".date('Ymd', time()-86400*30)."' ORDER BY pageview DESC LIMIT 1");
+	# last N days graph  NEW
+	$gdays=get_option('statpress_daysinoverviewgraph'); if($gdays == 0) { $gdays=20; }
+	$start_of_week = get_settings('start_of_week');
+	print "\n\n";
+    print "<table width=100% border=0><tr><td>\n";
+	$qry = $wpdb->get_row("SELECT count(date) as pageview, date FROM $table_name GROUP BY date HAVING date >= '".date('Ymd', time()-86400*$gdays)."' ORDER BY pageview DESC LIMIT 1");
 	$maxxday=$qry->pageview;
 	if($maxxday == 0) { $maxxday = 1; }
 	# Y
-	for($gg=30;$gg>=0;$gg--) {
-
+	$gd=(90/$gdays).'%';
+	for($gg=$gdays-1;$gg>=0;$gg--) {
 		$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".date('Ymd', time()-86400*$gg)."';");
 		$tot_unique=count($qry);
 		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".date('Ymd', time()-86400*$gg)."';");
@@ -278,18 +291,25 @@ function iriStatPressMain() {
 		$tot_spider=count($qry);
 		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed NOT LIKE '' AND spider='' AND date = '".date('Ymd', time()-86400*$gg)."';");
 		$tot_rss=count($qry);
-		print "<!a href='/?m=".$rk->date."' target=_blank><div style='float:left;font-family:Helvetica;font-size:7pt;text-align:center;'>";
-		print "<div style='background:#ffffff;width:30px;height:".(($maxxday-$tot_unique-$tot_web-$tot_rss-$tot_spider)*100/$maxxday)."px;margin-right:2px;'></div>";
-		print "<div style='background:$rss_color;width:30px;height:".($tot_rss*100/$maxxday)."px;margin-right:2px;'></div>";
-		print "<div style='background:$spider_color;width:30px;height:".($tot_spider*100/$maxxday)."px;margin-right:2px;'></div>";
-		print "<div style='background:$web_color;width:30px;height:".($tot_web*100/$maxxday)."px;margin-right:2px;'></div>";
-		print "<div style='background:$unique_color;width:30px;height:".($tot_unique*100/$maxxday)."px;margin-right:2px;'></div>";
-		print "<div style='background:#448abd;width:32px;height:2px;'></div>";
-		print "<!/a><br>";		
-		print date('d/m', time()-86400*$gg);
-	    print "</div>";
+		# pxs
+		$px_rss=round($tot_rss*100/$maxxday);
+		$px_spider=round($tot_spider*100/$maxxday);
+		$px_visits=round($tot_web*100/$maxxday);
+		$px_unique=round($tot_unique*100/$maxxday);
+		$px_white = 100 - $px_rss - $px_spider - $px_visits - $px_unique;
+		print "<div style='float:left;font-family:Helvetica;font-size:7pt;text-align:center;width:$gd;border-right:1px solid white;color:black;";
+		if($start_of_week == date('w',time()-86400*$gg)) { print "border-left:2px dotted gray;padding-left:1px;"; }  # week-cut
+		print "'>";
+			print "<div style='background:#ffffff;width:100%;height:".$px_white."px;'></div>";
+			print "<div style='background:$rss_color;width:100%;height:".$px_rss."px;'></div>";
+			print "<div style='background:$spider_color;width:100%;height:".$px_spider."px;'></div>";
+			print "<div style='background:$web_color;width:100%;height:".$px_visits."px;'></div>";
+			print "<div style='background:$unique_color;width:100%;height:".$px_unique."px;'></div>";
+			print "<div style='background:#448abd;width:100%;height:2px;'></div>";
+			print "<br>".date('d', time()-86400*$gg)."<br>".date('M', time()-86400*$gg);
+	    print "</div>\n";
 	}
-	print "</td></tr></table>";
+	print "</td></tr></table>\n";
 	
 	print "</div>";
 
@@ -438,12 +458,7 @@ document.getElementById(thediv).style.display="none"
 		print "<span style='color:#006dca;cursor:pointer;border-bottom:1px dotted #AFD5F9;font-size:8pt;' onClick=ttogle('".$rk->ip."');>".__('more info','statpress')."</span></div>";
 		print "<div id='".$rk->ip."' name='".$rk->ip."'>".$rk->os.", ".$rk->browser;
 //		print "<br><iframe style='overflow:hide;border:0px;width:100%;height:15px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://showip.fakap.net/txt/".$rk->ip."></iframe>";
-		$w=iri_StatPress_Where($rk->ip);
-		if(($w[0].$w[1]) != '') {
-			print "$w[0]<br>";
-		} else {
-			print "<br><iframe style='overflow:hide;border:0px;width:100%;height:26px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://api.hostip.info/get_html.php?ip=".$rk->ip."></iframe>";
-		}
+		print "<br><iframe style='overflow:hide;border:0px;width:100%;height:26px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://api.hostip.info/get_html.php?ip=".$rk->ip."></iframe>";
 		if($rk->nation) {
 			print "<br><small>".gethostbyaddr($rk->ip)."</small>";
 		}
@@ -455,7 +470,7 @@ document.getElementById(thediv).style.display="none"
 		foreach ($qry2 as $details) {
 			print "<tr>";
 			print "<td valign='top' width='151'><div><font size='1' color='#3B3B3B'><strong>".irihdate($details->date)." ".$details->time."</strong></font></div></td>";
-			print "<td><div><a href='".$details->urlrequested."' target=_blank>".iri_StatPress_Decode($details->urlrequested)."</a>";
+			print "<td><div><a href='".get_bloginfo('url')."/?".$details->urlrequested."' target='_blank'>".iri_StatPress_Decode($details->urlrequested)."</a>";
 			if($details->searchengine != '') {
 				print "<br><small>".__('arrived from','statpress')." <b>".$details->searchengine."</b> ".__('searching','statpress')." <a href='".$details->referrer."' target=_blank>".$details->search."</a></small>";
 			} elseif($details->referrer != '' && strpos($details->referrer,get_settings('siteurl'))===FALSE) {
@@ -847,7 +862,7 @@ function iriStatAppend($feed='') {
 		}
 		$insert = "INSERT INTO " . $table_name .
             " (date, time, ip, urlrequested, agent, referrer, search,nation,os,browser,searchengine,spider,feed,user,timestamp) " .
-            "VALUES ('$vdate','$vtime','$ipAddress','$urlRequested','$userAgent','$referrer','$search_phrase','".iriDomain($ipAddress)."','$os','$browser','$searchengine','$spider','$feed','$userdata->user_login','$timestamp')";
+            "VALUES ('$vdate','$vtime','$ipAddress','$urlRequested','$userAgent','$referrer','".addslashes($search_phrase)."','".iriDomain($ipAddress)."','$os','$browser','$searchengine','$spider','$feed','$userdata->user_login','$timestamp')";
 		$results = $wpdb->query( $insert );
 	}
 }
@@ -916,7 +931,7 @@ function iriStatPressUpdate() {
 	foreach ($qry as $rk) {
 		list($searchengine,$search_phrase)=explode("|",iriGetSE($rk->referrer));
 		if($searchengine <> '') {
-			$q="UPDATE $table_name SET searchengine = '$searchengine', search='$search_phrase' WHERE id=".$rk->id;
+			$q="UPDATE $table_name SET searchengine = '$searchengine', search='".addslashes($search_phrase)."' WHERE id=".$rk->id;
 			$wpdb->query($q);
 		}
 	}
