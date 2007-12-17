@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: 
 Donate link: 
-Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts
+Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts,spy,statistiche
 Requires at least: 2.0.2
 Tested up to: 2.3.1
-Stable Tag: 0.9.6
+Stable Tag: 1.0
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -13,18 +13,24 @@ The real-time plugin dedicated to the management of statistics about blog visits
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
-StatPress speaks English, Italian, Spanish!
-
-= Could you translate StatPress in your language? Thank you! =
-( please post to http://www.irisco.it/forums/forum.php?id=1 )
-
-= Check "Other notes" tab to find out updates history! =
-
-Once the plugin StatPress has been activated it immediately starts to collect statistic information about blog visitors.
+Once the plugin StatPress has been activated it immediately starts to collect statistics information.
+Using StatPress you could spy your visitors while they are surfing your blog or check which are the preferred pages, posts and categories.
 In the Dashboard menu you will find the StatPress page where you could look up the statistics (overview or detailed).
 StatPress also includes a widget one can possibly add to a sidebar (or easy PHP code if you can't use widgets!).
 
-You could ban IP list from stats editing banips.dat!
+= Multilanguage =
+StatPress speaks English, Italian, Spanish!
+Could you translate StatPress in your language? Thank you!
+( please post to http://www.irisco.it/forums/forum.php?id=1 )
+
+= What's new? =
+Check "Other notes" tab to find out updates history!
+
+= Ban IP =
+
+You could ban IP list from stats editing def/banips.dat file.
+
+= DB Table maintenance =
 
 StatPress can automatically delete older records to allow the insertion of newer records when limited space is present.
 
@@ -179,7 +185,6 @@ Of course!
 
 * Spanish translation available (Thanks to nv1962)
 
-
-I'm working on...
+*Version 1.0*
 
 * WP Date and Time settings support (UTC + timezone offset)

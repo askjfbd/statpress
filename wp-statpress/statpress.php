@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 0.9.6
+Version: 1.0
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -143,7 +143,7 @@ function iriStatPressMain() {
 	$rss_color="#f38f36";
 	$spider_color="#83b4d8";
     $lastmonth = date('Ym', mktime(0, 0, 0, date("m")-1 , date("d") - 1, date("Y")));
-    $yesterday = date('Ymd', time()-86400);
+    $yesterday = date('Ymd', current_time('timestamp')-86400);
 	print "<div class='wrap'><h2>". __('Overview','statpress'). "</h2>";
 	print "<table class='widefat'><thead><tr><th scope='col'></th><th scope='col'>". __('Total','statpress'). "</th><th scope='col'>". __('Last month','statpress'). "</th><th scope='col'>". __('This month','statpress'). "</th><th scope='col'>". __('Yesterday','statpress'). "</th><th scope='col'>". __('Today','statpress'). "</th></tr></thead>";
 	print "<tbody id='the-list'>";
@@ -277,19 +277,19 @@ function iriStatPressMain() {
 	$start_of_week = get_settings('start_of_week');
 	print "\n\n";
     print "<table width=100% border=0><tr><td>\n";
-	$qry = $wpdb->get_row("SELECT count(date) as pageview, date FROM $table_name GROUP BY date HAVING date >= '".date('Ymd', time()-86400*$gdays)."' ORDER BY pageview DESC LIMIT 1");
+	$qry = $wpdb->get_row("SELECT count(date) as pageview, date FROM $table_name GROUP BY date HAVING date >= '".date('Ymd', current_time('timestamp')-86400*$gdays)."' ORDER BY pageview DESC LIMIT 1");
 	$maxxday=$qry->pageview;
 	if($maxxday == 0) { $maxxday = 1; }
 	# Y
 	$gd=(90/$gdays).'%';
 	for($gg=$gdays-1;$gg>=0;$gg--) {
-		$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".date('Ymd', time()-86400*$gg)."';");
+		$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".date('Ymd', current_time('timestamp')-86400*$gg)."';");
 		$tot_unique=count($qry);
-		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".date('Ymd', time()-86400*$gg)."';");
+		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".date('Ymd', current_time('timestamp')-86400*$gg)."';");
 		$tot_web=count($qry)-$tot_unique;
-		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed='' AND spider NOT LIKE '' AND date = '".date('Ymd', time()-86400*$gg)."';");
+		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed='' AND spider NOT LIKE '' AND date = '".date('Ymd', current_time('timestamp')-86400*$gg)."';");
 		$tot_spider=count($qry);
-		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed NOT LIKE '' AND spider='' AND date = '".date('Ymd', time()-86400*$gg)."';");
+		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed NOT LIKE '' AND spider='' AND date = '".date('Ymd', current_time('timestamp')-86400*$gg)."';");
 		$tot_rss=count($qry);
 		# pxs
 		$px_rss=round($tot_rss*100/$maxxday);
@@ -298,7 +298,7 @@ function iriStatPressMain() {
 		$px_unique=round($tot_unique*100/$maxxday);
 		$px_white = 100 - $px_rss - $px_spider - $px_visits - $px_unique;
 		print "<div style='float:left;font-family:Helvetica;font-size:7pt;text-align:center;width:$gd;border-right:1px solid white;color:black;";
-		if($start_of_week == date('w',time()-86400*$gg)) { print "border-left:2px dotted gray;padding-left:1px;"; }  # week-cut
+		if($start_of_week == date('w',current_time('timestamp')-86400*$gg)) { print "border-left:2px dotted gray;padding-left:1px;"; }  # week-cut
 		print "'>";
 			print "<div style='background:#ffffff;width:100%;height:".$px_white."px;'></div>";
 			print "<div style='background:$rss_color;width:100%;height:".$px_rss."px;'></div>";
@@ -306,7 +306,7 @@ function iriStatPressMain() {
 			print "<div style='background:$web_color;width:100%;height:".$px_visits."px;'></div>";
 			print "<div style='background:$unique_color;width:100%;height:".$px_unique."px;'></div>";
 			print "<div style='background:#448abd;width:100%;height:2px;'></div>";
-			print "<br>".date('d', time()-86400*$gg)."<br>".date('M', time()-86400*$gg);
+			print "<br>".date('d', current_time('timestamp')-86400*$gg)."<br>".date('M', current_time('timestamp')-86400*$gg);
 	    print "</div>\n";
 	}
 	print "</td></tr></table>\n";
@@ -434,8 +434,8 @@ function iriStatPressSpy() {
 	$table_name = $wpdb->prefix . "statpress";
 	
 	# Spy
-	$today = date('Ymd', time());
-	$yesterday = date('Ymd', time()-86400);
+	$today = date('Ymd', current_time('timestamp'));
+	$yesterday = date('Ymd', current_time('timestamp')-86400);
 	print "<div class='wrap'><h2>".__('Spy','statpress')."</h2>";
 	$sql="SELECT ip,nation,os,browser,agent FROM $table_name WHERE (spider='' AND feed='') AND (date BETWEEN '$yesterday' AND '$today') GROUP BY ip ORDER BY id DESC LIMIT 20";
 	$qry = $wpdb->get_results($sql);
@@ -831,8 +831,13 @@ function iriStatAppend($feed='') {
 	$table_name = $wpdb->prefix . "statpress";
 	global $userdata;
     get_currentuserinfo();
-	# Raccoglie le informazioni
-	$timestamp  = time();
+
+	// Time
+	$timestamp  = current_time('timestamp');
+	$vdate  = date("Ymd",$timestamp);
+	$vtime  = date("H:i:s",$timestamp);
+
+	// IP
     $ipAddress = $_SERVER['REMOTE_ADDR'];
 
     if(iriCheckBanIP($ipAddress) == '') { return ''; }
@@ -843,9 +848,6 @@ function iriStatAppend($feed='') {
     $referrer = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
     $userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
     
-	$vdate  = date("Ymd");
-	$vtime  = date("H:i:s");
-	
 	$os=iriGetOS($userAgent);
 	$browser=iriGetBrowser($userAgent);
 	list($searchengine,$search_phrase)=explode("|",iriGetSE($referrer));
@@ -955,7 +957,7 @@ function iri_StatPress_Vars($body) {
    	global $wpdb;
 	$table_name = $wpdb->prefix . "statpress";
 	if(strpos(strtolower($body),"%visits%") !== FALSE) {
-		$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as pageview FROM $table_name WHERE date = '".date("Ymd")."' and spider='' and feed='';");
+		$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as pageview FROM $table_name WHERE date = '".date("Ymd",current_time('timestamp'))."' and spider='' and feed='';");
 		$body = str_replace("%visits%", $qry[0]->pageview, $body);
 	}
 	if(strpos(strtolower($body),"%totalvisits%") !== FALSE) {
@@ -984,13 +986,13 @@ function iri_StatPress_Vars($body) {
    	   	$body = str_replace("%ip%", $ipAddress, $body);
    	}
 	if(strpos(strtolower($body),"%visitorsonline%") !== FALSE) { 	
-		$to_time = time();
+		$to_time = current_time('timestamp');
 		$from_time = strtotime('-4 minutes', $to_time);
 		$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as visitors FROM $table_name WHERE spider='' and feed='' AND timestamp BETWEEN $from_time AND $to_time;");
    	   	$body = str_replace("%visitorsonline%", $qry[0]->visitors, $body);
    	}
 	if(strpos(strtolower($body),"%usersonline%") !== FALSE) { 	
-		$to_time = time();
+		$to_time = current_time('timestamp');
 		$from_time = strtotime('-4 minutes', $to_time);
 		$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as users FROM $table_name WHERE spider='' and feed='' AND user<>'' AND timestamp BETWEEN $from_time AND $to_time;");
    	   	$body = str_replace("%usersonline%", $qry[0]->users, $body);
