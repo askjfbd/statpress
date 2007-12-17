@@ -13,7 +13,7 @@ The real-time plugin dedicated to the management of statistics about blog visits
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
-StatPress speaks English, Italian, Spanish.
+StatPress speaks English, Italian, Spanish!
 
 = Could you translate StatPress in your language? Thank you! =
 ( please post to http://www.irisco.it/forums/forum.php?id=1 )
