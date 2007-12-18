@@ -14,6 +14,7 @@ if ($_GET['statpress_action'] == 'exportnow') {
 }
 
 
+
 function iri_add_pages() {
 	# Crea/aggiorna tabella se non esiste
 	global $wpdb;
