@@ -4,7 +4,7 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts,spy,statistiche
 Requires at least: 2.0.2
 Tested up to: 2.3.1
-Stable Tag: 1.0.1
+Stable Tag: 1.1
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -50,6 +50,7 @@ Widget is customizable. These are the available variables:
 
 Now you could add these values everywhere! StatPress >=0.7.6 offers a new PHP function *StatPress_Print()*.
 * i.e. StatPress_Print("%totalvisits% total visits.");
+
 
 == Installation ==
 
@@ -190,6 +191,6 @@ Of course!
 
 * WP Date and Time settings support (UTC + timezone offset)
 
-*Version 1.0.1*
+*Version 1.1*
 
 * Time settings patch

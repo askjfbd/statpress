@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.0.1
+Version: 1.1
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -707,7 +707,7 @@ function iriValueTable($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $e
         	print "</td><td style='text-align:center;'>".$rk->pageview."</td>";  // <td style='text-align:right'>$pc%</td>";
 	        print "<td><div style='text-align:right;padding:2px;font-family:helvetica;font-size:7pt;font-weight:bold;height:16px;width:".($tdwidth*$pc/100)."px;background:".irirgbhex($red,$green,$blue).";border-top:1px solid ".irirgbhex($red+20,$green+20,$blue).";border-right:1px solid ".irirgbhex($red+30,$green+30,$blue).";border-bottom:1px solid ".irirgbhex($red-20,$green-20,$blue).";'>$pc%</div>";
     	    print "</td></tr>\n";
-        	$red=$red+$deltacolor; $blue=$blue-($deltacolor/2);
+        	$red=$red+$deltacolor; $blue=$blue-($deltacolor / 2);
 		}
 	}
 	print "</table></div>";
@@ -1004,10 +1004,8 @@ function iri_StatPress_Vars($body) {
 
 
 function widget_statpress_init($args) {
-	// Check for the required API functions
 	if ( !function_exists('register_sidebar_widget') || !function_exists('register_widget_control') )
 		return;
-
 	function widget_statpress_control() {
 		$options = get_option('widget_statpress');
 		if ( !is_array($options) )
@@ -1043,6 +1041,7 @@ function widget_statpress_init($args) {
 	register_widget_control(array('StatPress', 'widgets'), 'widget_statpress_control', 300, 200);
 
 }
+
 
 load_plugin_textdomain('statpress', 'wp-content/plugins/wp-statpress/locale');
 
