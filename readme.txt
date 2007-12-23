@@ -19,7 +19,7 @@ In the Dashboard menu you will find the StatPress page where you could look up t
 StatPress also includes a widget one can possibly add to a sidebar (or easy PHP code if you can't use widgets!).
 
 = Multilanguage =
-StatPress speaks English, Italian, Spanish!
+StatPress speaks English, Italian, Spanish, French, German, Russian!
 Could you translate StatPress in your language? Thank you!
 ( please post to http://www.irisco.it/forums/forum.php?id=1 )
 
@@ -185,7 +185,7 @@ Of course!
 
 *Update from 0.9.5 to 0.9.6 (17 Dec 2007)*
 
-* Spanish translation available (Thanks to nv1962)
+* Spanish translation (Thanks to nv1962)
 
 *Version 1.0*
 
@@ -194,3 +194,11 @@ Of course!
 *Version 1.1*
 
 * Time settings patch
+
+*Version 1.1.1*
+
+* French translation (Thanks to Joel Remaud)
+* German translation (Thanks to Martin Bartels)
+* Russian translation (Thanks to Aleksandr)
+* New option: Minimum "capability" to view stats
+* Some Overview update

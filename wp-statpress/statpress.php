@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.1
+Version: 1.1.1
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -23,7 +23,12 @@ function iri_add_pages() {
 		iri_StatPress_CreateTable();
 	}
 	# add submenu
-    add_submenu_page('index.php', 'StatPress', 'StatPress', 8, 'statpress', 'iriStatPress');
+	$mincap=get_option('statpress_mincap');
+	if($mincap == '') {
+		$mincap="level_8";
+	}
+//    add_submenu_page('index.php', 'StatPress', 'StatPress', 8, 'statpress', 'iriStatPress');
+    add_submenu_page('index.php', 'StatPress', 'StatPress', $mincap, 'statpress', 'iriStatPress');
 }
 
 
@@ -64,6 +69,7 @@ function iriStatPressOptions() {
 		update_option('statpress_collectloggeduser', $_POST['statpress_collectloggeduser']);
 		update_option('statpress_autodelete', $_POST['statpress_autodelete']);
 		update_option('statpress_daysinoverviewgraph', $_POST['statpress_daysinoverviewgraph']);
+		update_option('statpress_mincap', $_POST['statpress_mincap']);
 		# update database too
 		iri_StatPress_CreateTable();
 		print "<br />&nbsp;".__('Saved','statpress')."!";
@@ -92,6 +98,13 @@ function iriStatPressOptions() {
 	<option value="50" <?php if(get_option('statpress_daysinoverviewgraph') == 50) print "selected"; ?>>50</option>
 	</select></td></tr>
 
+	<tr><td><?php _e('Minimum capability to view stats','statpress'); ?>
+	<select name="statpress_mincap">
+<?php iri_dropdown_caps(get_option('statpress_mincap')); ?>
+	</select> 
+	<a href="http://codex.wordpress.org/Roles_and_Capabilities" target="_blank"><?php _e("more info",'statpress'); ?></a>
+	</td></tr>
+	
 	<tr><td><br><input type=submit value="<?php _e('Save options','statpress'); ?>"></td></tr>
 	</tr>
 	</table>
@@ -102,6 +115,17 @@ function iriStatPressOptions() {
 <?php
 
 	} # chiude saveit
+}
+
+
+function iri_dropdown_caps( $default = false ) {
+	global $wp_roles;
+	$role = get_role('administrator');
+	foreach($role->capabilities as $cap => $grant) {
+		print "<option ";
+		if($default == $cap) { print "selected "; }
+		print ">$cap</option>";
+	}
 }
 
 
@@ -144,9 +168,11 @@ function iriStatPressMain() {
 	$rss_color="#f38f36";
 	$spider_color="#83b4d8";
     $lastmonth = gmdate('Ym', mktime(0, 0, 0, date("m")-1 , date("d") - 1, date("Y")));
+    $thismonth = gmdate('Ym', current_time('timestamp'));
     $yesterday = gmdate('Ymd', current_time('timestamp')-86400);
+    $today = gmdate('Ymd', current_time('timestamp'));
 	print "<div class='wrap'><h2>". __('Overview','statpress'). "</h2>";
-	print "<table class='widefat'><thead><tr><th scope='col'></th><th scope='col'>". __('Total','statpress'). "</th><th scope='col'>". __('Last month','statpress'). "</th><th scope='col'>". __('This month','statpress'). "</th><th scope='col'>". __('Yesterday','statpress'). "</th><th scope='col'>". __('Today','statpress'). "</th></tr></thead>";
+	print "<table class='widefat'><thead><tr><th scope='col'></th><th scope='col'>". __('Total','statpress'). "</th><th scope='col'>". __('Last month','statpress'). "<br><font size=1>$lastmonth</font></th><th scope='col'>". __('This month','statpress'). "<br><font size=1>$thismonth</font></th><th scope='col'>Target ". __('This month','statpress'). "<br><font size=1>$thismonth</font></th><th scope='col'>". __('Yesterday','statpress'). "<br><font size=1>$yesterday</font></th><th scope='col'>". __('Today','statpress'). "<br><font size=1>$today</font></th></tr></thead>";
 	print "<tbody id='the-list'>";
 
 	###### Unique
@@ -157,7 +183,7 @@ function iriStatPressMain() {
 	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date LIKE '".$lastmonth."%';");
     $prec=count($qry);
 	print "<td>".$prec."</td>\n";
-	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date LIKE '".gmdate("Ym")."%';");
+	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date LIKE '".$thismonth."%';");
 	print "<td>".count($qry);
 	if($prec<>0) {
 		print " (";
@@ -166,9 +192,18 @@ function iriStatPressMain() {
 		print $pc."%)";
 	}
 	print "</td>\n";
+	$target=round(count($qry) / date("d",current_time('timestamp')) * 30);
+	print "<td>" . $target;
+	if($prec<>0) {
+		print " (";
+		$pc=round( 100 * ($target / $prec ) - 100,1);
+		if($pc>=0) { print "+"; }
+		print $pc."%)";
+	}	
+	print "</td>";
 	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".$yesterday."';");
 	print "<td>".count($qry)."</td>\n";
-	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".gmdate("Ymd")."';");
+	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '$today';");
 	print "<td>".count($qry)."</td>\n";
     print "</tr>";
 
@@ -184,7 +219,7 @@ function iriStatPressMain() {
 		print "<td>".$rk->pageview."</td>\n";
 	}
     $prec=$rk->pageview;
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider='' AND date LIKE '".gmdate("Ym")."%';");
+	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider='' AND date LIKE '".$thismonth."%';");
 	foreach ($qry as $rk) {
 		print "<td>".$rk->pageview;
 		if($prec<>0) {
@@ -195,11 +230,20 @@ function iriStatPressMain() {
 		}
 		print "</td>\n";
 	}
+	$target=round($rk->pageview / date("d",current_time('timestamp')) * 30);
+	print "<td>" . $target;
+	if($prec<>0) {
+		print " (";
+		$pc=round( 100 * ($target / $prec ) - 100,1);
+		if($pc>=0) { print "+"; }
+		print $pc."%)";
+	}	
+	print "</td>";
 	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider='' AND date = '".$yesterday."';");
 	foreach ($qry as $rk) {
 		print "<td>".$rk->pageview."</td>\n";
 	}
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider='' AND date = '".gmdate("Ymd")."';");
+	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider='' AND date = '$today';");
 	foreach ($qry as $rk) {
 		print "<td>".$rk->pageview."</td>\n";
 	}
@@ -216,7 +260,7 @@ function iriStatPressMain() {
 		print "<td>".$rk->pageview."</td>\n";
 	}
     $prec=$rk->pageview;
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed=''  AND spider NOT LIKE '' AND date LIKE '".gmdate("Ym")."%';");
+	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed=''  AND spider NOT LIKE '' AND date LIKE '".$thismonth."%';");
 	foreach ($qry as $rk) {
 		print "<td>".$rk->pageview;
 		if($prec<>0) {
@@ -227,11 +271,20 @@ function iriStatPressMain() {
 		}
 		print "</td>\n";
 	}
+	$target=round($rk->pageview / date("d",current_time('timestamp')) * 30);
+	print "<td>" . $target;
+	if($prec<>0) {
+		print " (";
+		$pc=round( 100 * ($target / $prec ) - 100,1);
+		if($pc>=0) { print "+"; }
+		print $pc."%)";
+	}	
+	print "</td>";
 	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed=''  AND spider NOT LIKE '' AND date = '".$yesterday."';");
 	foreach ($qry as $rk) {
 		print "<td>".$rk->pageview."</td>\n";
 	}
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed=''  AND spider NOT LIKE '' AND date = '".gmdate("Ymd")."';");
+	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed=''  AND spider NOT LIKE '' AND date = '$today';");
 	foreach ($qry as $rk) {
 		print "<td>".$rk->pageview."</td>\n";
 	}
@@ -248,7 +301,7 @@ function iriStatPressMain() {
 		print "<td>".$rk->pageview."</td>\n";
 	}
     $prec=$rk->pageview;
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed<>'' AND date LIKE '".gmdate("Ym")."%';");
+	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed<>'' AND date LIKE '".$thismonth."%';");
 	foreach ($qry as $rk) {
 		print "<td>".$rk->pageview;
 		if($prec<>0) {
@@ -259,13 +312,21 @@ function iriStatPressMain() {
 		}
 		print "</td>\n";
 	}
-
+	$target=round($rk->pageview / date("d",current_time('timestamp')) * 30);
+	print "<td>" . $target;
+	if($prec<>0) {
+		print " (";
+		$pc=round( 100 * ($target / $prec ) - 100,1);
+		if($pc>=0) { print "+"; }
+		print $pc."%)";
+	}	
+	print "</td>";
 	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed<>'' AND date = '".$yesterday."';");
 	foreach ($qry as $rk) {
 		print "<td>".$rk->pageview."</td>\n";
 	}
 
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed<>'' AND date = '".gmdate("Ymd")."';");
+	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed<>'' AND date = '$today';");
 	foreach ($qry as $rk) {
 		print "<td>".$rk->pageview."</td>\n";
 	}
@@ -352,7 +413,7 @@ function iriStatPressMain() {
 	print "<tbody id='the-list'>";	
 	$qry = $wpdb->get_results("SELECT date,time,referrer FROM $table_name WHERE ((referrer NOT LIKE '".get_settings('siteurl')."%') AND (referrer <>'') AND (searchengine='')) ORDER BY id DESC $querylimit");
 	foreach ($qry as $rk) {
-		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td><a href='".$rk->referrer."'>".substr($rk->referrer,0,70)."...</a></td><td><a href='".get_bloginfo('url')."/?".$rk->urlrequested."'>". __('page viewed','statpress'). "</a></td></tr>\n";
+		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td><a href='".$rk->referrer."'>".iri_StatPress_Abbrevia($rk->referrer,80)."</a></td><td><a href='".get_bloginfo('url')."/?".$rk->urlrequested."'>". __('page viewed','statpress'). "</a></td></tr>\n";
 	}
 	print "</table></div>";
 	
@@ -371,7 +432,7 @@ function iriStatPressMain() {
 	print "<tbody id='the-list'>";	
 	$qry = $wpdb->get_results("SELECT date,time,urlrequested,os,browser,spider FROM $table_name WHERE (spider='' AND feed='') ORDER BY id DESC $querylimit");
 	foreach ($qry as $rk) {
-		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td>".iri_StatPress_Decode($rk->urlrequested)."</td><td> ".$rk->os. " ".$rk->browser." ".$rk->spider."</td></tr>\n";
+		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td>".iri_StatPress_Abbrevia(iri_StatPress_Decode($rk->urlrequested),60)."</td><td> ".$rk->os. " ".$rk->browser." ".$rk->spider."</td></tr>\n";
 	}
 	print "</table></div>";
 	
@@ -618,6 +679,11 @@ function iriStatPressSearch($what='') {
 	
 }
 
+function iri_StatPress_Abbrevia($s,$c) {
+	$res=""; if(strlen($s)>$c) { $res="..."; }
+	return substr($s,0,$c).$res;
+	
+}
 
 function iri_StatPress_Where($ip) {
 	$url = "http://api.hostip.info/get_html.php?ip=$ip";
@@ -865,7 +931,8 @@ function iriStatAppend($feed='') {
 		}
 		$insert = "INSERT INTO " . $table_name .
             " (date, time, ip, urlrequested, agent, referrer, search,nation,os,browser,searchengine,spider,feed,user,timestamp) " .
-            "VALUES ('$vdate','$vtime','$ipAddress','$urlRequested','$userAgent','$referrer','".addslashes($search_phrase)."','".iriDomain($ipAddress)."','$os','$browser','$searchengine','$spider','$feed','$userdata->user_login','$timestamp')";
+            "VALUES ('$vdate','$vtime','$ipAddress','$urlRequested','".addslashes(strip_tags($userAgent))."','$referrer','".addslashes(strip_tags($search_phrase))."','".iriDomain($ipAddress)."','$os','$browser','$searchengine','$spider','$feed','$userdata->user_login','$timestamp')";
+//print "$insert<br>";
 		$results = $wpdb->query( $insert );
 	}
 }
