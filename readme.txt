@@ -201,5 +201,6 @@ Of course!
 * French translation (Thanks to Joel Remaud)
 * German translation (Thanks to Martin Bartels)
 * Russian translation (Thanks to Aleksandr)
+* Portuguese/Brazilian translation (Thanks to gmcosta)
 * New option: Minimum "capability" to view stats
 * Some Overview update
