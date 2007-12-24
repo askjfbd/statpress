@@ -89,7 +89,7 @@ function iriStatPressOptions() {
 	<option value="1 year" <?php if(get_option('statpress_autodelete') == "1 year") print "selected"; ?>>1 <?php _e('year','statpress'); ?></option>
 	</select></td></tr>
 
-	<tr><td><?php _e('Days in Overview graph','statpress'); ?>
+	<tr><td><?php  _e('Days in Overview graph','statpress'); ?>
 	<select name="statpress_daysinoverviewgraph">
 	<option value="7" <?php if(get_option('statpress_daysinoverviewgraph') == 7) print "selected"; ?>>7</option>
 	<option value="10" <?php if(get_option('statpress_daysinoverviewgraph') == 10) print "selected"; ?>>10</option>
