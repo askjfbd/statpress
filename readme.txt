@@ -195,7 +195,7 @@ Of course!
 
 * Time settings patch
 
-*Version 1.1.1*
+*Version 1.2*
 
 * French translation (Thanks to Joel Remaud)
 * German translation (Thanks to Martin Bartels)
