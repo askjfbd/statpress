@@ -19,7 +19,7 @@ In the Dashboard menu you will find the StatPress page where you could look up t
 StatPress also includes a widget one can possibly add to a sidebar (or easy PHP code if you can't use widgets!).
 
 = Multilanguage =
-StatPress speaks English, Italian, Spanish, French, German, Russian!
+StatPress speaks English, Italian, Spanish, French, German, Russian and Dutch!
 Could you translate StatPress in your language? Thank you!
 ( please post to http://www.irisco.it/forums/forum.php?id=1 )
 
@@ -204,3 +204,4 @@ Of course!
 * Portuguese/Brazilian translation (Thanks to gmcosta)
 * New option: Minimum "capability" to view stats
 * Some Overview update
+* 20071225: Dutch translation (Thanks to Matthijs www.hethaagseblog.nl)
