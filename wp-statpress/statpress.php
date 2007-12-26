@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.2
+Version: 1.2.1
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -334,7 +334,7 @@ function iriStatPressMain() {
     print "</tr></table><br />";
     
    	
-	# last N days graph  NEW
+	# last "N" days graph  NEW
 	$gdays=get_option('statpress_daysinoverviewgraph'); if($gdays == 0) { $gdays=20; }
 	$start_of_week = get_settings('start_of_week');
 	print "\n\n";

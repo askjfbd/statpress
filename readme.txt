@@ -4,7 +4,7 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts,spy,statistiche
 Requires at least: 2.0.2
 Tested up to: 2.3.1
-Stable Tag: 1.2
+Stable Tag: 1.2.1
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -205,6 +205,7 @@ Of course!
 * New option: Minimum "capability" to view stats
 * Some Overview update
 * 20071225: Dutch translation (Thanks to Matthijs www.hethaagseblog.nl)
-* 20071226: Norwegian translation (Thanks to Selveste Radiohode)
 
+*Version 1.2.1*
 
+* Norwegian translation (Thanks to Selveste Radiohode)
