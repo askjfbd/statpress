@@ -1091,8 +1091,6 @@ function widget_statpress_init($args) {
 		echo '<p style="text-align:right;"><label for="statpress-body"><div>' . __('Body:', 'widgets') . '</div><textarea style="width: 288px;height:100px;" id="statpress-body" name="statpress-body" type="textarea">'.$body.'</textarea></label></p>';
 		echo '<input type="hidden" id="statpress-submit" name="statpress-submit" value="1" /><div style="font-size:7pt;">%totalvisits% %visits% %thistotalvisits% %os% %browser% %ip% %since% %visitorsonline% %usersonline%</div>';
 	}
-	
-	// main widget function
 	function widget_statpress($args) {
 	    extract($args);
 		$options = get_option('widget_statpress');

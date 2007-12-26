@@ -55,7 +55,7 @@ Now you could add these values everywhere! StatPress >=0.7.6 offers a new PHP fu
 == Installation ==
 
 Upload wp-statpress directory in /wp-content/plugins/ . Then just activate it on your plugin management page.
-You are ready!
+You are ready!!!
 
 
 = Update =
