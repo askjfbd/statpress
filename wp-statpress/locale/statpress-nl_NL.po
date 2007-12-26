@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: statpress-nl_NL\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-12-14 10:21+0100\n"
-"PO-Revision-Date: 2007-12-25 22:48+0100\n"
+"PO-Revision-Date: 2007-12-26 15:09+0100\n"
 "Last-Translator: Daniele Lippi <daniele.lippi@gmail.com>\n"
 "Language-Team:  <matthijs@hethaagseblog.nl>\n"
 "MIME-Version: 1.0\n"
@@ -113,7 +113,7 @@ msgstr "Totaal"
 
 #: /Users/danielelippi/sviluppo/statpress/statpress/trunk/wp-statpress/statpress.php:148
 msgid "Last month"
-msgstr "Предыдущий месяц"
+msgstr "Afgelopen maand"
 
 #: /Users/danielelippi/sviluppo/statpress/statpress/trunk/wp-statpress/statpress.php:148
 msgid "This month"
