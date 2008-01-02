@@ -671,7 +671,11 @@ function iriStatPressSearch($what='') {
 	$qry=$wpdb->get_results($sql,ARRAY_N);
 	foreach ($qry as $rk) {
 		print "<tr>";
-		for($i=1;$i<=3;$i++) { print "<td>".$rk[$i-1]."</td>"; }
+		for($i=1;$i<=3;$i++) {
+			print "<td>";
+			if($_GET["where$i"] == 'urlrequested') { print iri_StatPress_Decode($rk[$i-1]); } else { print $rk[$i-1]; }
+			print "</td>";
+		}
 		print "</tr>";
 	}
 	print "</table></div>";
