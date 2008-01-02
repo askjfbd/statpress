@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.2.1
+Version: 1.2.2
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -167,7 +167,7 @@ function iriStatPressMain() {
 	$web_color="#3377B6";
 	$rss_color="#f38f36";
 	$spider_color="#83b4d8";
-    $lastmonth = gmdate('Ym', mktime(0, 0, 0, date("m")-1 , date("d") - 1, date("Y")));
+    $lastmonth = iri_StatPress_lastmonth();
     $thismonth = gmdate('Ym', current_time('timestamp'));
     $yesterday = gmdate('Ymd', current_time('timestamp')-86400);
     $today = gmdate('Ymd', current_time('timestamp'));
@@ -201,7 +201,7 @@ function iriStatPressMain() {
 		print $pc."%)";
 	}	
 	print "</td>";
-	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".$yesterday."';");
+	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '$yesterday';");
 	print "<td>".count($qry)."</td>\n";
 	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '$today';");
 	print "<td>".count($qry)."</td>\n";
@@ -764,10 +764,14 @@ function iriValueTable($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $e
 		if($limit > 0) { $sql=$sql." LIMIT $limit"; }
 		$qry = $wpdb->get_results($sql);
 	    $tdwidth=450; $red=131; $green=180; $blue=216; $deltacolor=round(250/count($qry),0);
+//	    $chl="";
+//	    $chd="t:";
 		foreach ($qry as $rk) {
 			$pc=round(($rk->pageview*100/$rks),1);
 			if($fld == 'date') { $rk->$fld = irihdate($rk->$fld); }
 			if($fld == 'urlrequested') { $rk->$fld = iri_StatPress_Decode($rk->$fld); }
+//			$chl.=urlencode(substr($rk->$fld,0,50))."|";
+//			$chd.=($tdwidth*$pc/100)."|";
         	print "<tr><td style='width:400px;overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>".substr($rk->$fld,0,50);
         	if(strlen("$rk->fld")>=50) { print "..."; }
         	print "</td><td style='text-align:center;'>".$rk->pageview."</td>";  // <td style='text-align:right'>$pc%</td>";
@@ -776,7 +780,11 @@ function iriValueTable($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $e
         	$red=$red+$deltacolor; $blue=$blue-($deltacolor / 2);
 		}
 	}
-	print "</table></div>";
+	print "</table>\n";
+//	$chl=substr($chl,0,strlen($chl)-1);
+//	$chd=substr($chd,0,strlen($chd)-1);
+//	print "<img src=http://chart.apis.google.com/chart?cht=p3&chd=".($chd)."&chs=400x200&chl=".($chl)."&chco=1B75DF,92BF23>\n";
+	print "</div>\n";
 }
 
 
@@ -864,6 +872,25 @@ function iriGetSpider($agent = null){
 	return null;
 }
 
+
+function iri_StatPress_lastmonth() {
+  $ta = getdate(current_time('timestamp'));
+    
+  $year = $ta['year'];
+  $month = $ta['mon'];
+    
+  --$month; // go back 1 month
+    
+  if( $month === 0 ): // if this month is Jan
+    --$year; // go back a year
+    $month = 12; // last month is Dec
+  endif;
+    
+  // return in format 'YYYYMM'
+  return sprintf( $year.'%02d', $month); 
+}
+
+
 function iri_StatPress_CreateTable() {
 	global $wpdb;
 	global $wp_db_version;
@@ -911,7 +938,8 @@ function iriStatAppend($feed='') {
 
 	$urlRequested=iri_StatPress_URL();
 	if (eregi("favicon.ico", $urlRequested)) { return ''; }
-
+	if (eregi(".css$", $urlRequested)) { return ''; }
+	
     $referrer = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
     $userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
     
