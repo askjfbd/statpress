@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.2.2
+Version: 1.2.3
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -336,7 +336,8 @@ function iriStatPressMain() {
    	
 	# last "N" days graph  NEW
 	$gdays=get_option('statpress_daysinoverviewgraph'); if($gdays == 0) { $gdays=20; }
-	$start_of_week = get_settings('start_of_week');
+//	$start_of_week = get_settings('start_of_week');
+	$start_of_week = get_option('start_of_week');
 	print "\n\n";
     print "<table width=100% border=0><tr><td>\n";
 	$qry = $wpdb->get_row("SELECT count(date) as pageview, date FROM $table_name GROUP BY date HAVING date >= '".gmdate('Ymd', current_time('timestamp')-86400*$gdays)."' ORDER BY pageview DESC LIMIT 1");
@@ -389,7 +390,7 @@ function iriStatPressMain() {
 		print "<td>". $fivesdraft->time ."</td>";
 		print "<td>". $fivesdraft->ip ."</td>";
 		print "<td>". $fivesdraft->nation ."</td>";
-		print "<td>". iri_StatPress_Decode($fivesdraft->urlrequested) ."</td>";
+		print "<td>". iri_StatPress_Abbrevia(iri_StatPress_Decode($fivesdraft->urlrequested),30) ."</td>";
 		print "<td>". $fivesdraft->os . "</td>";
 		print "<td>". $fivesdraft->browser . "</td>";
 		print "<td>". $fivesdraft->feed . "</td>";
@@ -407,11 +408,10 @@ function iriStatPressMain() {
 	}
 	print "</table></div>";
 	
-	
 	# Referrer
 	print "<div class='wrap'><h2>".__('Last referrers','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('URL','statpress')."</th><th scope='col'>".__('Result','statpress')."</th></tr></thead>";
 	print "<tbody id='the-list'>";	
-	$qry = $wpdb->get_results("SELECT date,time,referrer FROM $table_name WHERE ((referrer NOT LIKE '".get_settings('siteurl')."%') AND (referrer <>'') AND (searchengine='')) ORDER BY id DESC $querylimit");
+	$qry = $wpdb->get_results("SELECT date,time,referrer,urlrequested FROM $table_name WHERE ((referrer NOT LIKE '".get_option('home')."%') AND (referrer <>'') AND (searchengine='')) ORDER BY id DESC $querylimit");
 	foreach ($qry as $rk) {
 		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td><a href='".$rk->referrer."'>".iri_StatPress_Abbrevia($rk->referrer,80)."</a></td><td><a href='".get_bloginfo('url')."/?".$rk->urlrequested."'>". __('page viewed','statpress'). "</a></td></tr>\n";
 	}
@@ -535,7 +535,7 @@ document.getElementById(thediv).style.display="none"
 			print "<td><div><a href='".get_bloginfo('url')."/?".$details->urlrequested."' target='_blank'>".iri_StatPress_Decode($details->urlrequested)."</a>";
 			if($details->searchengine != '') {
 				print "<br><small>".__('arrived from','statpress')." <b>".$details->searchengine."</b> ".__('searching','statpress')." <a href='".$details->referrer."' target=_blank>".$details->search."</a></small>";
-			} elseif($details->referrer != '' && strpos($details->referrer,get_settings('siteurl'))===FALSE) {
+			} elseif($details->referrer != '' && strpos($details->referrer,get_option('home'))===FALSE) {
 				print "<br><small>".__('arrived from','statpress')." <a href='".$details->referrer."' target=_blank>".$details->referrer."</a></small>";
 			}
 			print "</div></td>";
@@ -678,7 +678,8 @@ function iriStatPressSearch($what='') {
 		}
 		print "</tr>";
 	}
-	print "</table></div>";
+	print "</table>";
+	print "<br /><br /><font size=1 color=gray>sql: $sql</font></div>";
  }
 	
 }
@@ -816,7 +817,7 @@ else{return null;}
 
 function iriGetOS($arg){
     $arg=str_replace(" ","",$arg);
-	$lines = file(ABSPATH.'wp-content/plugins/wp-statpress/def/os.dat');
+	$lines = file(ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/def/os.dat');
 	foreach($lines as $line_num => $os) {
 		list($nome_os,$id_os)=explode("|",$os);
 		if(strpos($arg,$id_os)===FALSE) continue;
@@ -828,7 +829,7 @@ function iriGetOS($arg){
 
 function iriGetBrowser($arg){
     $arg=str_replace(" ","",$arg);
-	$lines = file(ABSPATH.'wp-content/plugins/wp-statpress/def/browser.dat');
+	$lines = file(ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/def/browser.dat');
 	foreach($lines as $line_num => $browser) {
 		list($nome,$id)=explode("|",$browser);
 		if(strpos($arg,$id)===FALSE) continue;
@@ -838,7 +839,7 @@ function iriGetBrowser($arg){
 }
 
 function iriCheckBanIP($arg){
-	$lines = file(ABSPATH.'wp-content/plugins/wp-statpress/def/banips.dat');
+	$lines = file(ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/def/banips.dat');
 	foreach($lines as $line_num => $banip) {
 		if(strpos($arg,rtrim($banip,"\n"))===FALSE) continue;
     	return ''; // riconosciuto, da scartare
@@ -848,7 +849,7 @@ function iriCheckBanIP($arg){
 
 function iriGetSE($referrer = null){
 	$key = null;
-	$lines = file(ABSPATH.'wp-content/plugins/wp-statpress/def/searchengines.dat');
+	$lines = file(ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/def/searchengines.dat');
 	foreach($lines as $line_num => $se) {
 		list($nome,$url,$key)=explode("|",$se);
 		if(strpos($referrer,$url)===FALSE) continue;
@@ -866,7 +867,7 @@ function iriGetSE($referrer = null){
 function iriGetSpider($agent = null){
     $agent=str_replace(" ","",$agent);
 	$key = null;
-	$lines = file(ABSPATH.'wp-content/plugins/wp-statpress/def/spider.dat');
+	$lines = file(ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/def/spider.dat');
 	foreach($lines as $line_num => $spider) {
 		list($nome,$key)=explode("|",$spider);
 		if(strpos($agent,$key)===FALSE) continue;
@@ -988,7 +989,7 @@ function iriStatPressUpdate() {
 	# Update OS
 	print "Updating OSes... ";
     $wpdb->query("UPDATE $table_name SET os = '';");
-	$lines = file(ABSPATH.'wp-content/plugins/wp-statpress/def/os.dat');
+	$lines = file(ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/def/os.dat');
 	foreach($lines as $line_num => $os) {
 		list($nome_os,$id_os)=explode("|",$os);
 		$qry="UPDATE $table_name SET os = '$nome_os' WHERE os='' AND replace(agent,' ','') LIKE '%".$id_os."%';";
@@ -999,7 +1000,7 @@ function iriStatPressUpdate() {
 	# Update Browser
 	print "Updating Browsers... ";
     $wpdb->query("UPDATE $table_name SET browser = '';");
-	$lines = file(ABSPATH.'wp-content/plugins/wp-statpress/def/browser.dat');
+	$lines = file(ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/def/browser.dat');
 	foreach($lines as $line_num => $browser) {
 		list($nome,$id)=explode("|",$browser);
 		$qry="UPDATE $table_name SET browser = '$nome' WHERE browser='' AND replace(agent,' ','') LIKE '%".$id."%';";
@@ -1010,7 +1011,7 @@ function iriStatPressUpdate() {
 	# Update Spider
 	print "Updating Spiders... ";
     $wpdb->query("UPDATE $table_name SET spider = '';");
-	$lines = file(ABSPATH.'wp-content/plugins/wp-statpress/def/spider.dat');
+	$lines = file(ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/def/spider.dat');
 	foreach($lines as $line_num => $spider) {
 		list($nome,$id)=explode("|",$spider);
 		$qry="UPDATE $table_name SET spider = '$nome',os='',browser='' WHERE spider='' AND replace(agent,' ','') LIKE '%".$id."%';";
@@ -1097,8 +1098,19 @@ function iri_StatPress_Vars($body) {
 		$qry = $wpdb->get_results("SELECT count(DISTINCT(ip)) as users FROM $table_name WHERE spider='' and feed='' AND user<>'' AND timestamp BETWEEN $from_time AND $to_time;");
    	   	$body = str_replace("%usersonline%", $qry[0]->users, $body);
    	}
-		
-   	return $body;
+	if(strpos(strtolower($body),"%toppost%") !== FALSE) {
+		$qry = $wpdb->get_results("SELECT urlrequested,count(*) as totale FROM wp_statpress WHERE spider='' AND feed='' AND urlrequested LIKE '%p=%' GROUP BY urlrequested ORDER BY totale DESC LIMIT 1;");
+		$body = str_replace("%toppost%", iri_StatPress_Decode($qry[0]->urlrequested), $body);
+	}
+	if(strpos(strtolower($body),"%topbrowser%") !== FALSE) {
+		$qry = $wpdb->get_results("SELECT browser,count(*) as totale FROM wp_statpress WHERE spider='' AND feed='' GROUP BY browser ORDER BY totale DESC LIMIT 1;");
+		$body = str_replace("%topbrowser%", iri_StatPress_Decode($qry[0]->browser), $body);
+	}
+	if(strpos(strtolower($body),"%topos%") !== FALSE) {
+		$qry = $wpdb->get_results("SELECT os,count(*) as totale FROM wp_statpress WHERE spider='' AND feed='' GROUP BY os ORDER BY totale DESC LIMIT 1;");
+		$body = str_replace("%topos%", iri_StatPress_Decode($qry[0]->os), $body);
+	}
+	return $body;
 }
 
 
@@ -1121,7 +1133,7 @@ function widget_statpress_init($args) {
 		// the form
 		echo '<p style="text-align:right;"><label for="statpress-title">' . __('Title:') . ' <input style="width: 250px;" id="statpress-title" name="statpress-title" type="text" value="'.$title.'" /></label></p>';
 		echo '<p style="text-align:right;"><label for="statpress-body"><div>' . __('Body:', 'widgets') . '</div><textarea style="width: 288px;height:100px;" id="statpress-body" name="statpress-body" type="textarea">'.$body.'</textarea></label></p>';
-		echo '<input type="hidden" id="statpress-submit" name="statpress-submit" value="1" /><div style="font-size:7pt;">%totalvisits% %visits% %thistotalvisits% %os% %browser% %ip% %since% %visitorsonline% %usersonline%</div>';
+		echo '<input type="hidden" id="statpress-submit" name="statpress-submit" value="1" /><div style="font-size:7pt;">%totalvisits% %visits% %thistotalvisits% %os% %browser% %ip% %since% %visitorsonline% %usersonline% %toppost% %topbrowser% %topos%</div>';
 	}
 	function widget_statpress($args) {
 	    extract($args);
@@ -1140,7 +1152,7 @@ function widget_statpress_init($args) {
 }
 
 
-load_plugin_textdomain('statpress', 'wp-content/plugins/wp-statpress/locale');
+load_plugin_textdomain('statpress', 'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/locale');
 
 add_action('admin_menu', 'iri_add_pages');
 add_action('plugins_loaded', 'widget_statpress_init');

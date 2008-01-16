@@ -4,7 +4,7 @@ Donate link:
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts,spy,statistiche
 Requires at least: 2.0.2
 Tested up to: 2.3.2
-Stable Tag: 1.2.2
+Stable Tag: 1.2.3
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -19,7 +19,7 @@ In the Dashboard menu you will find the StatPress page where you could look up t
 StatPress also includes a widget one can possibly add to a sidebar (or easy PHP code if you can't use widgets!).
 
 = Multilanguage =
-StatPress speaks English, Italian, Spanish, French, German, Russian, Norwegian and Dutch!
+StatPress speaks English, Italian, Spanish, French, German, Russian, Norwegian, Dutch, Brazilian, Turkish, Swedish!
 Could you translate StatPress in your language? Thank you!
 ( please post to http://www.irisco.it/forums/forum.php?id=1 )
 
@@ -47,6 +47,9 @@ Widget is customizable. These are the available variables:
 * %ip% - IP address
 * %visitorsonline% - Counts all online visitors
 * %usersonline% - Counts logged online visitors
+* %toppost% - The most viewed Post
+* %topbrowser% - The most used Browser
+* %topos% - The most used O.S.
 
 Now you could add these values everywhere! StatPress >=0.7.6 offers a new PHP function *StatPress_Print()*.
 * i.e. StatPress_Print("%totalvisits% total visits.");
@@ -54,14 +57,14 @@ Now you could add these values everywhere! StatPress >=0.7.6 offers a new PHP fu
 
 == Installation ==
 
-Upload wp-statpress directory in /wp-content/plugins/ . Then just activate it on your plugin management page.
+Upload "wp-statpress" directory in wp-content/plugins/ . Then just activate it on your plugin management page.
 You are ready!!!
 
 
 = Update =
 
 * Deactivate StatPress plugin (no data lost!)
-* Override wp-statpress directory in /wp-content/plugins/
+* Override "wp-statpress" directory in wp-content/plugins/
 * Re-activate it on your plugin management page
 * In the Dashboard click "StatPress", then "StatPressUpdate" and wait until it will add/update db's content
 
@@ -213,3 +216,11 @@ Of course!
 *Version 1.2.2 (2 Jan 2008)*
 
 * Resolved some bugs
+
+*Version 1.2.3 (16 Jan 2008)*
+
+* Two Turkish translation (Thanks to Singlemen http://berkant.info/blog/?p=618 and Resat)
+* Swedish translation (Thanks to Bjšrn Felten)
+* Path independent (Thanks to Christian Heim)
+* Some new widget variables
+* Some fixes
