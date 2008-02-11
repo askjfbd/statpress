@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.2.3
+Version: 1.2.4
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -150,7 +150,7 @@ function iriStatPressExportNow() {
 	header('Content-Description: File Transfer');
 	header("Content-Disposition: attachment; filename=$filename");
 	header('Content-Type: text/plain charset=' . get_option('blog_charset'), true);
-    $qry = $wpdb->get_results("SELECT * FROM $table_name WHERE date>='".$_GET['from']."' AND date<='".$_GET['to']."';");
+    $qry = $wpdb->get_results("SELECT * FROM $table_name WHERE date>='".(date("Ymd",strtotime(substr($_GET['from'],0,8))))."' AND date<='".(date("Ymd",strtotime(substr($_GET['to'],0,8))))."';");
 	print "date;time;ip;urlrequested;agent;referrer;search;nation;os;browser;searchengine;spider;feed\n";
 	foreach ($qry as $rk) {
 		print '"'.$rk->date.'";"'.$rk->time.'";"'.$rk->ip.'";"'.$rk->urlrequested.'";"'.$rk->agent.'";"'.$rk->referrer.'";"'.$rk->search.'";"'.$rk->nation.'";"'.$rk->os.'";"'.$rk->browser.'";"'.$rk->searchengine.'";"'.$rk->spider.'";"'.$rk->feed.'"'."\n";
@@ -171,210 +171,377 @@ function iriStatPressMain() {
     $thismonth = gmdate('Ym', current_time('timestamp'));
     $yesterday = gmdate('Ymd', current_time('timestamp')-86400);
     $today = gmdate('Ymd', current_time('timestamp'));
+    $tlm[0]=substr($lastmonth,0,4); $tlm[1]=substr($lastmonth,4,2);
+
+    /*
 	print "<div class='wrap'><h2>". __('Overview','statpress'). "</h2>";
 	print "<table class='widefat'><thead><tr><th scope='col'></th><th scope='col'>". __('Total','statpress'). "</th><th scope='col'>". __('Last month','statpress'). "<br><font size=1>$lastmonth</font></th><th scope='col'>". __('This month','statpress'). "<br><font size=1>$thismonth</font></th><th scope='col'>Target ". __('This month','statpress'). "<br><font size=1>$thismonth</font></th><th scope='col'>". __('Yesterday','statpress'). "<br><font size=1>$yesterday</font></th><th scope='col'>". __('Today','statpress'). "<br><font size=1>$today</font></th></tr></thead>";
 	print "<tbody id='the-list'>";
+*/
 
-	###### Unique
-    print "<tr><td><div style='background:$unique_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>". __('Visitors','statpress'). "</td>";
-	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='';");
-	print "<td>".count($qry)."</td>\n";
-    $prec=0;
-	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date LIKE '".$lastmonth."%';");
-    $prec=count($qry);
-	print "<td>".$prec."</td>\n";
-	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date LIKE '".$thismonth."%';");
-	print "<td>".count($qry);
-	if($prec<>0) {
-		print " (";
-		$pc=round( 100 * (count($qry) / $prec ) - 100,1);
-		if($pc>=0) { print "+"; }
-		print $pc."%)";
+	print "<div class='wrap'><h2>". __('Overview','statpress'). "</h2>";
+	print "<table class='widefat'><thead><tr>
+	<th scope='col'></th>
+	<th scope='col'>". __('Total','statpress'). "</th>
+	<th scope='col'>". __('Last month','statpress'). "<br /><font size=1>" . jdmonthname($tlm[1], 0) . ", " . $tlm[0] ."</font></th>
+	<th scope='col'>". __('This month','statpress'). "<br /><font size=1>" . gmdate('M, Y', current_time('timestamp')) ."</font></th>
+	<th scope='col'>Target ". __('This month','statpress'). "<br /><font size=1>" . gmdate('M, Y', current_time('timestamp')) ."</font></th>
+	<th scope='col'>". __('Yesterday','statpress'). "<br /><font size=1>" . gmdate('d M, Y', current_time('timestamp')-86400) ."</font></th>
+	<th scope='col'>". __('Today','statpress'). "<br /><font size=1>" . gmdate('d M, Y', current_time('timestamp')) ."</font></th>
+	</tr></thead>
+	<tbody id='the-list'>";
+
+	################################################################################################
+	# VISITORS ROW
+	print "<tr><td><div style='background:$unique_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>". __('Visitors','statpress'). "</td>";
+
+	#TOTAL
+	$qry_total = $wpdb->get_row("
+		SELECT count(DISTINCT ip) AS visitors
+		FROM $table_name
+		WHERE feed=''
+		AND spider=''
+	");
+	print "<td>" . $qry_total->visitors . "</td>\n";
+
+	#LAST MONTH
+	$qry_lmonth = $wpdb->get_row("
+		SELECT count(DISTINCT ip) AS visitors
+		FROM $table_name
+		WHERE feed=''
+		AND spider=''
+		AND date LIKE '" . $lastmonth . "%'
+	");
+	print "<td>" . $qry_lmonth->visitors . "</td>\n";
+
+	#THIS MONTH
+	$qry_tmonth = $wpdb->get_row("
+		SELECT count(DISTINCT ip) AS visitors
+		FROM $table_name
+		WHERE feed=''
+		AND spider=''
+		AND date LIKE '" . $thismonth . "%'
+	");
+	if($qry_lmonth->visitors <> 0) {
+		$pc = round( 100 * ($qry_tmonth->visitors / $qry_lmonth->visitors ) - 100,1);
+		if($pc >= 0) $pc = "+" . $pc;
+		$qry_tmonth->change = "<code> (" . $pc . "%)</code>";
 	}
-	print "</td>\n";
-	$target=round(count($qry) / date("d",current_time('timestamp')) * 30);
-	print "<td>" . $target;
-	if($prec<>0) {
-		print " (";
-		$pc=round( 100 * ($target / $prec ) - 100,1);
-		if($pc>=0) { print "+"; }
-		print $pc."%)";
-	}	
-	print "</td>";
-	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '$yesterday';");
-	print "<td>".count($qry)."</td>\n";
-	$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '$today';");
-	print "<td>".count($qry)."</td>\n";
+	print "<td>" . $qry_tmonth->visitors . $qry_tmonth->change . "</td>\n";
+
+	#TARGET
+	$qry_tmonth->target = round($qry_tmonth->visitors / date("d", current_time('timestamp')) * 30);
+	if($qry_lmonth->visitors <> 0) {
+		$pt = round( 100 * ($qry_tmonth->target / $qry_lmonth->visitors ) - 100,1);
+		if($pt >= 0) $pt = "+" . $pt;
+		$qry_tmonth->added = "<code> (" . $pt . "%)</code>";
+	}
+	print "<td>" . $qry_tmonth->target . $qry_tmonth->added . "</td>\n";
+
+	#YESTERDAY
+	$qry_y = $wpdb->get_row("
+		SELECT count(DISTINCT ip) AS visitors
+		FROM $table_name
+		WHERE feed=''
+		AND spider=''
+		AND date = '$yesterday'
+	");
+	print "<td>" . $qry_y->visitors . "</td>\n";
+
+	#TODAY
+	$qry_t = $wpdb->get_row("
+		SELECT count(DISTINCT ip) AS visitors
+		FROM $table_name
+		WHERE feed=''
+		AND spider=''
+		AND date = '$today'
+	");
+	print "<td>" . $qry_t->visitors . "</td>\n";
     print "</tr>";
 
-	###### Pageviews
-    print "<tr><td><div style='background:$web_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>". __('Pageviews','statpress'). "</td>";
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider='';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview."</td>\n";
-	}
-    $prec=0;
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider='' AND date LIKE '".$lastmonth."%';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview."</td>\n";
-	}
-    $prec=$rk->pageview;
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider='' AND date LIKE '".$thismonth."%';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview;
-		if($prec<>0) {
-			print " (";
-			$pc=round(( 100 * ($rk->pageview) / $prec ) - 100,1);
-			if($pc>=0) { print "+"; }
-			print $pc."%)";
-		}
-		print "</td>\n";
-	}
-	$target=round($rk->pageview / date("d",current_time('timestamp')) * 30);
-	print "<td>" . $target;
-	if($prec<>0) {
-		print " (";
-		$pc=round( 100 * ($target / $prec ) - 100,1);
-		if($pc>=0) { print "+"; }
-		print $pc."%)";
-	}	
-	print "</td>";
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider='' AND date = '".$yesterday."';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview."</td>\n";
-	}
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider='' AND date = '$today';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview."</td>\n";
-	}
-    print "</tr>";
-  	###### Spider
-    print "<tr><td><div style='background:$spider_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>Spiders</td>";
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider NOT LIKE '';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview."</td>\n";
-	}
-    $prec=0;
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed='' AND spider NOT LIKE '' AND date LIKE '".$lastmonth."%';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview."</td>\n";
-	}
-    $prec=$rk->pageview;
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed=''  AND spider NOT LIKE '' AND date LIKE '".$thismonth."%';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview;
-		if($prec<>0) {
-			print " (";
-			$pc=round(( 100 * ($rk->pageview) / $prec ) - 100,1);
-			if($pc>=0) { print "+"; }
-			print $pc."%)";
-		}
-		print "</td>\n";
-	}
-	$target=round($rk->pageview / date("d",current_time('timestamp')) * 30);
-	print "<td>" . $target;
-	if($prec<>0) {
-		print " (";
-		$pc=round( 100 * ($target / $prec ) - 100,1);
-		if($pc>=0) { print "+"; }
-		print $pc."%)";
-	}	
-	print "</td>";
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed=''  AND spider NOT LIKE '' AND date = '".$yesterday."';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview."</td>\n";
-	}
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed=''  AND spider NOT LIKE '' AND date = '$today';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview."</td>\n";
-	}
-    print "</tr>";
-    ##### Feeds
-    print "<tr><td><div style='background:$rss_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>Feeds</td>";
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed<>'';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview."</td>\n";
-	}
-    $prec=0;
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed<>'' AND date LIKE '".$lastmonth."%';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview."</td>\n";
-	}
-    $prec=$rk->pageview;
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed<>'' AND date LIKE '".$thismonth."%';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview;
-		if($prec<>0) {
-			print " (";
-			$pc=round(( 100 * ($rk->pageview) / $prec ) - 100,1);
-			if($pc>=0) { print "+"; }
-			print $pc."%)";
-		}
-		print "</td>\n";
-	}
-	$target=round($rk->pageview / date("d",current_time('timestamp')) * 30);
-	print "<td>" . $target;
-	if($prec<>0) {
-		print " (";
-		$pc=round( 100 * ($target / $prec ) - 100,1);
-		if($pc>=0) { print "+"; }
-		print $pc."%)";
-	}	
-	print "</td>";
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed<>'' AND date = '".$yesterday."';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview."</td>\n";
-	}
+	################################################################################################
+	# PAGEVIEWS ROW
+	print "<tr><td><div style='background:$web_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>". __('Pageviews','statpress'). "</td>";
 
-	$qry = $wpdb->get_results("SELECT count(date) as pageview FROM $table_name WHERE feed<>'' AND date = '$today';");
-	foreach ($qry as $rk) {
-		print "<td>".$rk->pageview."</td>\n";
-	}
+	#TOTAL
+	$qry_total = $wpdb->get_row("
+		SELECT count(date) as pageview
+		FROM $table_name
+		WHERE feed=''
+		AND spider=''
+	");
+	print "<td>" . $qry_total->pageview . "</td>\n";
 
-    print "</tr></table><br />";
+	#LAST MONTH
+	$prec=0;
+	$qry_lmonth = $wpdb->get_row("
+		SELECT count(date) as pageview
+		FROM $table_name
+		WHERE feed=''
+		AND spider=''
+		AND date LIKE '" . $lastmonth . "%'
+	");
+	print "<td>".$qry_lmonth->pageview."</td>\n";
+
+	#THIS MONTH
+	$qry_tmonth = $wpdb->get_row("
+		SELECT count(date) as pageview
+		FROM $table_name
+		WHERE feed=''
+		AND spider=''
+		AND date LIKE '" . $thismonth . "%'
+	");
+	if($qry_lmonth->pageview <> 0) {
+		$pc = round( 100 * ($qry_tmonth->pageview / $qry_lmonth->pageview ) - 100,1);
+		if($pc >= 0) $pc = "+" . $pc;
+		$qry_tmonth->change = "<code> (" . $pc . "%)</code>";
+	}
+	print "<td>" . $qry_tmonth->pageview . $qry_tmonth->change . "</td>\n";
+
+	#TARGET
+	$qry_tmonth->target = round($qry_tmonth->pageview / date("d", current_time('timestamp')) * 30);
+	if($qry_lmonth->pageview <> 0) {
+		$pt = round( 100 * ($qry_tmonth->target / $qry_lmonth->pageview ) - 100,1);
+		if($pt >= 0) $pt = "+" . $pt;
+		$qry_tmonth->added = "<code> (" . $pt . "%)</code>";
+	}
+	print "<td>" . $qry_tmonth->target . $qry_tmonth->added . "</td>\n";
+
+	#YESTERDAY
+	$qry_y = $wpdb->get_row("
+		SELECT count(date) as pageview
+		FROM $table_name
+		WHERE feed=''
+		AND spider=''
+		AND date = '$yesterday'
+	");
+	print "<td>" . $qry_y->pageview . "</td>\n";
+
+	#TODAY
+	$qry_t = $wpdb->get_row("
+		SELECT count(date) as pageview
+		FROM $table_name
+		WHERE feed=''
+		AND spider=''
+		AND date = '$today'
+	");
+	print "<td>" . $qry_t->pageview . "</td>\n";
+	print "</tr>";
+	################################################################################################
+	# SPIDERS ROW
+	print "<tr><td><div style='background:$spider_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>Spiders</td>";
+	#TOTAL
+	$qry_total = $wpdb->get_row("
+		SELECT count(date) as spiders
+		FROM $table_name
+		WHERE feed=''
+		AND spider<>''
+	");
+	print "<td>" . $qry_total->spiders . "</td>\n";
+    #LAST MONTH
+    $prec=0;
+	$qry_lmonth = $wpdb->get_row("
+		SELECT count(date) as spiders
+		FROM $table_name
+		WHERE feed=''
+		AND spider<>''
+		AND date LIKE '" . $lastmonth . "%'
+	");
+	print "<td>" . $qry_lmonth->spiders. "</td>\n";
+	
+	#THIS MONTH
+	$prec=$qry_lmonth->spiders;
+	$qry_tmonth = $wpdb->get_row("
+		SELECT count(date) as spiders
+		FROM $table_name
+		WHERE feed=''
+		AND spider<>''
+		AND date LIKE '" . $thismonth . "%'
+	");
+	if($qry_lmonth->spiders <> 0) {
+		$pc = round( 100 * ($qry_tmonth->spiders / $qry_lmonth->spiders ) - 100,1);
+		if($pc >= 0) $pc = "+" . $pc;
+		$qry_tmonth->change = "<code> (" . $pc . "%)</code>";
+	}
+	print "<td>" . $qry_tmonth->spiders . $qry_tmonth->change . "</td>\n";
+
+	#TARGET
+	$qry_tmonth->target = round($qry_tmonth->spiders / date("d", current_time('timestamp')) * 30);
+	if($qry_lmonth->spiders <> 0) {
+		$pt = round( 100 * ($qry_tmonth->target / $qry_lmonth->spiders ) - 100,1);
+		if($pt >= 0) $pt = "+" . $pt;
+		$qry_tmonth->added = "<code> (" . $pt . "%)</code>";
+	}
+	print "<td>" . $qry_tmonth->target . $qry_tmonth->added . "</td>\n";
+
+	#YESTERDAY
+	$qry_y = $wpdb->get_row("
+		SELECT count(date) as spiders
+		FROM $table_name
+		WHERE feed=''
+		AND spider<>''
+		AND date = '$yesterday'
+	");
+	print "<td>" . $qry_y->spiders . "</td>\n";
+	
+	#TODAY
+	$qry_t = $wpdb->get_row("
+		SELECT count(date) as spiders
+		FROM $table_name
+		WHERE feed=''
+		AND spider<>''
+		AND date = '$today'
+	");
+	print "<td>" . $qry_t->spiders . "</td>\n";
+    print "</tr>";
+	################################################################################################
+	# FEEDS ROW
+	print "<tr><td><div style='background:$rss_color;width:10px;height:10px;float:left;margin-top:4px;margin-right:5px;'></div>Feeds</td>";
+	#TOTAL
+	$qry_total = $wpdb->get_row("
+		SELECT count(date) as feeds
+		FROM $table_name
+		WHERE feed<>''
+		AND spider=''
+	");
+	print "<td>".$qry_total->feeds."</td>\n";
+
+	#LAST MONTH
+	$qry_lmonth = $wpdb->get_row("
+		SELECT count(date) as feeds
+		FROM $table_name
+		WHERE feed<>''
+		AND spider=''
+		AND date LIKE '" . $lastmonth . "%'
+	");
+	print "<td>".$qry_lmonth->feeds."</td>\n";
+
+	#THIS MONTH
+	$qry_tmonth = $wpdb->get_row("
+		SELECT count(date) as feeds
+		FROM $table_name
+		WHERE feed<>''
+		AND spider=''
+		AND date LIKE '" . $thismonth . "%'
+	");
+	if($qry_lmonth->feeds <> 0) {
+		$pc = round( 100 * ($qry_tmonth->feeds / $qry_lmonth->feeds ) - 100,1);
+		if($pc >= 0) $pc = "+" . $pc;
+		$qry_tmonth->change = "<code> (" . $pc . "%)</code>";
+	}
+	print "<td>" . $qry_tmonth->feeds . $qry_tmonth->change . "</td>\n";
+
+	#TARGET
+	$qry_tmonth->target = round($qry_tmonth->feeds / date("d", current_time('timestamp')) * 30);
+	if($qry_lmonth->feeds <> 0) {
+		$pt = round( 100 * ($qry_tmonth->target / $qry_lmonth->feeds ) - 100,1);
+		if($pt >= 0) $pt = "+" . $pt;
+		$qry_tmonth->added = "<code> (" . $pt . "%)</code>";
+	}
+	print "<td>" . $qry_tmonth->target . $qry_tmonth->added . "</td>\n";
+
+	$qry_y = $wpdb->get_row("
+		SELECT count(date) as feeds
+		FROM $table_name
+		WHERE feed<>''
+		AND spider=''
+		AND date = '".$yesterday."'
+	");
+	print "<td>".$qry_y->feeds."</td>\n";
+
+	$qry_t = $wpdb->get_row("
+		SELECT count(date) as feeds
+		FROM $table_name
+		WHERE feed<>''
+		AND spider=''
+		AND date = '$today'
+	");
+	print "<td>".$qry_t->feeds."</td>\n";
+
+    print "</tr></table><br />\n\n";
     
-   	
+	################################################################################################
+	################################################################################################
+	# THE GRAPHS
+
 	# last "N" days graph  NEW
 	$gdays=get_option('statpress_daysinoverviewgraph'); if($gdays == 0) { $gdays=20; }
 //	$start_of_week = get_settings('start_of_week');
 	$start_of_week = get_option('start_of_week');
-	print "\n\n";
-    print "<table width=100% border=0><tr><td>\n";
-	$qry = $wpdb->get_row("SELECT count(date) as pageview, date FROM $table_name GROUP BY date HAVING date >= '".gmdate('Ymd', current_time('timestamp')-86400*$gdays)."' ORDER BY pageview DESC LIMIT 1");
+    print '<table width="100%" border="0"><tr>';
+	$qry = $wpdb->get_row("
+		SELECT count(date) as pageview, date
+		FROM $table_name
+		GROUP BY date HAVING date >= '".gmdate('Ymd', current_time('timestamp')-86400*$gdays)."'
+		ORDER BY pageview DESC
+		LIMIT 1
+	");
 	$maxxday=$qry->pageview;
 	if($maxxday == 0) { $maxxday = 1; }
 	# Y
 	$gd=(90/$gdays).'%';
-	for($gg=$gdays-1;$gg>=0;$gg--) {
-		$qry = $wpdb->get_results("SELECT DISTINCT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".gmdate('Ymd', current_time('timestamp')-86400*$gg)."';");
-		$tot_unique=count($qry);
-		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed='' AND spider='' AND date = '".gmdate('Ymd', current_time('timestamp')-86400*$gg)."';");
-		$tot_web=count($qry)-$tot_unique;
-		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed='' AND spider NOT LIKE '' AND date = '".gmdate('Ymd', current_time('timestamp')-86400*$gg)."';");
-		$tot_spider=count($qry);
-		$qry = $wpdb->get_results("SELECT ip FROM $table_name WHERE feed NOT LIKE '' AND spider='' AND date = '".gmdate('Ymd', current_time('timestamp')-86400*$gg)."';");
-		$tot_rss=count($qry);
-		# pxs
-		$px_rss=round($tot_rss*100/$maxxday);
-		$px_spider=round($tot_spider*100/$maxxday);
-		$px_visits=round($tot_web*100/$maxxday);
-		$px_unique=round($tot_unique*100/$maxxday);
-		$px_white = 100 - $px_rss - $px_spider - $px_visits - $px_unique;
-		print "<div style='float:left;font-family:Helvetica;font-size:7pt;text-align:center;width:$gd;border-right:1px solid white;color:black;";
-		if($start_of_week == gmdate('w',current_time('timestamp')-86400*$gg)) { print "border-left:2px dotted gray;padding-left:1px;"; }  # week-cut
-		print "'>";
-			print "<div style='background:#ffffff;width:100%;height:".$px_white."px;'></div>";
-			print "<div style='background:$rss_color;width:100%;height:".$px_rss."px;'></div>";
-			print "<div style='background:$spider_color;width:100%;height:".$px_spider."px;'></div>";
-			print "<div style='background:$web_color;width:100%;height:".$px_visits."px;'></div>";
-			print "<div style='background:$unique_color;width:100%;height:".$px_unique."px;'></div>";
-			print "<div style='background:#448abd;width:100%;height:2px;'></div>";
-			print "<br>".gmdate('d', current_time('timestamp')-86400*$gg)."<br>".gmdate('M', current_time('timestamp')-86400*$gg);
-	    print "</div>\n";
+	for($gg=$gdays-1;$gg>=0;$gg--)
+	{
+		#TOTAL VISITORS
+		$qry_visitors = $wpdb->get_row("
+			SELECT count(DISTINCT ip) AS total
+			FROM $table_name
+			WHERE feed=''
+			AND spider=''
+			AND date = '".gmdate('Ymd', current_time('timestamp')-86400*$gg)."'
+		");
+		$px_visitors = round($qry_visitors->total*100/$maxxday);
+
+		#TOTAL PAGEVIEWS (we do not delete the uniques, this is falsing the info.. uniques are not different visitors!)
+		$qry_pageviews = $wpdb->get_row("
+			SELECT count(date) as total
+			FROM $table_name
+			WHERE feed=''
+			AND spider=''
+			AND date = '".gmdate('Ymd', current_time('timestamp')-86400*$gg)."'
+		");
+		$px_pageviews = round($qry_pageviews->total*100/$maxxday);
+
+		#TOTAL SPIDERS
+		$qry_spiders = $wpdb->get_row("
+			SELECT count(ip) AS total
+			FROM $table_name
+			WHERE feed=''
+			AND spider<>''
+			AND date = '".gmdate('Ymd', current_time('timestamp')-86400*$gg)."'
+		");
+		$px_spiders = round($qry_spiders->total*100/$maxxday);
+
+		#TOTAL FEEDS
+		$qry_feeds = $wpdb->get_row("
+			SELECT count(ip) AS total
+			FROM $table_name
+			WHERE feed<>''
+			AND spider=''
+			AND date = '".gmdate('Ymd', current_time('timestamp')-86400*$gg)."'
+		");
+		$px_feeds = round($qry_feeds->total*100/$maxxday);
+
+		$px_white = 100 - $px_feeds - $px_spiders - $px_pageviews - $px_visitors;
+
+		print '<td width="'.$gd.'" valign="bottom"';
+		if($start_of_week == gmdate('w',current_time('timestamp')-86400*$gg)) { print ' style="border-left:2px dotted gray;"'; }  # week-cut
+		print "><div style='float:left;height: 100%;width:100%;font-family:Helvetica;font-size:7pt;text-align:center;border-right:1px solid white;color:black;'>
+		<div style='background:#ffffff;width:100%;height:".$px_white."px;'></div>
+		<div style='background:$unique_color;width:100%;height:".$px_visitors."px;' title='".$qry_visitors->total." visitors'></div>
+		<div style='background:$web_color;width:100%;height:".$px_pageviews."px;' title='".$qry_pageviews->total." pageviews'></div>
+		<div style='background:$spider_color;width:100%;height:".$px_spiders."px;' title='".$qry_spiders->total." spiders'></div>
+		<div style='background:$rss_color;width:100%;height:".$px_feeds."px;' title='".$qry_feeds->total." feeds'></div>
+		<div style='background:gray;width:100%;height:1px;'></div>
+		<br />".gmdate('d', current_time('timestamp')-86400*$gg) . ' ' . gmdate('M', current_time('timestamp')-86400*$gg) . "</div></td>\n";
 	}
-	print "</td></tr></table>\n";
+	print '</tr></table>';
 	
-	print "</div>";
+	print '</div>';
+# END OF OVERVIEW
+####################################################################################################
+
+
 
 
 	$querylimit="LIMIT 10";
@@ -1114,16 +1281,29 @@ function iri_StatPress_Vars($body) {
 }
 
 
+function iri_StatPress_TopPosts($limit=5, $showcounts='checked') {
+   	global $wpdb;
+   	$res="";
+	$table_name = $wpdb->prefix . "statpress";
+	$qry = $wpdb->get_results("SELECT urlrequested,count(*) as totale FROM wp_statpress WHERE spider='' AND feed='' AND urlrequested LIKE '%p=%' GROUP BY urlrequested ORDER BY totale DESC LIMIT $limit;");
+	foreach ($qry as $rk) {
+		$res.="<a href='".$rk->urlrequested."'>".iri_StatPress_Decode($rk->urlrequested)."</a>";
+		if(strtolower($showcounts) == 'checked') { $res.=" (".$rk->totale.")"; }
+		$res.="<br/>\n";
+	}
+	return $res;
+}
+
+
 function widget_statpress_init($args) {
 	if ( !function_exists('register_sidebar_widget') || !function_exists('register_widget_control') )
 		return;
+	// Multifunctional StatPress pluging
 	function widget_statpress_control() {
 		$options = get_option('widget_statpress');
 		if ( !is_array($options) )
 			$options = array('title'=>'StatPress', 'body'=>'Visits today: %visits%');
 		if ( $_POST['statpress-submit'] ) {
-
-			// Remember to sanitize and format use input appropriately.
 			$options['title'] = strip_tags(stripslashes($_POST['statpress-title']));
 			$options['body'] = stripslashes($_POST['statpress-body']);
 			update_option('widget_statpress', $options);
@@ -1140,15 +1320,49 @@ function widget_statpress_init($args) {
 		$options = get_option('widget_statpress');
 		$title = $options['title'];
 		$body = $options['body'];
-		
     	echo $before_widget;
     	print($before_title . $title . $after_title);
 		print iri_StatPress_Vars($body);
 	    echo $after_widget;
     }
    	register_sidebar_widget('StatPress', 'widget_statpress');
-	register_widget_control(array('StatPress', 'widgets'), 'widget_statpress_control', 300, 200);
+	register_widget_control(array('StatPress','widgets'), 'widget_statpress_control', 300, 210);
 
+    // Top posts
+    function widget_statpresstopposts_control() {
+		$options = get_option('widget_statpresstopposts');
+		if ( !is_array($options) ) {
+			$options = array('title'=>'StatPress TopPosts', 'howmany'=>'5', 'showcounts'=>'checked');
+		}
+		if ( $_POST['statpresstopposts-submit'] ) {
+			$options['title'] = strip_tags(stripslashes($_POST['statpresstopposts-title']));
+			$options['howmany'] = stripslashes($_POST['statpresstopposts-howmany']);
+			$options['showcounts'] = stripslashes($_POST['statpresstopposts-showcounts']);
+			if($options['showcounts'] == "1") {$options['showcounts']='checked';}
+			update_option('widget_statpresstopposts', $options);
+		}
+		$title = htmlspecialchars($options['title'], ENT_QUOTES);
+		$howmany = htmlspecialchars($options['howmany'], ENT_QUOTES);
+		$showcounts = htmlspecialchars($options['showcounts'], ENT_QUOTES);
+		// the form
+		echo '<p style="text-align:right;"><label for="statpresstopposts-title">' . __('Title','statpress') . ' <input style="width: 250px;" id="statpress-title" name="statpresstopposts-title" type="text" value="'.$title.'" /></label></p>';
+		echo '<p style="text-align:right;"><label for="statpresstopposts-howmany">' . __('Limit results to','statpress') . ' <input style="width: 100px;" id="statpresstopposts-howmany" name="statpresstopposts-howmany" type="text" value="'.$howmany.'" /></label></p>';
+		echo '<p style="text-align:right;"><label for="statpresstopposts-showcounts">' . __('Visits','statpress') . ' <input id="statpresstopposts-showcounts" name="statpresstopposts-showcounts" type=checkbox value="checked" '.$showcounts.' /></label></p>';
+		echo '<input type="hidden" id="statpress-submitTopPosts" name="statpresstopposts-submit" value="1" />';
+	}
+	function widget_statpresstopposts($args) {
+	    extract($args);
+		$options = get_option('widget_statpresstopposts');
+		$title = htmlspecialchars($options['title'], ENT_QUOTES);
+		$howmany = htmlspecialchars($options['howmany'], ENT_QUOTES);
+		$showcounts = htmlspecialchars($options['showcounts'], ENT_QUOTES);
+    	echo $before_widget;
+    	print($before_title . $title . $after_title);
+		print iri_StatPress_TopPosts($howmany,$showcounts);
+	    echo $after_widget;
+    }
+	register_sidebar_widget('StatPress TopPosts', 'widget_statpresstopposts');
+	register_widget_control(array('StatPress TopPosts','widgets'), 'widget_statpresstopposts_control', 300, 110);
 }
 
 
