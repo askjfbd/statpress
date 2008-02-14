@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.2.4
+Version: 1.2.5
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -70,6 +70,8 @@ function iriStatPressOptions() {
 		update_option('statpress_autodelete', $_POST['statpress_autodelete']);
 		update_option('statpress_daysinoverviewgraph', $_POST['statpress_daysinoverviewgraph']);
 		update_option('statpress_mincap', $_POST['statpress_mincap']);
+		update_option('statpress_donotcollectspider', $_POST['statpress_donotcollectspider']);
+		
 		# update database too
 		iri_StatPress_CreateTable();
 		print "<br />&nbsp;".__('Saved','statpress')."!";
@@ -79,6 +81,7 @@ function iriStatPressOptions() {
 	<form method=post><table width=100%>
 <?php
 	print "<tr><td><input type=checkbox name='statpress_collectloggeduser' value='checked' ".get_option('statpress_collectloggeduser')."> ".__('Collect data about logged users, too.','statpress')."</td></tr>";
+	print "<tr><td><input type=checkbox name='statpress_donotcollectspider' value='checked' ".get_option('statpress_donotcollectspider')."> ".__('Do not collect spiders visits','statpress')."</td></tr>";
 ?>
 	<tr><td><?php _e('Automatically delete visits older than','statpress'); ?>
 	<select name="statpress_autodelete">
@@ -135,6 +138,7 @@ function iriStatPressExport() {
 	<form method=get><table>
 	<tr><td><?php _e('From','statpress'); ?></td><td><input type=text name=from> (YYYYMMDD)</td></tr>
 	<tr><td><?php _e('To','statpress'); ?></td><td><input type=text name=to> (YYYYMMDD)</td></tr>
+	<tr><td><?php _e('Fields delimiter','statpress'); ?></td><td><select name=del><option>,</option><option>;</option><option>|</option></select></tr>
 	<tr><td></td><td><input type=submit value=<?php _e('Export','statpress'); ?>></td></tr>
 	<input type=hidden name=page value=statpress><input type=hidden name=statpress_action value=exportnow>
 	</table></form>
@@ -151,9 +155,13 @@ function iriStatPressExportNow() {
 	header("Content-Disposition: attachment; filename=$filename");
 	header('Content-Type: text/plain charset=' . get_option('blog_charset'), true);
     $qry = $wpdb->get_results("SELECT * FROM $table_name WHERE date>='".(date("Ymd",strtotime(substr($_GET['from'],0,8))))."' AND date<='".(date("Ymd",strtotime(substr($_GET['to'],0,8))))."';");
-	print "date;time;ip;urlrequested;agent;referrer;search;nation;os;browser;searchengine;spider;feed\n";
+//	print "date;time;ip;urlrequested;agent;referrer;search;nation;os;browser;searchengine;spider;feed\n";
+	$del=substr($_GET['del'],0,1);
+	print "date".$del."time".$del."ip".$del."urlrequested".$del."agent".$del."referrer".$del."search".$del."nation".$del."os".$del."browser".$del."searchengine".$del."spider".$del."feed\n";
 	foreach ($qry as $rk) {
-		print '"'.$rk->date.'";"'.$rk->time.'";"'.$rk->ip.'";"'.$rk->urlrequested.'";"'.$rk->agent.'";"'.$rk->referrer.'";"'.$rk->search.'";"'.$rk->nation.'";"'.$rk->os.'";"'.$rk->browser.'";"'.$rk->searchengine.'";"'.$rk->spider.'";"'.$rk->feed.'"'."\n";
+//		print '"'.$rk->date.'";"'.$rk->time.'";"'.$rk->ip.'";"'.$rk->urlrequested.'";"'.$rk->agent.'";"'.$rk->referrer.'";"'.$rk->search.'";"'.$rk->nation.'";"'.$rk->os.'";"'.$rk->browser.'";"'.$rk->searchengine.'";"'.$rk->spider.'";"'.$rk->feed.'"'."\n";
+			print '"'.$rk->date.'"'.$del.'"'.$rk->time.'"'.$del.'"'.$rk->ip.'"'.$del.'"'.$rk->urlrequested.'"'.$del.'"'.$rk->agent.'"'.$del.'"'.$rk->referrer.'"'.$del.'"'.$rk->search.'"'.$del.'"'.$rk->nation.'"'.$del.'"'.$rk->os.'"'.$del.'"'.$rk->browser.'"'.$del.'"'.$rk->searchengine.'"'.$del.'"'.$rk->spider.'"'.$del.'"'.$rk->feed.'"'."\n";
+
 	}
 	die();
 }
@@ -183,7 +191,7 @@ function iriStatPressMain() {
 	print "<table class='widefat'><thead><tr>
 	<th scope='col'></th>
 	<th scope='col'>". __('Total','statpress'). "</th>
-	<th scope='col'>". __('Last month','statpress'). "<br /><font size=1>" . jdmonthname($tlm[1], 0) . ", " . $tlm[0] ."</font></th>
+	<th scope='col'>". __('Last month','statpress'). "<br /><font size=1>" . gmdate('M, Y',gmmktime(0,0,0,$tlm[1],1,$tlm[0])) ."</font></th>
 	<th scope='col'>". __('This month','statpress'). "<br /><font size=1>" . gmdate('M, Y', current_time('timestamp')) ."</font></th>
 	<th scope='col'>Target ". __('This month','statpress'). "<br /><font size=1>" . gmdate('M, Y', current_time('timestamp')) ."</font></th>
 	<th scope='col'>". __('Yesterday','statpress'). "<br /><font size=1>" . gmdate('d M, Y', current_time('timestamp')-86400) ."</font></th>
@@ -592,7 +600,6 @@ function iriStatPressMain() {
 		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td>".$rk->agent."</td><td> ".$rk->os. " ".$rk->browser." ".$rk->spider."</td></tr>\n";
 	}
 	print "</table></div>";
-	
 
 	# Last pages
 	print "<div class='wrap'><h2>".__('Last pages','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('Page','statpress')."</th><th scope='col'>".__('What','statpress')."</th></tr></thead>";
@@ -602,6 +609,16 @@ function iriStatPressMain() {
 		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td>".iri_StatPress_Abbrevia(iri_StatPress_Decode($rk->urlrequested),60)."</td><td> ".$rk->os. " ".$rk->browser." ".$rk->spider."</td></tr>\n";
 	}
 	print "</table></div>";
+	
+	# Last Spiders
+	print "<div class='wrap'><h2>".__('Last spiders','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('Spider','statpress')."</th><th scope='col'>".__('Agent','statpress')."</th></tr></thead>";
+	print "<tbody id='the-list'>";	
+	$qry = $wpdb->get_results("SELECT date,time,agent,os,browser,spider FROM $table_name WHERE (spider<>'') ORDER BY id DESC $querylimit");
+	foreach ($qry as $rk) {
+		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td>".$rk->spider."</td><td> ".$rk->agent."</td></tr>\n";
+	}
+	print "</table></div>";
+	
 	
 	print "<br />";
 	print "&nbsp;<i>StatPress table size: <b>".iritablesize($wpdb->prefix . "statpress")."</b></i><br />";
@@ -1111,15 +1128,20 @@ function iriStatAppend($feed='') {
 	$urlRequested=iri_StatPress_URL();
 	if (eregi("favicon.ico", $urlRequested)) { return ''; }
 	if (eregi(".css$", $urlRequested)) { return ''; }
-	
+
     $referrer = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
     $userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
-    
-	$os=iriGetOS($userAgent);
-	$browser=iriGetBrowser($userAgent);
-	list($searchengine,$search_phrase)=explode("|",iriGetSE($referrer));
 	$spider=iriGetSpider($userAgent);
-	if($spider != '') { $os=''; $browser=''; }
+	
+   	if(($spider != '') and (get_option('statpress_donotcollectspider')=='checked')) { return ''; }
+    
+   	if($spider != '') {
+	    $os=''; $browser='';
+	} else {
+		$os=iriGetOS($userAgent);
+		$browser=iriGetBrowser($userAgent);
+		list($searchengine,$search_phrase)=explode("|",iriGetSE($referrer));
+	}
     if ((!is_user_logged_in()) OR (get_option('statpress_collectloggeduser')=='checked')) {
 		if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 			iri_StatPress_CreateTable();
