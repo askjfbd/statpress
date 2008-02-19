@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.2.5
+Version: 1.2.6
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -74,7 +74,7 @@ function iriStatPressOptions() {
 		
 		# update database too
 		iri_StatPress_CreateTable();
-		print "<br />&nbsp;".__('Saved','statpress')."!";
+		print "<br /><div class='updated'><p>".__('Saved','statpress')."!</p></div>";
 	} else {
 ?>
 	<div class='wrap'><h2><?php _e('Options','statpress'); ?></h2>
@@ -155,12 +155,10 @@ function iriStatPressExportNow() {
 	header("Content-Disposition: attachment; filename=$filename");
 	header('Content-Type: text/plain charset=' . get_option('blog_charset'), true);
     $qry = $wpdb->get_results("SELECT * FROM $table_name WHERE date>='".(date("Ymd",strtotime(substr($_GET['from'],0,8))))."' AND date<='".(date("Ymd",strtotime(substr($_GET['to'],0,8))))."';");
-//	print "date;time;ip;urlrequested;agent;referrer;search;nation;os;browser;searchengine;spider;feed\n";
 	$del=substr($_GET['del'],0,1);
 	print "date".$del."time".$del."ip".$del."urlrequested".$del."agent".$del."referrer".$del."search".$del."nation".$del."os".$del."browser".$del."searchengine".$del."spider".$del."feed\n";
 	foreach ($qry as $rk) {
-//		print '"'.$rk->date.'";"'.$rk->time.'";"'.$rk->ip.'";"'.$rk->urlrequested.'";"'.$rk->agent.'";"'.$rk->referrer.'";"'.$rk->search.'";"'.$rk->nation.'";"'.$rk->os.'";"'.$rk->browser.'";"'.$rk->searchengine.'";"'.$rk->spider.'";"'.$rk->feed.'"'."\n";
-			print '"'.$rk->date.'"'.$del.'"'.$rk->time.'"'.$del.'"'.$rk->ip.'"'.$del.'"'.$rk->urlrequested.'"'.$del.'"'.$rk->agent.'"'.$del.'"'.$rk->referrer.'"'.$del.'"'.$rk->search.'"'.$del.'"'.$rk->nation.'"'.$del.'"'.$rk->os.'"'.$del.'"'.$rk->browser.'"'.$del.'"'.$rk->searchengine.'"'.$del.'"'.$rk->spider.'"'.$del.'"'.$rk->feed.'"'."\n";
+		print '"'.$rk->date.'"'.$del.'"'.$rk->time.'"'.$del.'"'.$rk->ip.'"'.$del.'"'.$rk->urlrequested.'"'.$del.'"'.$rk->agent.'"'.$del.'"'.$rk->referrer.'"'.$del.'"'.$rk->search.'"'.$del.'"'.$rk->nation.'"'.$del.'"'.$rk->os.'"'.$del.'"'.$rk->browser.'"'.$del.'"'.$rk->searchengine.'"'.$del.'"'.$rk->spider.'"'.$del.'"'.$rk->feed.'"'."\n";
 
 	}
 	die();
@@ -180,12 +178,6 @@ function iriStatPressMain() {
     $yesterday = gmdate('Ymd', current_time('timestamp')-86400);
     $today = gmdate('Ymd', current_time('timestamp'));
     $tlm[0]=substr($lastmonth,0,4); $tlm[1]=substr($lastmonth,4,2);
-
-    /*
-	print "<div class='wrap'><h2>". __('Overview','statpress'). "</h2>";
-	print "<table class='widefat'><thead><tr><th scope='col'></th><th scope='col'>". __('Total','statpress'). "</th><th scope='col'>". __('Last month','statpress'). "<br><font size=1>$lastmonth</font></th><th scope='col'>". __('This month','statpress'). "<br><font size=1>$thismonth</font></th><th scope='col'>Target ". __('This month','statpress'). "<br><font size=1>$thismonth</font></th><th scope='col'>". __('Yesterday','statpress'). "<br><font size=1>$yesterday</font></th><th scope='col'>". __('Today','statpress'). "<br><font size=1>$today</font></th></tr></thead>";
-	print "<tbody id='the-list'>";
-*/
 
 	print "<div class='wrap'><h2>". __('Overview','statpress'). "</h2>";
 	print "<table class='widefat'><thead><tr>
@@ -1126,6 +1118,7 @@ function iriStatAppend($feed='') {
     if(iriCheckBanIP($ipAddress) == '') { return ''; }
 
 	$urlRequested=iri_StatPress_URL();
+	if (eregi(".ico$", $urlRequested)) { return ''; }
 	if (eregi("favicon.ico", $urlRequested)) { return ''; }
 	if (eregi(".css$", $urlRequested)) { return ''; }
 
@@ -1309,7 +1302,7 @@ function iri_StatPress_TopPosts($limit=5, $showcounts='checked') {
 	$table_name = $wpdb->prefix . "statpress";
 	$qry = $wpdb->get_results("SELECT urlrequested,count(*) as totale FROM wp_statpress WHERE spider='' AND feed='' AND urlrequested LIKE '%p=%' GROUP BY urlrequested ORDER BY totale DESC LIMIT $limit;");
 	foreach ($qry as $rk) {
-		$res.="<a href='".$rk->urlrequested."'>".iri_StatPress_Decode($rk->urlrequested)."</a>";
+		$res.="<a href='?".$rk->urlrequested."'>".iri_StatPress_Decode($rk->urlrequested)."</a>";
 		if(strtolower($showcounts) == 'checked') { $res.=" (".$rk->totale.")"; }
 		$res.="<br/>\n";
 	}
