@@ -3,11 +3,13 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.2.7
+Version: 1.2.8
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
 
+$_STATPRESS['version']='1.x';
+$_STATPRESS['feedtype']='';
 
 if ($_GET['statpress_action'] == 'exportnow') {
 	iriStatPressExportNow();
@@ -1096,10 +1098,11 @@ function iri_StatPress_CreateTable() {
 	dbDelta($sql_createtable);	
 }
 
-function iriStatAppend($feed='') {
+function iriStatAppend() {
 	global $wpdb;
 	$table_name = $wpdb->prefix . "statpress";
 	global $userdata;
+	global $_STATPRESS;
     get_currentuserinfo();
 
 	// Time
@@ -1142,18 +1145,20 @@ function iriStatAppend($feed='') {
 			$t=gmdate("Ymd",strtotime('-'.get_option('statpress_autodelete')));
 			$results =	$wpdb->query( "DELETE FROM " . $table_name . " WHERE date < '" . $t . "'");
 		}
+		$feed=$_STATPRESS['feedtype'];
 		$insert = "INSERT INTO " . $table_name .
             " (date, time, ip, urlrequested, agent, referrer, search,nation,os,browser,searchengine,spider,feed,user,timestamp) " .
-            "VALUES ('$vdate','$vtime','$ipAddress','$urlRequested','".addslashes(strip_tags($userAgent))."','$referrer','".addslashes(strip_tags($search_phrase))."','".iriDomain($ipAddress)."','$os','$browser','$searchengine','$spider','$feed','$userdata->user_login','$timestamp')";
-//print "$insert<br>";
+            "VALUES ('$vdate','$vtime','$ipAddress','$urlRequested','".addslashes(strip_tags($userAgent))."','$referrer','" .
+            addslashes(strip_tags($search_phrase))."','".iriDomain($ipAddress) .
+            "','$os','$browser','$searchengine','$spider','$feed','$userdata->user_login','$timestamp')";
 		$results = $wpdb->query( $insert );
 	}
 }
 
-function iriStatAppendRSS() { iriStatAppend('RSS'); }
-function iriStatAppendRSS2() { iriStatAppend('RSS2'); }
-function iriStatAppendATOM() { iriStatAppend('ATOM'); }
-function iriStatAppendRDF() { iriStatAppend('RDF'); }
+function iriStatAppendRSS() { $_STATPRESS['feedtype']='RSS'; iriStatAppend(); }
+function iriStatAppendRSS2() { $_STATPRESS['feedtype']='RSS2'; iriStatAppend(); }
+function iriStatAppendATOM() { $_STATPRESS['feedtype']='ATOM'; iriStatAppend(); }
+function iriStatAppendRDF() { $_STATPRESS['feedtype']='RDF'; iriStatAppend(); }
 
 
 function iriStatPressUpdate() {
@@ -1166,6 +1171,11 @@ function iriStatPressUpdate() {
 	iri_StatPress_CreateTable();
 	print "".__('done','statpress')."<br>";
 	
+	# Update Feed (1.2.7 feed problem)
+	print "Updating Feed... ";
+    $wpdb->query("UPDATE $table_name SET feed='' WHERE feed='Object';");
+	print "".__('done','statpress')."<br>";
+
 	# Update OS
 	print "Updating OSes... ";
     $wpdb->query("UPDATE $table_name SET os = '';");
