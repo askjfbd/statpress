@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.2.6
+Version: 1.2.7
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -12,8 +12,6 @@ Author URI: http://www.irisco.it
 if ($_GET['statpress_action'] == 'exportnow') {
 	iriStatPressExportNow();
 }
-
-
 
 function iri_add_pages() {
 	# Crea/aggiorna tabella se non esiste
@@ -27,25 +25,22 @@ function iri_add_pages() {
 	if($mincap == '') {
 		$mincap="level_8";
 	}
-//    add_submenu_page('index.php', 'StatPress', 'StatPress', 8, 'statpress', 'iriStatPress');
-    add_submenu_page('index.php', 'StatPress', 'StatPress', $mincap, 'statpress', 'iriStatPress');
+// ORIG   add_submenu_page('index.php', 'StatPress', 'StatPress', 8, 'statpress', 'iriStatPress');
+
+    add_menu_page('StatPress', 'StatPress', $mincap, __FILE__, 'iriStatPress');
+    add_submenu_page(__FILE__, __('Overview','statpress'), __('Overview','statpress'), $mincap, __FILE__, 'iriStatPress');
+    add_submenu_page(__FILE__, __('Details','statpress'), __('Details','statpress'), $mincap, __FILE__ . '&statpress_action=details', 'iriStatPress');
+    add_submenu_page(__FILE__, __('Spy','statpress'), __('Spy','statpress'), $mincap, __FILE__ . '&statpress_action=spy', 'iriStatPress');
+    add_submenu_page(__FILE__, __('Search','statpress'), __('Search','statpress'), $mincap, __FILE__ . '&statpress_action=search', 'iriStatPress');
+    add_submenu_page(__FILE__, __('Export','statpress'), __('Export','statpress'), $mincap, __FILE__ . '&statpress_action=export', 'iriStatPress');
+    add_submenu_page(__FILE__, __('Options','statpress'), __('Options','statpress'), $mincap, __FILE__ . '&statpress_action=options', 'iriStatPress');
+    add_submenu_page(__FILE__, __('StatPressUpdate','statpress'), __('StatPressUpdate','statpress'), $mincap, __FILE__ . '&statpress_action=up', 'iriStatPress');
+    add_submenu_page(__FILE__, __('Support','statpress'), __('Support','statpress'), $mincap, 'http://www.irisco.it/forums/forum.php?id=1');
 }
 
 
 function iriStatPress() {
 ?>
-
-<ul id="submenu" style='border-top:1px dotted #83b4d8'>
-    <li><a href='?page=statpress' <?php if($_GET['statpress_action'] == '') { print "class=current"; } ?>><?php _e('Overview','statpress'); ?></a></li>
-    <li><a href='?page=statpress&statpress_action=details' <?php if($_GET['statpress_action'] == 'details') { print "class=current"; } ?>><?php _e('Details','statpress'); ?></a></li>
-    <li><a href='?page=statpress&statpress_action=spy' <?php if($_GET['statpress_action'] == 'spy') { print "class=current"; } ?>><?php _e('Spy','statpress'); ?></a></li>
-    <li><a href='?page=statpress&statpress_action=search' <?php if($_GET['statpress_action'] == 'search') { print "class=current"; } ?>><?php _e('Search','statpress'); ?></a></li>
-    <li><a href='?page=statpress&statpress_action=export' <?php if($_GET['statpress_action'] == 'export') { print "class=current"; } ?>><?php _e('Export','statpress'); ?></a></li>
-    <li><a href='?page=statpress&statpress_action=options' <?php if($_GET['statpress_action'] == 'options') { print "class=current"; } ?>><?php _e('Options','statpress'); ?></a></li>
-    <li><a href='?page=statpress&statpress_action=up' <?php if($_GET['statpress_action'] == 'up') { print "class=current"; } ?>>StatPressUpdate</a></li>
-    <li><a href='http://www.irisco.it/forums/forum.php?id=1' target='_blank'>Support</a></li>
-</ul>
-
 <?php
 	if ($_GET['statpress_action'] == 'export') {
 		iriStatPressExport();
@@ -1121,6 +1116,9 @@ function iriStatAppend($feed='') {
 	if (eregi(".ico$", $urlRequested)) { return ''; }
 	if (eregi("favicon.ico", $urlRequested)) { return ''; }
 	if (eregi(".css$", $urlRequested)) { return ''; }
+	if (eregi(".js$", $urlRequested)) { return ''; }
+	if (stristr($urlRequested,"/wp-content/plugins") != FALSE) { return ''; }
+	if (stristr($urlRequested,"/wp-content/themes") != FALSE) { return ''; }
 
     $referrer = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
     $userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
@@ -1298,15 +1296,14 @@ function iri_StatPress_Vars($body) {
 
 function iri_StatPress_TopPosts($limit=5, $showcounts='checked') {
    	global $wpdb;
-   	$res="";
+   	$res="\n<ul>\n";
 	$table_name = $wpdb->prefix . "statpress";
 	$qry = $wpdb->get_results("SELECT urlrequested,count(*) as totale FROM wp_statpress WHERE spider='' AND feed='' AND urlrequested LIKE '%p=%' GROUP BY urlrequested ORDER BY totale DESC LIMIT $limit;");
 	foreach ($qry as $rk) {
-		$res.="<a href='?".$rk->urlrequested."'>".iri_StatPress_Decode($rk->urlrequested)."</a>";
+		$res.="<li><a href='?".$rk->urlrequested."'>".iri_StatPress_Decode($rk->urlrequested)."</a></li>\n";
 		if(strtolower($showcounts) == 'checked') { $res.=" (".$rk->totale.")"; }
-		$res.="<br/>\n";
 	}
-	return $res;
+	return "$res</ul>\n";
 }
 
 
@@ -1385,7 +1382,7 @@ load_plugin_textdomain('statpress', 'wp-content/plugins/'.dirname(plugin_basenam
 
 add_action('admin_menu', 'iri_add_pages');
 add_action('plugins_loaded', 'widget_statpress_init');
-add_action('wp_head', 'iriStatAppend');
+add_action('send_headers', 'iriStatAppend');  //add_action('wp_head', 'iriStatAppend');
 
 add_action('rss_head','iriStatAppendRSS');
 add_action('rss2_head','iriStatAppendRSS2');

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts,spy,statistiche
 Requires at least: 2.0.2
 Tested up to: 2.3.3
-Stable Tag: 1.2.6
+Stable Tag: 1.2.7
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -244,3 +244,11 @@ Of course!
 * TopPosts widget new href links (Thanks Flip and Frank)
 * .def updates (Thanks to GT)
 * Interface fixes
+
+*Version 1.2.7 (27 Feb 2008)*
+
+* New menu layout (top level)
+* Updated TopPosts widget code (Thanks to crashdumpfr)
+* New hook "send_headers"
+* Js, plugins and themes doesn't count
+* New spiders (Thanks to M66B)
