@@ -37,7 +37,7 @@ function iri_add_pages() {
     add_submenu_page(__FILE__, __('Export','statpress'), __('Export','statpress'), $mincap, __FILE__ . '&statpress_action=export', 'iriStatPress');
     add_submenu_page(__FILE__, __('Options','statpress'), __('Options','statpress'), $mincap, __FILE__ . '&statpress_action=options', 'iriStatPress');
     add_submenu_page(__FILE__, __('StatPressUpdate','statpress'), __('StatPressUpdate','statpress'), $mincap, __FILE__ . '&statpress_action=up', 'iriStatPress');
-    add_submenu_page(__FILE__, __('Support','statpress'), __('Support','statpress'), $mincap, 'http://www.irisco.it/forums/forum.php?id=1');
+//    add_submenu_page(__FILE__, __('Support','statpress'), __('Support','statpress'), $mincap, 'http://www.irisco.it/forums/forum.php?id=1');
 }
 
 
