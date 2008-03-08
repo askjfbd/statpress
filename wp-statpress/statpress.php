@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.2.8
+Version: 1.2.9
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -612,9 +612,16 @@ function iriStatPressMain() {
 	print "<br />";
 	print "&nbsp;<i>StatPress table size: <b>".iritablesize($wpdb->prefix . "statpress")."</b></i><br />";
 	print "&nbsp;<i>StatPress current time: <b>".current_time('mysql')."</b></i><br />";
+	print "&nbsp;<i>RSS2 url: <b>".get_bloginfo('rss2_url').' ('.iri_StatPress_extractfeedreq(get_bloginfo('rss2_url')).")</b></i><br />";
 	
 }	
 
+
+function iri_StatPress_extractfeedreq($url) {
+	list($null,$q)=explode("?",$url);
+	list($res,$null)=explode("&",$q);
+	return $res;
+}
 
 function iriStatPressDetails() {
 	global $wpdb;
@@ -1098,13 +1105,26 @@ function iri_StatPress_CreateTable() {
 	dbDelta($sql_createtable);	
 }
 
+function iri_StatPress_is_feed($url) {
+	if (stristr($url,get_bloginfo('rdf_url')) != FALSE) { return 'RDF'; }
+	if (stristr($url,get_bloginfo('rss2_url')) != FALSE) { return 'RSS2'; }
+	if (stristr($url,get_bloginfo('rss_url')) != FALSE) { return 'RSS'; }
+	if (stristr($url,get_bloginfo('atom_url')) != FALSE) { return 'ATOM'; }
+	if (stristr($url,get_bloginfo('comments_rss2_url')) != FALSE) { return 'COMMENT RSS'; }
+	if (stristr($url,get_bloginfo('comments_atom_url')) != FALSE) { return 'COMMENT ATOM'; }
+	if (stristr($url,'wp-feed.php') != FALSE) { return 'RSS2'; }
+	if (stristr($url,'/feed/') != FALSE) { return 'RSS2'; }
+	return '';
+}
+
 function iriStatAppend() {
 	global $wpdb;
 	$table_name = $wpdb->prefix . "statpress";
 	global $userdata;
 	global $_STATPRESS;
     get_currentuserinfo();
-
+	$feed='';
+	
 	// Time
 	$timestamp  = current_time('timestamp');
 	$vdate  = gmdate("Ymd",$timestamp);
@@ -1112,9 +1132,9 @@ function iriStatAppend() {
 
 	// IP
     $ipAddress = $_SERVER['REMOTE_ADDR'];
-
     if(iriCheckBanIP($ipAddress) == '') { return ''; }
 
+	// URL (requested)
 	$urlRequested=iri_StatPress_URL();
 	if (eregi(".ico$", $urlRequested)) { return ''; }
 	if (eregi("favicon.ico", $urlRequested)) { return ''; }
@@ -1132,20 +1152,22 @@ function iriStatAppend() {
    	if($spider != '') {
 	    $os=''; $browser='';
 	} else {
+		// Trap feeds
+		$feed=iri_StatPress_is_feed(get_bloginfo('url').$_SERVER['REQUEST_URI']);
+		// Get OS and browser
 		$os=iriGetOS($userAgent);
 		$browser=iriGetBrowser($userAgent);
 		list($searchengine,$search_phrase)=explode("|",iriGetSE($referrer));
+	}
+	// Auto-delete visits if...
+	if(get_option('statpress_autodelete') != '') {
+		$t=gmdate("Ymd",strtotime('-'.get_option('statpress_autodelete')));
+		$results =	$wpdb->query( "DELETE FROM " . $table_name . " WHERE date < '" . $t . "'");
 	}
     if ((!is_user_logged_in()) OR (get_option('statpress_collectloggeduser')=='checked')) {
 		if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 			iri_StatPress_CreateTable();
 		}
-		// Auto-delete visits if...
-		if(get_option('statpress_autodelete') != '') {
-			$t=gmdate("Ymd",strtotime('-'.get_option('statpress_autodelete')));
-			$results =	$wpdb->query( "DELETE FROM " . $table_name . " WHERE date < '" . $t . "'");
-		}
-		$feed=$_STATPRESS['feedtype'];
 		$insert = "INSERT INTO " . $table_name .
             " (date, time, ip, urlrequested, agent, referrer, search,nation,os,browser,searchengine,spider,feed,user,timestamp) " .
             "VALUES ('$vdate','$vtime','$ipAddress','$urlRequested','".addslashes(strip_tags($userAgent))."','$referrer','" .
@@ -1154,11 +1176,6 @@ function iriStatAppend() {
 		$results = $wpdb->query( $insert );
 	}
 }
-
-function iriStatAppendRSS() { $_STATPRESS['feedtype']='RSS'; iriStatAppend(); }
-function iriStatAppendRSS2() { $_STATPRESS['feedtype']='RSS2'; iriStatAppend(); }
-function iriStatAppendATOM() { $_STATPRESS['feedtype']='ATOM'; iriStatAppend(); }
-function iriStatAppendRDF() { $_STATPRESS['feedtype']='RDF'; iriStatAppend(); }
 
 
 function iriStatPressUpdate() {
@@ -1171,9 +1188,39 @@ function iriStatPressUpdate() {
 	iri_StatPress_CreateTable();
 	print "".__('done','statpress')."<br>";
 	
-	# Update Feed (1.2.7 feed problem)
-	print "Updating Feed... ";
-    $wpdb->query("UPDATE $table_name SET feed='' WHERE feed='Object';");
+	# Update Feed
+	print "Updating Feeds... ";
+    $wpdb->query("UPDATE $table_name SET feed='';");
+    # not standard
+    $wpdb->query("UPDATE $table_name SET feed='RSS2' WHERE urlrequested LIKE '%/feed/%';");
+    $wpdb->query("UPDATE $table_name SET feed='RSS2' WHERE urlrequested LIKE '%wp-feed.php%';");
+	# standard blog info urls
+	$s=iri_StatPress_extractfeedreq(get_bloginfo('comments_atom_url'));
+	if($s != '') {
+	    $wpdb->query("UPDATE $table_name SET feed='COMMENT ATOM' WHERE INSTR(urlrequested,'$s')>0;");
+	}
+	$s=iri_StatPress_extractfeedreq(get_bloginfo('comments_rss2_url'));
+	if($s != '') {
+	    $wpdb->query("UPDATE $table_name SET feed='COMMENT RSS' WHERE INSTR(urlrequested,'$s')>0;");
+	}
+	$s=iri_StatPress_extractfeedreq(get_bloginfo('atom_url'));
+	if($s != '') {
+	    $wpdb->query("UPDATE $table_name SET feed='ATOM' WHERE INSTR(urlrequested,'$s')>0;");
+	}
+	$s=iri_StatPress_extractfeedreq(get_bloginfo('rdf_url'));
+	if($s != '') {
+	    $wpdb->query("UPDATE $table_name SET feed='RDF'  WHERE INSTR(urlrequested,'$s')>0;");
+	}
+	$s=iri_StatPress_extractfeedreq(get_bloginfo('rss_url'));
+	if($s != '') {
+	    $wpdb->query("UPDATE $table_name SET feed='RSS'  WHERE INSTR(urlrequested,'$s')>0;");
+	}
+	$s=iri_StatPress_extractfeedreq(get_bloginfo('rss2_url'));
+	if($s != '') {
+	    $wpdb->query("UPDATE $table_name SET feed='RSS2' WHERE INSTR(urlrequested,'$s')>0;");
+	}
+
+# elim    $wpdb->query("UPDATE $table_name SET feed='Y' WHERE (urlrequested LIKE '%feed=%') or (urlrequested LIKE '%wp-rss%') or (urlrequested LIKE '%wp-rdf%') or (urlrequested LIKE '%wp-commentsrss%') or (urlrequested LIKE '%wp-atom%');");
 	print "".__('done','statpress')."<br>";
 
 	# Update OS
@@ -1393,11 +1440,6 @@ load_plugin_textdomain('statpress', 'wp-content/plugins/'.dirname(plugin_basenam
 add_action('admin_menu', 'iri_add_pages');
 add_action('plugins_loaded', 'widget_statpress_init');
 add_action('send_headers', 'iriStatAppend');  //add_action('wp_head', 'iriStatAppend');
-
-add_action('rss_head','iriStatAppendRSS');
-add_action('rss2_head','iriStatAppendRSS2');
-add_action('rdf_header','iriStatAppendRDF');
-add_action('atom_head','iriStatAppendATOM');
 
 register_activation_hook(__FILE__,'iri_StatPress_CreateTable');
 
