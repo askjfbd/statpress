@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.2.9
+Version: 1.2.9.1
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -788,7 +788,7 @@ function iriStatPressSearch($what='') {
 		</td>
 	</tr>		
 	</table>	
-	<input type=hidden name=page value=statpress><input type=hidden name=statpress_action value=search>
+	<input type=hidden name=page value='wp-statpress/statpress.php'><input type=hidden name=statpress_action value=search>
 	</form><br>
 <?php
 

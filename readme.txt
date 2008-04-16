@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%
 Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts,spy,statistiche
 Requires at least: 2.0.2
 Tested up to: 2.5
-Stable Tag: 1.2.9
+Stable Tag: 1.2.9.1
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -261,3 +261,8 @@ Of course!
 
 * Feed issues resolved (Thanks to Frank http://www.webtlk.com )
 * Comment Feeds support
+
+*Version 1.2.9.1 (16 Apr 2008)*
+
+* Search works again!
+* defs updated (Thanks to all forum users!)
