@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.irisco.it/?page_id=28
 Description: Real time stats for your blog
-Version: 1.2.9.1
+Version: 1.2.9.2
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -1143,8 +1143,8 @@ function iriStatAppend() {
 	if (stristr($urlRequested,"/wp-content/plugins") != FALSE) { return ''; }
 	if (stristr($urlRequested,"/wp-content/themes") != FALSE) { return ''; }
 
-    $referrer = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
-    $userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
+	$referrer = (isset($_SERVER['HTTP_REFERER']) ? htmlentities($_SERVER['HTTP_REFERER']) : '');
+	$userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? htmlentities($_SERVER['HTTP_USER_AGENT']) : '');
 	$spider=iriGetSpider($userAgent);
 	
    	if(($spider != '') and (get_option('statpress_donotcollectspider')=='checked')) { return ''; }
