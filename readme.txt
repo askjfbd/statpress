@@ -1,9 +1,9 @@
 === Plugin Name ===
 Contributors: 
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%2elippi%40gmail%2ecom&item_name=wp%2dstatpress&no_shipping=0&no_note=1&tax=0&currency_code=EUR&lc=IT&bn=PP%2dDonationsBF&charset=UTF%2d8
-Tags: stats, statistics, widget, admin, sidebar, visits, visitors, pageview, user, agent, referrer,post,posts,spy,statistiche
+Tags: stats, statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche
 Requires at least: 2.0.2
-Tested up to: 2.5
+Tested up to: 2.7
 Stable Tag: 1.2.9.2
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
@@ -80,11 +80,9 @@ Of course!
 
 
 == Screenshots ==
-&middot; <a href="http://www.irisco.it/wp-content/uploads/overview.jpg">screenshot-1 - Overview</a><br>
-&middot; <a href="http://www.irisco.it/wp-content/uploads/details.jpg">screenshot-2 - Details</a><br>
-&middot; <a href="http://www.irisco.it/wp-content/uploads/widget.jpg">screenshot-3 - Widget</a><br>
-&middot; <a href="http://www.irisco.it/wp-content/uploads/spy.jpg">screenshot-4 - Spy</a><br>
-&middot; <a href="http://www.irisco.it/wp-content/uploads/search.jpg">screenshot-5 - Search</a><br>
+&middot; <a href="http://farm4.static.flickr.com/3409/3214830727_fe46a43f90_o.jpg">screenshot-1 - Overview</a><br>
+&middot; <a href="http://farm4.static.flickr.com/3345/3214830807_6f2e80e7d2_o.jpg">screenshot-2 - Details</a><br>
+&middot; <a href="http://farm4.static.flickr.com/3492/3214830895_4556bb1faa_o.jpg">screenshot-3 - Spy</a><br>
 
 
 == Updates ==
