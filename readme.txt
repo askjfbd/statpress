@@ -4,11 +4,9 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%
 Tags: stats, statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche
 Requires at least: 2.0.2
 Tested up to: 2.7
-Stable Tag: 1.2.9.2
+Stable Tag: 1.2.9.3
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
-
-1
 
 == Description ==
 
@@ -270,3 +268,6 @@ Of course!
 
 * XSS vulnerability patch (Thanks to rogeriopvl blog.rogeriopvl.com)
 
+*Version 1.2.9.3 (21 Jan 2009)*
+
+* Directory structure modified

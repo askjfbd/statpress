@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: StatPress
-Plugin URI: http://www.irisco.it/?page_id=28
+Plugin URI: http://me.irisco.it/main/OpenSource.html
 Description: Real time stats for your blog
-Version: 1.2.9.2
+Version: 1.2.9.3
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
