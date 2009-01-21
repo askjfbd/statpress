@@ -20,7 +20,7 @@ StatPress also includes a widget one can possibly add to a sidebar (or easy PHP 
 = Multilanguage =
 StatPress speaks English, Italian, Spanish, French, German, Russian, Norwegian, Dutch, Brazilian, Turkish, Swedish!
 Could you translate StatPress in your language? Thank you!
-( please post to http://www.irisco.it/forums/forum.php?id=1 )
+( please write to statpress@irisco.it )
 
 = What's new? =
 Check "Other notes" tab to find out updates history!
