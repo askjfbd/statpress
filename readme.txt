@@ -8,6 +8,7 @@ Stable Tag: 1.2.9.2
 
 The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
+1
 
 == Description ==
 
