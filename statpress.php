@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: StatPress
-Plugin URI: http://me.irisco.it/main/OpenSource.html
+Plugin URI: http://www.irisco.it/forums/forum.php?id=1
 Description: Real time stats for your blog
 Version: 1.2.9.3
 Author: Daniele Lippi
