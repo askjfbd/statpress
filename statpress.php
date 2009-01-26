@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: StatPress
-Plugin URI: http://www.irisco.it/forums/forum.php?id=1
+Plugin URI: http://forum.irisco.it/forum.php?id=1
 Description: Real time stats for your blog
 Version: 1.2.9.3
 Author: Daniele Lippi
@@ -699,7 +699,6 @@ document.getElementById(thediv).style.display="none"
 		print " <strong><span><font size='2' color='#7b7b7b'>".$rk->ip."</font></span></strong> ";
 		print "<span style='color:#006dca;cursor:pointer;border-bottom:1px dotted #AFD5F9;font-size:8pt;' onClick=ttogle('".$rk->ip."');>".__('more info','statpress')."</span></div>";
 		print "<div id='".$rk->ip."' name='".$rk->ip."'>".$rk->os.", ".$rk->browser;
-//		print "<br><iframe style='overflow:hide;border:0px;width:100%;height:15px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://showip.fakap.net/txt/".$rk->ip."></iframe>";
 		print "<br><iframe style='overflow:hide;border:0px;width:100%;height:26px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://api.hostip.info/get_html.php?ip=".$rk->ip."></iframe>";
 		if($rk->nation) {
 			print "<br><small>".gethostbyaddr($rk->ip)."</small>";

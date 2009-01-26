@@ -71,12 +71,7 @@ You are ready!!!
 
 = I've a problem. Where can I get help? =
 
-Please post your messages to <a href="http://www.irisco.it/forums/forum.php?id=1">statpress forum</a>
-
-= Is it wp_2.3.x compatible? =
-
-Of course!
-
+Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">statpress forum</a>
 
 == Screenshots ==
 &middot; <a href="http://farm4.static.flickr.com/3409/3214830727_fe46a43f90_o.jpg">screenshot-1 - Overview</a><br>
