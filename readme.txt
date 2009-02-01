@@ -266,3 +266,9 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 *Version 1.2.9.3 (21 Jan 2009)*
 
 * Directory structure modified
+
+*Version 1.2.9.4 (2 Feb 2009)*
+
+* defs updated, some icons
+* New "Last Agents"
+* Bugs fixed

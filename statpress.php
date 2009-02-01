@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://forum.irisco.it/forum.php?id=1
 Description: Real time stats for your blog
-Version: 1.2.9.3
+Version: 1.2.9.4
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -580,7 +580,8 @@ function iriStatPressMain() {
 		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td><a href='".$rk->referrer."'>".iri_StatPress_Abbrevia($rk->referrer,80)."</a></td><td><a href='".get_bloginfo('url')."/?".$rk->urlrequested."'>". __('page viewed','statpress'). "</a></td></tr>\n";
 	}
 	print "</table></div>";
-	
+
+/*	
 	# Last Agents
 	print "<div class='wrap'><h2>".__('Last agents','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('Agent','statpress')."</th><th scope='col'>".__('What','statpress')."</th></tr></thead>";
 	print "<tbody id='the-list'>";	
@@ -589,6 +590,22 @@ function iriStatPressMain() {
 		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td>".$rk->agent."</td><td> ".$rk->os. " ".$rk->browser." ".$rk->spider."</td></tr>\n";
 	}
 	print "</table></div>";
+*/
+
+	# Last Agents 2
+	print "<div class='wrap'><h2>".__('Last agents','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Agent','statpress')."</th><th scope='col'>OS</th><th scope='col'></th><th scope='col'>Browser/Spider</th></tr></thead>";
+	print "<tbody id='the-list'>";	
+	$qry = $wpdb->get_results("SELECT agent,os,browser,spider FROM $table_name GROUP BY agent,os,browser,spider ORDER BY id DESC $querylimit");
+	foreach ($qry as $rk) {
+		print "<tr><td>".$rk->agent."</td><td>".$rk->os."</td>";
+		if($rk->browser != '') {
+			$img=str_replace(" ","",strtolower($rk->browser)).".png";
+			print "<td><IMG style='border:0px;width:16px;height:16px;' SRC='/wp-content/plugins/".dirname(plugin_basename(__FILE__))."/images/browsers/$img'></td>";
+		}
+		print "<td>".$rk->browser." ".$rk->spider."</td></tr>\n";
+	}
+	print "</table></div>";
+
 
 	# Last pages
 	print "<div class='wrap'><h2>".__('Last pages','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('Page','statpress')."</th><th scope='col'>".__('What','statpress')."</th></tr></thead>";
@@ -699,7 +716,7 @@ document.getElementById(thediv).style.display="none"
 		print " <strong><span><font size='2' color='#7b7b7b'>".$rk->ip."</font></span></strong> ";
 		print "<span style='color:#006dca;cursor:pointer;border-bottom:1px dotted #AFD5F9;font-size:8pt;' onClick=ttogle('".$rk->ip."');>".__('more info','statpress')."</span></div>";
 		print "<div id='".$rk->ip."' name='".$rk->ip."'>".$rk->os.", ".$rk->browser;
-		print "<br><iframe style='overflow:hide;border:0px;width:100%;height:26px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://api.hostip.info/get_html.php?ip=".$rk->ip."></iframe>";
+		print "<br><iframe style='overflow:hide;border:0px;width:100%;height:30px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://api.hostip.info/get_html.php?ip=".$rk->ip."></iframe>";
 		if($rk->nation) {
 			print "<br><small>".gethostbyaddr($rk->ip)."</small>";
 		}
@@ -1141,6 +1158,7 @@ function iriStatAppend() {
 	if (eregi(".js$", $urlRequested)) { return ''; }
 	if (stristr($urlRequested,"/wp-content/plugins") != FALSE) { return ''; }
 	if (stristr($urlRequested,"/wp-content/themes") != FALSE) { return ''; }
+	if (stristr($urlRequested,"/wp-admin/") != FALSE) { return ''; }
 
 	$referrer = (isset($_SERVER['HTTP_REFERER']) ? htmlentities($_SERVER['HTTP_REFERER']) : '');
 	$userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? htmlentities($_SERVER['HTTP_USER_AGENT']) : '');
@@ -1335,15 +1353,15 @@ function iri_StatPress_Vars($body) {
    	   	$body = str_replace("%usersonline%", $qry[0]->users, $body);
    	}
 	if(strpos(strtolower($body),"%toppost%") !== FALSE) {
-		$qry = $wpdb->get_results("SELECT urlrequested,count(*) as totale FROM wp_statpress WHERE spider='' AND feed='' AND urlrequested LIKE '%p=%' GROUP BY urlrequested ORDER BY totale DESC LIMIT 1;");
+		$qry = $wpdb->get_results("SELECT urlrequested,count(*) as totale FROM $table_name WHERE spider='' AND feed='' AND urlrequested LIKE '%p=%' GROUP BY urlrequested ORDER BY totale DESC LIMIT 1;");
 		$body = str_replace("%toppost%", iri_StatPress_Decode($qry[0]->urlrequested), $body);
 	}
 	if(strpos(strtolower($body),"%topbrowser%") !== FALSE) {
-		$qry = $wpdb->get_results("SELECT browser,count(*) as totale FROM wp_statpress WHERE spider='' AND feed='' GROUP BY browser ORDER BY totale DESC LIMIT 1;");
+		$qry = $wpdb->get_results("SELECT browser,count(*) as totale FROM $table_name WHERE spider='' AND feed='' GROUP BY browser ORDER BY totale DESC LIMIT 1;");
 		$body = str_replace("%topbrowser%", iri_StatPress_Decode($qry[0]->browser), $body);
 	}
 	if(strpos(strtolower($body),"%topos%") !== FALSE) {
-		$qry = $wpdb->get_results("SELECT os,count(*) as totale FROM wp_statpress WHERE spider='' AND feed='' GROUP BY os ORDER BY totale DESC LIMIT 1;");
+		$qry = $wpdb->get_results("SELECT os,count(*) as totale FROM $table_name WHERE spider='' AND feed='' GROUP BY os ORDER BY totale DESC LIMIT 1;");
 		$body = str_replace("%topos%", iri_StatPress_Decode($qry[0]->os), $body);
 	}
 	return $body;
