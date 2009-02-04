@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://forum.irisco.it/forum.php?id=1
 Description: Real time stats for your blog
-Version: 1.2.9.4
+Version: 1.3
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -14,6 +14,8 @@ $_STATPRESS['feedtype']='';
 if ($_GET['statpress_action'] == 'exportnow') {
 	iriStatPressExportNow();
 }
+
+include ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/includes/googchart/GoogChart.class.php';
 
 function iri_add_pages() {
 	# Crea/aggiorna tabella se non esiste
@@ -645,46 +647,46 @@ function iriStatPressDetails() {
 	$table_name = $wpdb->prefix . "statpress";
 
 	$querylimit="LIMIT 10";
-	
+
 	# Top days
-    iriValueTable("date","Top days",5);
+    iriValueTable2("date","Top days",5);
 
 	# O.S.
-    iriValueTable("os","O.S.",0,"","","AND feed='' AND spider='' AND os<>''");
+    iriValueTable2("os","O.S.",0,"","","AND feed='' AND spider='' AND os<>''");
 
 	# Browser
-    iriValueTable("browser","Browser",0,"","","AND feed='' AND spider='' AND browser<>''");	
+    iriValueTable2("browser","Browser",0,"","","AND feed='' AND spider='' AND browser<>''");	
 	
 	# Feeds
-    iriValueTable("feed","Feeds",5,"","","AND feed<>''");
+    iriValueTable2("feed","Feeds",5,"","","AND feed<>''");
     
 	# SE
-    iriValueTable("searchengine","Search engines",10,"","","AND searchengine<>''");
+    iriValueTable2("searchengine","Search engines",10,"","","AND searchengine<>''");
 
 	# Search terms
-    iriValueTable("search","Top search terms",20,"","","AND search<>''");
+    iriValueTable2("search","Top search terms",20,"","","AND search<>''");
 
 	# Top referrer
-    iriValueTable("referrer","Top referrer",10,"","","AND referrer<>'' AND referrer NOT LIKE '%".get_bloginfo('url')."%'");
+    iriValueTable2("referrer","Top referrer",10,"","","AND referrer<>'' AND referrer NOT LIKE '%".get_bloginfo('url')."%'");
  	
 	# Countries
-    iriValueTable("nation","Countries (domains)",10,"","","AND nation<>'' AND spider=''");
+    iriValueTable2("nation","Countries (domains)",10,"","","AND nation<>'' AND spider=''");
 
 	# Spider
-    iriValueTable("spider","Spiders",10,"","","AND spider<>''");
+    iriValueTable2("spider","Spiders",10,"","","AND spider<>''");
 
 	# Top Pages
-    iriValueTable("urlrequested","Top pages",5,"","urlrequested","AND feed='' and spider=''");
+    iriValueTable2("urlrequested","Top pages",5,"","urlrequested","AND feed='' and spider=''");
 	
 	
 	# Top Days - Unique visitors
-    iriValueTable("date","Top Days - Unique visitors",5,"distinct","ip","AND feed='' and spider=''"); /* Maddler 04112007: required patching iriValueTable */
+    iriValueTable2("date","Top Days - Unique visitors",5,"distinct","ip","AND feed='' and spider=''"); /* Maddler 04112007: required patching iriValueTable */
 
     # Top Days - Pageviews
-    iriValueTable("date","Top Days - Pageviews",5,"","urlrequested","AND feed='' and spider=''"); /* Maddler 04112007: required patching iriValueTable */
+    iriValueTable2("date","Top Days - Pageviews",5,"","urlrequested","AND feed='' and spider=''"); /* Maddler 04112007: required patching iriValueTable */
 
     # Top IPs - Pageviews
-    iriValueTable("ip","Top IPs - Pageviews",5,"","urlrequested","AND feed='' and spider=''"); /* Maddler 04112007: required patching iriValueTable */
+    iriValueTable2("ip","Top IPs - Pageviews",5,"","urlrequested","AND feed='' and spider=''"); /* Maddler 04112007: required patching iriValueTable */
 }
 
 
@@ -987,6 +989,61 @@ function iriValueTable($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $e
 //	print "<img src=http://chart.apis.google.com/chart?cht=p3&chd=".($chd)."&chs=400x200&chl=".($chl)."&chco=1B75DF,92BF23>\n";
 	print "</div>\n";
 }
+
+
+
+function iriValueTable2($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $exclude= "") {
+	global $wpdb;
+	$table_name = $wpdb->prefix . "statpress";
+	
+	if ($queryfld == '') { $queryfld = $fld; }
+	print "<div class='wrap'><table class='widefat'><thead><tr><th scope='col' style='width:400px;'><h2>$fldtitle</h2></th><th scope='col' style='width:100px;'>".__('Visits','statpress')."</th><th></th></tr></thead>";
+	$rks = $wpdb->get_var("SELECT count($param $queryfld) as rks FROM $table_name WHERE 1=1 $exclude;"); 
+	if($rks > 0) {
+		$sql="SELECT count($param $queryfld) as pageview, $fld FROM $table_name WHERE 1=1 $exclude  GROUP BY $fld ORDER BY pageview DESC";
+		if($limit > 0) { $sql=$sql." LIMIT $limit"; }
+		$qry = $wpdb->get_results($sql);
+	    $tdwidth=450;
+		
+		// Collects data
+		$data=array();
+		foreach ($qry as $rk) {
+			$pc=round(($rk->pageview*100/$rks),1);
+			if($fld == 'date') { $rk->$fld = irihdate($rk->$fld); }
+			if($fld == 'urlrequested') { $rk->$fld = iri_StatPress_Decode($rk->$fld); }
+
+        	$data[substr($rk->$fld,0,50)]=$rk->pageview;
+		}
+	}
+
+	// Draw table body
+	$chart = new GoogChart();
+	$color = array(
+			'#83b4d8',
+			'#f38f36'
+		);
+		
+
+	$spider_color="#83b4d8";
+	$chart->setChartAttrs( array(
+		'type' => 'pie',
+		'title' => '',
+		'data' => $data,
+		'size' => array( 400, 250 ),
+		'color' => $color
+	));
+	print "<tbody id='the-list'>";	
+	if($rks > 0) { print "<tr><td></td><td></td><td rowspan='".($limit+2)."'>$chart</td></tr>"; }
+	foreach ($data as $key => $value) {
+       	print "<tr><td style='width:400px;overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>".$key;
+        print "</td><td style='width:100px;text-align:center;'>".$value."</td>";
+		print "</tr>";
+	}
+	print "</tbody></table></div><br>\n";
+	
+}
+
+
 
 
 
@@ -1372,7 +1429,7 @@ function iri_StatPress_TopPosts($limit=5, $showcounts='checked') {
    	global $wpdb;
    	$res="\n<ul>\n";
 	$table_name = $wpdb->prefix . "statpress";
-	$qry = $wpdb->get_results("SELECT urlrequested,count(*) as totale FROM wp_statpress WHERE spider='' AND feed='' AND urlrequested LIKE '%p=%' GROUP BY urlrequested ORDER BY totale DESC LIMIT $limit;");
+	$qry = $wpdb->get_results("SELECT urlrequested,count(*) as totale FROM $table_name WHERE spider='' AND feed='' AND urlrequested LIKE '%p=%' GROUP BY urlrequested ORDER BY totale DESC LIMIT $limit;");
 	foreach ($qry as $rk) {
 		$res.="<li><a href='?".$rk->urlrequested."'>".iri_StatPress_Decode($rk->urlrequested)."</a></li>\n";
 		if(strtolower($showcounts) == 'checked') { $res.=" (".$rk->totale.")"; }

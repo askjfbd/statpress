@@ -4,13 +4,13 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%
 Tags: stats, statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche
 Requires at least: 2.0.2
 Tested up to: 2.7
-Stable Tag: 1.2.9.3
+Stable Tag: 1.3
 
-The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
+The first real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
 == Description ==
 
-The real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
+The first real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
 Once the plugin StatPress has been activated it immediately starts to collect statistics information.
 Using StatPress you could spy your visitors while they are surfing your blog or check which are the preferred pages, posts and categories.
@@ -56,14 +56,16 @@ Now you could add these values everywhere! StatPress >=0.7.6 offers a new PHP fu
 
 == Installation ==
 
-Upload "wp-statpress" directory in wp-content/plugins/ . Then just activate it on your plugin management page.
+Upload "statpress" directory in wp-content/plugins/ . Then just activate it on your plugin management page.
 You are ready!!!
 
 
 = Update =
 
 * Deactivate StatPress plugin (no data lost!)
-* Override "wp-statpress" directory in wp-content/plugins/
+* Backup your custom DEFs files
+* Override "statpress" directory in wp-content/plugins/
+* Restore your custom DEFs files
 * Re-activate it on your plugin management page
 * In the Dashboard click "StatPress", then "StatPressUpdate" and wait until it will add/update db's content
 
@@ -271,4 +273,10 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 
 * defs updated, some icons
 * New "Last Agents"
+* Bugs fixed
+
+*Version 1.3 (4 Feb 2009)*
+
+* News charts! (Thanks to Ludwig Pettersson and its class)
+* Romanian translation (Thanks to Andrei Gavrilescu)
 * Bugs fixed
