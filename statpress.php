@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://forum.irisco.it/forum.php?id=1
 Description: Real time stats for your blog
-Version: 1.3
+Version: 1.3.1
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -15,7 +15,7 @@ if ($_GET['statpress_action'] == 'exportnow') {
 	iriStatPressExportNow();
 }
 
-include ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/includes/googchart/GoogChart.class.php';
+include ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/includes/charts.php';
 
 function iri_add_pages() {
 	# Crea/aggiorna tabella se non esiste
@@ -1017,27 +1017,15 @@ function iriValueTable2($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $
 	}
 
 	// Draw table body
-	$chart = new GoogChart();
-	$color = array(
-			'#83b4d8',
-			'#f38f36'
-		);
-		
-
-	$spider_color="#83b4d8";
-	$chart->setChartAttrs( array(
-		'type' => 'pie',
-		'title' => '',
-		'data' => $data,
-		'size' => array( 400, 250 ),
-		'color' => $color
-	));
-	print "<tbody id='the-list'>";	
-	if($rks > 0) { print "<tr><td></td><td></td><td rowspan='".($limit+2)."'>$chart</td></tr>"; }
-	foreach ($data as $key => $value) {
-       	print "<tr><td style='width:400px;overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>".$key;
-        print "</td><td style='width:100px;text-align:center;'>".$value."</td>";
-		print "</tr>";
+	print "<tbody id='the-list'>";
+	if($rks > 0) {  // Chart!
+		$chart=iriGoogleChart("","400x200",$data);
+		print "<tr><td></td><td></td><td rowspan='".($limit+2)."'>$chart</td></tr>";
+		foreach ($data as $key => $value) {
+    	   	print "<tr><td style='width:400px;overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>".$key;
+        	print "</td><td style='width:100px;text-align:center;'>".$value."</td>";
+			print "</tr>";
+		}
 	}
 	print "</tbody></table></div><br>\n";
 	

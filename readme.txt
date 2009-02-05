@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%
 Tags: stats, statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche
 Requires at least: 2.0.2
 Tested up to: 2.7
-Stable Tag: 1.3
+Stable Tag: 1.3.1
 
 The first real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -77,7 +77,7 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 
 == Screenshots ==
 &middot; <a href="http://farm4.static.flickr.com/3409/3214830727_fe46a43f90_o.jpg">screenshot-1 - Overview</a><br>
-&middot; <a href="http://farm4.static.flickr.com/3345/3214830807_6f2e80e7d2_o.jpg">screenshot-2 - Details</a><br>
+&middot; <a href="http://farm4.static.flickr.com/3503/3256064748_5d908c3ee6_o.jpg">screenshot-2 - Details</a><br>
 &middot; <a href="http://farm4.static.flickr.com/3492/3214830895_4556bb1faa_o.jpg">screenshot-3 - Spy</a><br>
 
 
@@ -277,6 +277,11 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 
 *Version 1.3 (4 Feb 2009)*
 
-* News charts! (Thanks to Ludwig Pettersson and its class)
+* News charts!
 * Romanian translation (Thanks to Andrei Gavrilescu)
 * Bugs fixed
+
+*Version 1.3.1 (5 Feb 2009)*
+
+* News 3D charts! PHP4/5 comatible. No CPU overload!
+
