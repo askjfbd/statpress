@@ -2,11 +2,11 @@
 Contributors: 
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%2elippi%40gmail%2ecom&item_name=wp%2dstatpress&no_shipping=0&no_note=1&tax=0&currency_code=EUR&lc=IT&bn=PP%2dDonationsBF&charset=UTF%2d8
 Tags: stats, statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche
-Requires at least: 2.0.2
+Requires at least: 2.1
 Tested up to: 2.7
-Stable Tag: 1.3.1
+Stable Tag: 1.3.2
 
-The first real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
+StatPress is first real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
 == Description ==
 
@@ -17,8 +17,14 @@ Using StatPress you could spy your visitors while they are surfing your blog or 
 In the Dashboard menu you will find the StatPress page where you could look up the statistics (overview or detailed).
 StatPress also includes a widget one can possibly add to a sidebar (or easy PHP code if you can't use widgets!).
 
+= Support =
+
+I will be happy to help you!
+I invite you to register to <a href="http://forum.irisco.it/forum.php?id=1">StatPress forum</a>
+
 = Multilanguage =
-StatPress speaks English, Italian, Spanish, French, German, Russian, Norwegian, Dutch, Brazilian, Turkish, Swedish!
+
+StatPress speaks English, Italian, Spanish, French, German, Russian, Norwegian, Dutch, Brazilian, Turkish, Swedish, Danish, Persian, etc.!
 Could you translate StatPress in your language? Thank you!
 ( please write to statpress@irisco.it )
 
@@ -283,5 +289,13 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 
 *Version 1.3.1 (5 Feb 2009)*
 
-* News 3D charts! PHP4/5 comatible. No CPU overload!
+* New 3D charts! PHP4/5 comatible. No CPU overload!
 
+*Version 1.3.2*
+
+* Collects browser language setting
+* Crypts IP option (privacy regulation)
+* Persian localization (thanks to Omid Pilevar)
+* Danish localization (thanks to Georg S. Adamsen)
+* DEFs updated
+* Bugs fixed

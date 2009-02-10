@@ -40,6 +40,8 @@ function iri_add_pages() {
     add_submenu_page(__FILE__, __('Options','statpress'), __('Options','statpress'), $mincap, __FILE__ . '&statpress_action=options', 'iriStatPress');
     add_submenu_page(__FILE__, __('StatPressUpdate','statpress'), __('StatPressUpdate','statpress'), $mincap, __FILE__ . '&statpress_action=up', 'iriStatPress');
 //    add_submenu_page(__FILE__, __('Support','statpress'), __('Support','statpress'), $mincap, 'http://www.irisco.it/forums/forum.php?id=1');
+    add_submenu_page(__FILE__, __('Donate','statpress'), __('Donate','statpress'), $mincap, 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%2elippi%40gmail%2ecom&item_name=wp%2dstatpress&no_shipping=0&no_note=1&tax=0&currency_code=EUR&lc=IT&bn=PP%2dDonationsBF&charset=UTF%2d8');
+
 }
 
 
@@ -70,6 +72,7 @@ function iriStatPressOptions() {
 		update_option('statpress_daysinoverviewgraph', $_POST['statpress_daysinoverviewgraph']);
 		update_option('statpress_mincap', $_POST['statpress_mincap']);
 		update_option('statpress_donotcollectspider', $_POST['statpress_donotcollectspider']);
+		update_option('statpress_cryptip', $_POST['statpress_cryptip']);
 		
 		# update database too
 		iri_StatPress_CreateTable();
@@ -81,6 +84,8 @@ function iriStatPressOptions() {
 <?php
 	print "<tr><td><input type=checkbox name='statpress_collectloggeduser' value='checked' ".get_option('statpress_collectloggeduser')."> ".__('Collect data about logged users, too.','statpress')."</td></tr>";
 	print "<tr><td><input type=checkbox name='statpress_donotcollectspider' value='checked' ".get_option('statpress_donotcollectspider')."> ".__('Do not collect spiders visits','statpress')."</td></tr>";
+	print "<tr><td><input type=checkbox name='statpress_cryptip' value='checked' ".get_option('statpress_cryptip')."> ".__('Crypt IP addresses','statpress')."</td></tr>";
+
 ?>
 	<tr><td><?php _e('Automatically delete visits older than','statpress'); ?>
 	<select name="statpress_autodelete">
@@ -546,7 +551,7 @@ function iriStatPressMain() {
 	$querylimit="LIMIT 10";
 	    
 	# Tabella Last hits
-	print "<div class='wrap'><h2>". __('Last hits','statpress'). "</h2><table class='widefat'><thead><tr><th scope='col'>". __('Date','statpress'). "</th><th scope='col'>". __('Time','statpress'). "</th><th scope='col'>IP</th><th scope='col'>". __('Domain','statpress'). "</th><th scope='col'>". __('Page','statpress'). "</th><th scope='col'>OS</th><th scope='col'>Browser</th><th scope='col'>Feed</th></tr></thead>";
+	print "<div class='wrap'><h2>". __('Last hits','statpress'). "</h2><table class='widefat'><thead><tr><th scope='col'>". __('Date','statpress'). "</th><th scope='col'>". __('Time','statpress'). "</th><th scope='col'>IP</th><th scope='col'>". __('Language','statpress'). "</th><th scope='col'>". __('Page','statpress'). "</th><th scope='col'>OS</th><th scope='col'>Browser</th><th scope='col'>Feed</th></tr></thead>";
 	print "<tbody id='the-list'>";	
 
 	$fivesdrafts = $wpdb->get_results("SELECT * FROM $table_name WHERE (os<>'' OR feed<>'') order by id DESC $querylimit");
@@ -669,8 +674,8 @@ function iriStatPressDetails() {
 	# Top referrer
     iriValueTable2("referrer","Top referrer",10,"","","AND referrer<>'' AND referrer NOT LIKE '%".get_bloginfo('url')."%'");
  	
-	# Countries
-    iriValueTable2("nation","Countries (domains)",10,"","","AND nation<>'' AND spider=''");
+	# Languages
+    iriValueTable2("nation","Languages",10,"","","AND nation<>'' AND spider=''");
 
 	# Spider
     iriValueTable2("spider","Spiders",10,"","","AND spider<>''");
@@ -718,10 +723,10 @@ document.getElementById(thediv).style.display="none"
 		print " <strong><span><font size='2' color='#7b7b7b'>".$rk->ip."</font></span></strong> ";
 		print "<span style='color:#006dca;cursor:pointer;border-bottom:1px dotted #AFD5F9;font-size:8pt;' onClick=ttogle('".$rk->ip."');>".__('more info','statpress')."</span></div>";
 		print "<div id='".$rk->ip."' name='".$rk->ip."'>".$rk->os.", ".$rk->browser;
-		print "<br><iframe style='overflow:hide;border:0px;width:100%;height:30px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://api.hostip.info/get_html.php?ip=".$rk->ip."></iframe>";
-		if($rk->nation) {
-			print "<br><small>".gethostbyaddr($rk->ip)."</small>";
+		if(get_option('statpress_cryptip')!='checked') {
+			print "<br><iframe style='overflow:hide;border:0px;width:100%;height:30px;font-family:helvetica;paddng:0;' scrolling='no' marginwidth=0 marginheight=0 src=http://api.hostip.info/get_html.php?ip=".$rk->ip."></iframe>";
 		}
+		print "<br><small>".gethostbyaddr($rk->ip)."</small>";
 		print "<br><small>".$rk->agent."</small>";
 		print "</div>";
 		print "<script>document.getElementById('".$rk->ip."').style.display='none';</script>";
@@ -746,6 +751,11 @@ document.getElementById(thediv).style.display="none"
 <?php
 }
 
+
+
+function iri_CheckIP($ip) {
+	return ( ! preg_match( "/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/", $ip)) ? FALSE : TRUE;
+}
 
 function iriStatPressSearch($what='') {
 	global $wpdb;
@@ -888,17 +898,6 @@ function iri_StatPress_Abbrevia($s,$c) {
 	
 }
 
-function iri_StatPress_Where($ip) {
-	$url = "http://api.hostip.info/get_html.php?ip=$ip";
-	$res = file_get_contents($url);
-	if($res === FALSE) { return(array('','')); }
-	$res = str_replace("Country: ","",$res);
-	$res = str_replace("\nCity: ",", ",$res);
-	$nation = preg_split('/\(|\)/',$res);
-	print "( $ip $res )";
-	return(array($res,$nation[1]));
-}
-
 
 function iri_StatPress_Decode($out_url) {
 	if($out_url == '') { $out_url=__('Page','statpress').": Home"; }
@@ -945,53 +944,6 @@ function iritablesize($table) {
 }
 
 
-function irirgbhex($red, $green, $blue) {
-    $red = 0x10000 * max(0,min(255,$red+0));
-    $green = 0x100 * max(0,min(255,$green+0));
-    $blue = max(0,min(255,$blue+0));
-    // convert the combined value to hex and zero-fill to 6 digits
-    return "#".str_pad(strtoupper(dechex($red + $green + $blue)),6,"0",STR_PAD_LEFT);
-}
-
-
-function iriValueTable($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $exclude= "") { /* Maddler 04112007: param addedd */
-	global $wpdb;
-	$table_name = $wpdb->prefix . "statpress";
-	
-	if ($queryfld == '') { $queryfld = $fld; }
-	print "<div class='wrap'><h2>$fldtitle</h2><table style='width:100%;padding:0px;margin:0px;' cellpadding=0 cellspacing=0><thead><tr><th style='width:400px;background-color:white;'></th><th style='width:150px;background-color:white;'><u>".__('Visits','statpress')."</u></th><th style='background-color:white;'></th></tr></thead>";
-	print "<tbody id='the-list'>";
-	$rks = $wpdb->get_var("SELECT count($param $queryfld) as rks FROM $table_name WHERE 1=1 $exclude;"); 
-	if($rks > 0) {
-		$sql="SELECT count($param $queryfld) as pageview, $fld FROM $table_name WHERE 1=1 $exclude  GROUP BY $fld ORDER BY pageview DESC";
-		if($limit > 0) { $sql=$sql." LIMIT $limit"; }
-		$qry = $wpdb->get_results($sql);
-	    $tdwidth=450; $red=131; $green=180; $blue=216; $deltacolor=round(250/count($qry),0);
-//	    $chl="";
-//	    $chd="t:";
-		foreach ($qry as $rk) {
-			$pc=round(($rk->pageview*100/$rks),1);
-			if($fld == 'date') { $rk->$fld = irihdate($rk->$fld); }
-			if($fld == 'urlrequested') { $rk->$fld = iri_StatPress_Decode($rk->$fld); }
-//			$chl.=urlencode(substr($rk->$fld,0,50))."|";
-//			$chd.=($tdwidth*$pc/100)."|";
-        	print "<tr><td style='width:400px;overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>".substr($rk->$fld,0,50);
-        	if(strlen("$rk->fld")>=50) { print "..."; }
-        	print "</td><td style='text-align:center;'>".$rk->pageview."</td>";  // <td style='text-align:right'>$pc%</td>";
-	        print "<td><div style='text-align:right;padding:2px;font-family:helvetica;font-size:7pt;font-weight:bold;height:16px;width:".($tdwidth*$pc/100)."px;background:".irirgbhex($red,$green,$blue).";border-top:1px solid ".irirgbhex($red+20,$green+20,$blue).";border-right:1px solid ".irirgbhex($red+30,$green+30,$blue).";border-bottom:1px solid ".irirgbhex($red-20,$green-20,$blue).";'>$pc%</div>";
-    	    print "</td></tr>\n";
-        	$red=$red+$deltacolor; $blue=$blue-($deltacolor / 2);
-		}
-	}
-	print "</table>\n";
-//	$chl=substr($chl,0,strlen($chl)-1);
-//	$chd=substr($chd,0,strlen($chd)-1);
-//	print "<img src=http://chart.apis.google.com/chart?cht=p3&chd=".($chd)."&chs=400x200&chl=".($chl)."&chco=1B75DF,92BF23>\n";
-	print "</div>\n";
-}
-
-
-
 function iriValueTable2($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $exclude= "") {
 	global $wpdb;
 	$table_name = $wpdb->prefix . "statpress";
@@ -1032,9 +984,7 @@ function iriValueTable2($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $
 }
 
 
-
-
-
+/*
 function iriDomain($ip) {
 	$host=gethostbyaddr($ip);
     if (ereg('^([0-9]{1,3}\.){3}[0-9]{1,3}$', $host)) {
@@ -1043,6 +993,12 @@ function iriDomain($ip) {
 	    return substr(strrchr($host,"."),1);
 	}
 }
+*/
+
+function iriGetLanguage($accepted) {
+	return substr($accepted,0,2);
+}
+
 
 function iriGetQueryPairs($url){
 $parsed_url = parse_url($url);
@@ -1095,7 +1051,7 @@ function iriGetSE($referrer = null){
 		list($nome,$url,$key)=explode("|",$se);
 		if(strpos($referrer,$url)===FALSE) continue;
 		# trovato se
-		$variables = iriGetQueryPairs($referrer);
+		$variables = iriGetQueryPairs(html_entity_decode($referrer));
 		$i = count($variables);
 		while($i--){
 		   $tab=explode("=",$variables[$i]);
@@ -1194,7 +1150,10 @@ function iriStatAppend() {
 	// IP
     $ipAddress = $_SERVER['REMOTE_ADDR'];
     if(iriCheckBanIP($ipAddress) == '') { return ''; }
-
+	if(get_option('statpress_cryptip')=='checked') {
+		$ipAddress = crypt($ipAddress,'statpress');
+	}
+	
 	// URL (requested)
 	$urlRequested=iri_StatPress_URL();
 	if (eregi(".ico$", $urlRequested)) { return ''; }
@@ -1233,7 +1192,7 @@ function iriStatAppend() {
 		$insert = "INSERT INTO " . $table_name .
             " (date, time, ip, urlrequested, agent, referrer, search,nation,os,browser,searchengine,spider,feed,user,timestamp) " .
             "VALUES ('$vdate','$vtime','$ipAddress','$urlRequested','".addslashes(strip_tags($userAgent))."','$referrer','" .
-            addslashes(strip_tags($search_phrase))."','".iriDomain($ipAddress) .
+            addslashes(strip_tags($search_phrase))."','".iriGetLanguage($_SERVER['HTTP_ACCEPT_LANGUAGE']) .
             "','$os','$browser','$searchengine','$spider','$feed','$userdata->user_login','$timestamp')";
 		$results = $wpdb->query( $insert );
 	}
