@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://forum.irisco.it/forum.php?id=1
 Description: Real time stats for your Wordpress blog
-Version: 1.3.2
+Version: 1.3.3
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
