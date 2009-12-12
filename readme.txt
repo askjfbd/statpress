@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%
 Tags: stats, statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche
 Requires at least: 2.1
 Tested up to: 2.7
-Stable Tag: 1.3.3
+Stable Tag: 1.3.4
 
 StatPress is first real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -297,3 +297,6 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 *Version 1.3.3*
 * Bugs fixed
 * New localizations
+
+*Version 1.3.4*
+* 1.3.3 bug fixed
