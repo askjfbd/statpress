@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%
 Tags: stats, statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche
 Requires at least: 2.1
 Tested up to: 2.7
-Stable Tag: 1.3.2
+Stable Tag: 1.3.3
 
 StatPress is first real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -21,12 +21,6 @@ StatPress also includes a widget one can possibly add to a sidebar (or easy PHP 
 
 I will be happy to help you!
 I invite you to register to <a href="http://forum.irisco.it/forum.php?id=1">StatPress forum</a>
-
-= Multilanguage =
-
-StatPress speaks English, Italian, Spanish, French, German, Russian, Norwegian, Dutch, Brazilian, Turkish, Swedish, Danish, Persian, etc.!
-Could you translate StatPress in your language? Thank you!
-( please write to statpress@irisco.it )
 
 = What's new? =
 Check "Other notes" tab to find out updates history!
@@ -299,3 +293,7 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 * Danish localization (thanks to Georg S. Adamsen)
 * DEFs updated
 * Bugs fixed
+
+*Version 1.3.3*
+* Bugs fixed
+* New localizations

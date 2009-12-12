@@ -150,6 +150,16 @@ function iriStatPressExport() {
 <?php
 }
 
+function iri_checkExport(){
+ÊÊÊ if ($_GET['statpress_action'] == 'exportnow') {
+ÊÊÊ ÊÊÊ $mincap=get_option('statpress_mincap');
+ÊÊÊ ÊÊÊ if ($mincap == '')
+ÊÊÊ ÊÊÊ ÊÊÊ $mincap = "level_8";
+ÊÊÊ ÊÊÊ if ( current_user_can( $mincap ) ) {
+ÊÊÊ ÊÊÊ ÊÊÊ iriStatPressExportNow();
+ÊÊÊ ÊÊÊ }
+ÊÊÊ }
+}
 
 function iriStatPressExportNow() {
 	global $wpdb;
@@ -1461,6 +1471,7 @@ load_plugin_textdomain('statpress', 'wp-content/plugins/'.dirname(plugin_basenam
 add_action('admin_menu', 'iri_add_pages');
 add_action('plugins_loaded', 'widget_statpress_init');
 add_action('send_headers', 'iriStatAppend');  //add_action('wp_head', 'iriStatAppend');
+add_action('init', 'iri_checkExport');
 
 register_activation_hook(__FILE__,'iri_StatPress_CreateTable');
 
