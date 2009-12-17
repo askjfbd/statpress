@@ -1,6 +1,6 @@
 === Plugin Name ===
 Contributors: 
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%2elippi%40gmail%2ecom&item_name=wp%2dstatpress&no_shipping=0&no_note=1&tax=0&currency_code=EUR&lc=IT&bn=PP%2dDonationsBF&charset=UTF%2d8
+Donate link: http://www.statpress.org/donate
 Tags: stats, statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche
 Requires at least: 2.1
 Tested up to: 2.9
@@ -309,4 +309,5 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 * Database optimization 
 * Bugs fixed
 * New localizations
+* 2.9 compatibility
 * New blog!

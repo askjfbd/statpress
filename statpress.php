@@ -1,19 +1,15 @@
 <?php
 /*
 Plugin Name: StatPress
-Plugin URI: http://forum.irisco.it/forum.php?id=1
+Plugin URI: http://www.statpress.org
 Description: Real time stats for your Wordpress blog
-Version: 1.3.4
+Version: 1.3.5
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
 
 $_STATPRESS['version']='1.x';
 $_STATPRESS['feedtype']='';
-
-if ($_GET['statpress_action'] == 'exportnow') {
-	iriStatPressExportNow();
-}
 
 include ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/includes/charts.php';
 
@@ -1109,21 +1105,21 @@ function iri_StatPress_CreateTable() {
 	$table_name = $wpdb->prefix . "statpress";
 	$sql_createtable = "CREATE TABLE " . $table_name . " (
 	id mediumint(9) NOT NULL AUTO_INCREMENT,
-	date text,
-	time text,
-	ip text,
+	date char(8),
+	time char(8),
+	ip char(15),
 	urlrequested text,
-	agent text,
+	agent varchar(255),
 	referrer text,
-	search text,
-	nation text,
-	os text,
-	browser text,
-	searchengine text,
-	spider text,
-	feed text,
-	user text,
-	timestamp text,
+	search varchar(255),
+	nation varchar(8),
+	os varchar(3),
+	browser varchar(32),
+	searchengine varchar(16),
+	spider varchar(32),
+	feed varchar(8),
+	user varchar(16),
+	timestamp varchar(10),
 	UNIQUE KEY id (id)
 	);";
 	if($wp_db_version >= 5540)	$page = 'wp-admin/includes/upgrade.php';  
