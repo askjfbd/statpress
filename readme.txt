@@ -3,8 +3,8 @@ Contributors:
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%2elippi%40gmail%2ecom&item_name=wp%2dstatpress&no_shipping=0&no_note=1&tax=0&currency_code=EUR&lc=IT&bn=PP%2dDonationsBF&charset=UTF%2d8
 Tags: stats, statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche
 Requires at least: 2.1
-Tested up to: 2.7
-Stable Tag: 1.3.4
+Tested up to: 2.9
+Stable Tag: 1.3.5
 
 StatPress is first real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -63,6 +63,7 @@ You are ready!!!
 = Update =
 
 * Deactivate StatPress plugin (no data lost!)
+* Backup ALL your data
 * Backup your custom DEFs files
 * Override "statpress" directory in wp-content/plugins/
 * Restore your custom DEFs files
@@ -283,7 +284,7 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 
 *Version 1.3.1 (5 Feb 2009)*
 
-* New 3D charts! PHP4/5 comatible. No CPU overload!
+* New 3D charts! PHP4/5 compatible. No CPU overload!
 
 *Version 1.3.2*
 
@@ -295,8 +296,17 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 * Bugs fixed
 
 *Version 1.3.3*
+
 * Bugs fixed
 * New localizations
 
 *Version 1.3.4*
+
 * 1.3.3 bug fixed
+
+*Version 1.3.5 (18 Dec 2009)*
+
+* Database optimization 
+* Bugs fixed
+* New localizations
+* New blog!
