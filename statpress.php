@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.statpress.org
 Description: Real time stats for your Wordpress blog
-Version: 1.3.5
+Version: 1.3.6
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -977,10 +977,10 @@ function iriValueTable2($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $
 	// Draw table body
 	print "<tbody id='the-list'>";
 	if($rks > 0) {  // Chart!
-		$chart=iriGoogleChart("","400x200",$data);
+		$chart=iriGoogleChart("","500x200",$data);
 		print "<tr><td></td><td></td><td rowspan='".($limit+2)."'>$chart</td></tr>";
 		foreach ($data as $key => $value) {
-    	   	print "<tr><td style='width:400px;overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>".$key;
+    	   	print "<tr><td style='width:500px;overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>".$key;
         	print "</td><td style='width:100px;text-align:center;'>".$value."</td>";
 			print "</tr>";
 		}
@@ -1113,7 +1113,7 @@ function iri_StatPress_CreateTable() {
 	referrer text,
 	search varchar(255),
 	nation varchar(8),
-	os varchar(3),
+	os varchar(30),
 	browser varchar(32),
 	searchengine varchar(16),
 	spider varchar(32),

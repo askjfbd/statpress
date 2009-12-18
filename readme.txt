@@ -4,7 +4,7 @@ Donate link: http://www.statpress.org/donate
 Tags: stats, statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche
 Requires at least: 2.1
 Tested up to: 2.9
-Stable Tag: 1.3.5
+Stable Tag: 1.3.6
 
 StatPress is first real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -23,7 +23,8 @@ I will be happy to help you!
 I invite you to register to <a href="http://forum.irisco.it/forum.php?id=1">StatPress forum</a>
 
 = What's new? =
-Check "Other notes" tab to find out updates history!
+
+Chek www.statpress.org blog or "Other notes" tab to find out updates history!
 
 = Ban IP =
 
@@ -311,3 +312,8 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 * New localizations
 * 2.9 compatibility
 * New blog!
+
+*Version 1.3.6 (19 Dec 2009)*
+
+* Bugs fixed
+* DEFs updated
