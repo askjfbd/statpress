@@ -23,5 +23,14 @@ function iriGoogleChart($title,$size,$data_array) {
 	return "<img src=http://chart.apis.google.com/chart?chtt=".urlencode($title)."&cht=p3&chs=$size&chd=".$data."&chl=".urlencode(implode("|",$labels)).">";
 }
 
+function iriGoogleGeo($title,$size,$data_array) {
+	if(empty($data_array)) { return ''; }
+	// get hash
+	foreach($data_array as $key => $value ) {
+		$values[] = $value;
+		$labels[] = $key;
+	}
+	return "<img src=http://chart.apis.google.com/chart?chtt=".urlencode($title)."&cht=t&chtm=world&chs=440x220&chco=eeeeee,FFffcc,cc3300&chd=t:0,".(implode(",",$values))."&chld=XX".(implode("",$labels)).">";
+}
 
 ?>

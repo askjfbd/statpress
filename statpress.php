@@ -3,7 +3,7 @@
 Plugin Name: StatPress
 Plugin URI: http://www.statpress.org
 Description: Real time stats for your Wordpress blog
-Version: 1.3.6
+Version: 1.4
 Author: Daniele Lippi
 Author URI: http://www.irisco.it
 */
@@ -35,8 +35,7 @@ function iri_add_pages() {
     add_submenu_page(__FILE__, __('Export','statpress'), __('Export','statpress'), $mincap, __FILE__ . '&statpress_action=export', 'iriStatPress');
     add_submenu_page(__FILE__, __('Options','statpress'), __('Options','statpress'), $mincap, __FILE__ . '&statpress_action=options', 'iriStatPress');
     add_submenu_page(__FILE__, __('StatPressUpdate','statpress'), __('StatPressUpdate','statpress'), $mincap, __FILE__ . '&statpress_action=up', 'iriStatPress');
-//    add_submenu_page(__FILE__, __('Support','statpress'), __('Support','statpress'), $mincap, 'http://www.irisco.it/forums/forum.php?id=1');
-    add_submenu_page(__FILE__, __('Donate','statpress'), __('Donate','statpress'), $mincap, 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=daniele%2elippi%40gmail%2ecom&item_name=wp%2dstatpress&no_shipping=0&no_note=1&tax=0&currency_code=EUR&lc=IT&bn=PP%2dDonationsBF&charset=UTF%2d8');
+    add_submenu_page(__FILE__, __('Statpress blog','statpress'), __('Statpress blog','statpress'), $mincap, 'http://www.statpress.org');
 
 }
 
@@ -557,7 +556,7 @@ function iriStatPressMain() {
 	$querylimit="LIMIT 10";
 	    
 	# Tabella Last hits
-	print "<div class='wrap'><h2>". __('Last hits','statpress'). "</h2><table class='widefat'><thead><tr><th scope='col'>". __('Date','statpress'). "</th><th scope='col'>". __('Time','statpress'). "</th><th scope='col'>IP</th><th scope='col'>". __('Language','statpress'). "</th><th scope='col'>". __('Page','statpress'). "</th><th scope='col'>OS</th><th scope='col'>Browser</th><th scope='col'>Feed</th></tr></thead>";
+	print "<div class='wrap'><h2>". __('Last hits','statpress'). "</h2><table class='widefat'><thead><tr><th scope='col'>". __('Date','statpress'). "</th><th scope='col'>". __('Time','statpress'). "</th><th scope='col'>IP</th><th scope='col'>". __('Country','statpress').'/'.__('Language','statpress'). "</th><th scope='col'>". __('Page','statpress'). "</th><th scope='col'>Feed</th><th scope='col' style='width:120px;'>OS</th><th></th><th scope='col' style='width:120px;'>Browser</th></tr></thead>";
 	print "<tbody id='the-list'>";	
 
 	$fivesdrafts = $wpdb->get_results("SELECT * FROM $table_name WHERE (os<>'' OR feed<>'') order by id DESC $querylimit");
@@ -568,9 +567,15 @@ function iriStatPressMain() {
 		print "<td>". $fivesdraft->ip ."</td>";
 		print "<td>". $fivesdraft->nation ."</td>";
 		print "<td>". iri_StatPress_Abbrevia(iri_StatPress_Decode($fivesdraft->urlrequested),30) ."</td>";
-		print "<td>". $fivesdraft->os . "</td>";
-		print "<td>". $fivesdraft->browser . "</td>";
 		print "<td>". $fivesdraft->feed . "</td>";
+		print "<td>". $fivesdraft->os . "</td>";
+		if($fivesdraft->browser != '') {
+			$img=str_replace(" ","",strtolower($fivesdraft->browser)).".png";
+			print "<td><IMG style='border:0px;width:16px;height:16px;' SRC='/wp-content/plugins/".dirname(plugin_basename(__FILE__))."/images/browsers/$img'></td>";
+		} else {
+			print "<td></td>";
+		}
+		print "<td>".$fivesdraft->browser."</td></tr>\n";
 		print "</tr>";
 	}
 	print "</table></div>";
@@ -594,19 +599,9 @@ function iriStatPressMain() {
 	}
 	print "</table></div>";
 
-/*	
-	# Last Agents
-	print "<div class='wrap'><h2>".__('Last agents','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('Agent','statpress')."</th><th scope='col'>".__('What','statpress')."</th></tr></thead>";
-	print "<tbody id='the-list'>";	
-	$qry = $wpdb->get_results("SELECT date,time,agent,os,browser,spider FROM $table_name WHERE (agent <>'') ORDER BY id DESC $querylimit");
-	foreach ($qry as $rk) {
-		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td>".$rk->agent."</td><td> ".$rk->os. " ".$rk->browser." ".$rk->spider."</td></tr>\n";
-	}
-	print "</table></div>";
-*/
 
-	# Last Agents 2
-	print "<div class='wrap'><h2>".__('Last agents','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Agent','statpress')."</th><th scope='col'>OS</th><th scope='col'></th><th scope='col'>Browser/Spider</th></tr></thead>";
+	# Last Agents
+	print "<div class='wrap'><h2>".__('Last agents','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Agent','statpress')."</th><th scope='col' style='width:120px;'>OS</th><th scope='col'></th><th scope='col' style='width:120px;'>Browser/Spider</th></tr></thead>";
 	print "<tbody id='the-list'>";	
 	$qry = $wpdb->get_results("SELECT agent,os,browser,spider FROM $table_name GROUP BY agent,os,browser,spider ORDER BY id DESC $querylimit");
 	foreach ($qry as $rk) {
@@ -614,6 +609,8 @@ function iriStatPressMain() {
 		if($rk->browser != '') {
 			$img=str_replace(" ","",strtolower($rk->browser)).".png";
 			print "<td><IMG style='border:0px;width:16px;height:16px;' SRC='/wp-content/plugins/".dirname(plugin_basename(__FILE__))."/images/browsers/$img'></td>";
+		} else {
+			print "<td></td>";
 		}
 		print "<td>".$rk->browser." ".$rk->spider."</td></tr>\n";
 	}
@@ -621,13 +618,23 @@ function iriStatPressMain() {
 
 
 	# Last pages
-	print "<div class='wrap'><h2>".__('Last pages','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('Page','statpress')."</th><th scope='col'>".__('What','statpress')."</th></tr></thead>";
+	print "<div class='wrap'><h2>".__('Last pages','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('Page','statpress')."</th><th scope='col' style='width:120px;'>".__('OS','statpress')."</th><th style='width:17px;'></th><th scope='col' style='width:120px;'>".__('Browser','statpress')."</th></tr></thead>";
 	print "<tbody id='the-list'>";	
 	$qry = $wpdb->get_results("SELECT date,time,urlrequested,os,browser,spider FROM $table_name WHERE (spider='' AND feed='') ORDER BY id DESC $querylimit");
 	foreach ($qry as $rk) {
-		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td>".iri_StatPress_Abbrevia(iri_StatPress_Decode($rk->urlrequested),60)."</td><td> ".$rk->os. " ".$rk->browser." ".$rk->spider."</td></tr>\n";
+		print "<tr><td>".irihdate($rk->date)."</td><td>".$rk->time."</td><td>".iri_StatPress_Abbrevia(iri_StatPress_Decode($rk->urlrequested),60)."</td><td> ".$rk->os;
+		// . " ".$rk->browser." ".$rk->spider."</td></tr>\n";
+		if($rk->browser != '') {
+			$img=str_replace(" ","",strtolower($rk->browser)).".png";
+			print "<td><IMG style='border:0px;width:16px;height:16px;' SRC='/wp-content/plugins/".dirname(plugin_basename(__FILE__))."/images/browsers/$img'></td>";
+		} else {
+			print "<td></td>";
+		}
+		print "<td>".$rk->browser." ".$rk->spider."</td></tr>\n";
+		
 	}
 	print "</table></div>";
+	
 	
 	# Last Spiders
 	print "<div class='wrap'><h2>".__('Last spiders','statpress')."</h2><table class='widefat'><thead><tr><th scope='col'>".__('Date','statpress')."</th><th scope='col'>".__('Time','statpress')."</th><th scope='col'>".__('Spider','statpress')."</th><th scope='col'>".__('Agent','statpress')."</th></tr></thead>";
@@ -681,7 +688,7 @@ function iriStatPressDetails() {
     iriValueTable2("referrer","Top referrer",10,"","","AND referrer<>'' AND referrer NOT LIKE '%".get_bloginfo('url')."%'");
  	
 	# Languages
-    iriValueTable2("nation","Languages",10,"","","AND nation<>'' AND spider=''");
+    iriValueTable2("nation","Countries/Languages",10,"","","AND nation<>'' AND spider=''");
 
 	# Spider
     iriValueTable2("spider","Spiders",10,"","","AND spider<>''");
@@ -958,7 +965,7 @@ function iriValueTable2($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $
 	print "<div class='wrap'><table class='widefat'><thead><tr><th scope='col' style='width:400px;'><h2>$fldtitle</h2></th><th scope='col' style='width:100px;'>".__('Visits','statpress')."</th><th></th></tr></thead>";
 	$rks = $wpdb->get_var("SELECT count($param $queryfld) as rks FROM $table_name WHERE 1=1 $exclude;"); 
 	if($rks > 0) {
-		$sql="SELECT count($param $queryfld) as pageview, $fld FROM $table_name WHERE 1=1 $exclude  GROUP BY $fld ORDER BY pageview DESC";
+		$sql="SELECT count($param $queryfld) as pageview, $fld FROM $table_name WHERE 1=1 $exclude GROUP BY $fld ORDER BY pageview DESC";
 		if($limit > 0) { $sql=$sql." LIMIT $limit"; }
 		$qry = $wpdb->get_results($sql);
 	    $tdwidth=450;
@@ -967,9 +974,9 @@ function iriValueTable2($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $
 		$data=array();
 		foreach ($qry as $rk) {
 			$pc=round(($rk->pageview*100/$rks),1);
+			if($fld == 'nation') { $rk->$fld = strtoupper($rk->$fld); }
 			if($fld == 'date') { $rk->$fld = irihdate($rk->$fld); }
 			if($fld == 'urlrequested') { $rk->$fld = iri_StatPress_Decode($rk->$fld); }
-
         	$data[substr($rk->$fld,0,50)]=$rk->pageview;
 		}
 	}
@@ -977,7 +984,11 @@ function iriValueTable2($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $
 	// Draw table body
 	print "<tbody id='the-list'>";
 	if($rks > 0) {  // Chart!
-		$chart=iriGoogleChart("","500x200",$data);
+		if($fld == 'nation') {
+			$chart=iriGoogleGeo("","",$data);
+		} else {
+			$chart=iriGoogleChart("","500x200",$data);
+		}
 		print "<tr><td></td><td></td><td rowspan='".($limit+2)."'>$chart</td></tr>";
 		foreach ($data as $key => $value) {
     	   	print "<tr><td style='width:500px;overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>".$key;
@@ -989,17 +1000,6 @@ function iriValueTable2($fld,$fldtitle,$limit = 0,$param = "", $queryfld = "", $
 	
 }
 
-
-/*
-function iriDomain($ip) {
-	$host=gethostbyaddr($ip);
-    if (ereg('^([0-9]{1,3}\.){3}[0-9]{1,3}$', $host)) {
-    	return "";
-    } else {
-	    return substr(strrchr($host,"."),1);
-	}
-}
-*/
 
 function iriGetLanguage($accepted) {
 	return substr($accepted,0,2);
@@ -1108,11 +1108,11 @@ function iri_StatPress_CreateTable() {
 	date char(8),
 	time char(8),
 	ip char(15),
-	urlrequested text,
-	agent varchar(255),
-	referrer text,
-	search varchar(255),
-	nation varchar(8),
+	urlrequested varchar(250),
+	agent varchar(250),
+	referrer varchar(250),
+	search varchar(250),
+	nation varchar(2),
 	os varchar(30),
 	browser varchar(32),
 	searchengine varchar(16),
@@ -1133,8 +1133,8 @@ function iri_StatPress_is_feed($url) {
 	if (stristr($url,get_bloginfo('rss2_url')) != FALSE) { return 'RSS2'; }
 	if (stristr($url,get_bloginfo('rss_url')) != FALSE) { return 'RSS'; }
 	if (stristr($url,get_bloginfo('atom_url')) != FALSE) { return 'ATOM'; }
-	if (stristr($url,get_bloginfo('comments_rss2_url')) != FALSE) { return 'COMMENT RSS'; }
-	if (stristr($url,get_bloginfo('comments_atom_url')) != FALSE) { return 'COMMENT ATOM'; }
+	if (stristr($url,get_bloginfo('comments_rss2_url')) != FALSE) { return 'COMMENT'; }
+	if (stristr($url,get_bloginfo('comments_atom_url')) != FALSE) { return 'COMMENT'; }
 	if (stristr($url,'wp-feed.php') != FALSE) { return 'RSS2'; }
 	if (stristr($url,'/feed/') != FALSE) { return 'RSS2'; }
 	return '';
@@ -1186,6 +1186,16 @@ function iriStatAppend() {
 		$browser=iriGetBrowser($userAgent);
 		list($searchengine,$search_phrase)=explode("|",iriGetSE($referrer));
 	}
+	// Country (ip2nation table) or language
+	$countrylang="";
+	if($wpdb->get_var("SHOW TABLES LIKE 'ip2nation'") == 'ip2nation') {
+		$sql='SELECT * FROM ip2nation WHERE ip < INET_ATON("'.$ipAddress.'") ORDER BY ip DESC LIMIT 0,1';
+		$qry = $wpdb->get_row($sql);
+		$countrylang=$qry->country;
+	}
+	if($countrylang == '') {
+		$countrylang=iriGetLanguage($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+	}
 	// Auto-delete visits if...
 	if(get_option('statpress_autodelete') != '') {
 		$t=gmdate("Ymd",strtotime('-'.get_option('statpress_autodelete')));
@@ -1198,8 +1208,7 @@ function iriStatAppend() {
 		$insert = "INSERT INTO " . $table_name .
             " (date, time, ip, urlrequested, agent, referrer, search,nation,os,browser,searchengine,spider,feed,user,timestamp) " .
             "VALUES ('$vdate','$vtime','$ipAddress','$urlRequested','".addslashes(strip_tags($userAgent))."','$referrer','" .
-            addslashes(strip_tags($search_phrase))."','".iriGetLanguage($_SERVER['HTTP_ACCEPT_LANGUAGE']) .
-            "','$os','$browser','$searchengine','$spider','$feed','$userdata->user_login','$timestamp')";
+            addslashes(strip_tags($search_phrase))."','".$countrylang."','$os','$browser','$searchengine','$spider','$feed','$userdata->user_login','$timestamp')";
 		$results = $wpdb->query( $insert );
 	}
 }
@@ -1210,13 +1219,31 @@ function iriStatPressUpdate() {
 	$table_name = $wpdb->prefix . "statpress";
 	
 	$wpdb->show_errors();
+
+	print "<div class='wrap'><table class='widefat'><thead><tr><th scope='col'><h2>".__('Updating...','statpress')."</h2></th><th scope='col' style='width:150px;'>".__('Size','statpress')."</th><th scope='col' style='width:100px;'>".__('Result','statpress')."</th><th></th></tr></thead>";
+	print "<tbody id='the-list'>";
+
+	# check if ip2nation .sql file exists
+	if(file_exists(ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/ip2nation.sql')) {
+		print "<tr><td>ip2nation.sql</td>";
+		$FP = fopen (ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/ip2nation.sql', 'r' ); 
+		$READ = fread ( $FP, filesize (ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/ip2nation.sql') ); 
+		$READ = explode ( ";\n", $READ ); 
+		foreach ( $READ as $RED ) { 
+			if($RES != '') { $wpdb->query($RED); }
+		} 
+		print "<td>".iritablesize("ip2nation")."</td>";
+		print "<td><IMG style='border:0px;width:20px;height:20px;' SRC='/wp-content/plugins/".dirname(plugin_basename(__FILE__))."/images/ok.gif'></td></tr>";
+	}
+
 	# update table
-	print "Updating table struct $table_name... ";
+	print "<tr><td>Struct $table_name</td>";
 	iri_StatPress_CreateTable();
-	print "".__('done','statpress')."<br>";
+	print "<td>".iritablesize($wpdb->prefix."statpress")."</td>";
+	print "<td><IMG style='border:0px;width:20px;height:20px;' SRC='/wp-content/plugins/".dirname(plugin_basename(__FILE__))."/images/ok.gif'></td></tr>";
 	
 	# Update Feed
-	print "Updating Feeds... ";
+	print "<tr><td>Feeds</td>";
     $wpdb->query("UPDATE $table_name SET feed='';");
     # not standard
     $wpdb->query("UPDATE $table_name SET feed='RSS2' WHERE urlrequested LIKE '%/feed/%';");
@@ -1224,11 +1251,11 @@ function iriStatPressUpdate() {
 	# standard blog info urls
 	$s=iri_StatPress_extractfeedreq(get_bloginfo('comments_atom_url'));
 	if($s != '') {
-	    $wpdb->query("UPDATE $table_name SET feed='COMMENT ATOM' WHERE INSTR(urlrequested,'$s')>0;");
+	    $wpdb->query("UPDATE $table_name SET feed='COMMENT' WHERE INSTR(urlrequested,'$s')>0;");
 	}
 	$s=iri_StatPress_extractfeedreq(get_bloginfo('comments_rss2_url'));
 	if($s != '') {
-	    $wpdb->query("UPDATE $table_name SET feed='COMMENT RSS' WHERE INSTR(urlrequested,'$s')>0;");
+	    $wpdb->query("UPDATE $table_name SET feed='COMMENT' WHERE INSTR(urlrequested,'$s')>0;");
 	}
 	$s=iri_StatPress_extractfeedreq(get_bloginfo('atom_url'));
 	if($s != '') {
@@ -1247,11 +1274,13 @@ function iriStatPressUpdate() {
 	    $wpdb->query("UPDATE $table_name SET feed='RSS2' WHERE INSTR(urlrequested,'$s')>0;");
 	}
 
-# elim    $wpdb->query("UPDATE $table_name SET feed='Y' WHERE (urlrequested LIKE '%feed=%') or (urlrequested LIKE '%wp-rss%') or (urlrequested LIKE '%wp-rdf%') or (urlrequested LIKE '%wp-commentsrss%') or (urlrequested LIKE '%wp-atom%');");
-	print "".__('done','statpress')."<br>";
+	$wpdb->query("UPDATE $table_name SET feed = '' WHERE isnull(feed);");	
+
+	print "<td></td>";
+	print "<td><IMG style='border:0px;width:20px;height:20px;' SRC='/wp-content/plugins/".dirname(plugin_basename(__FILE__))."/images/ok.gif'></td></tr>";
 
 	# Update OS
-	print "Updating OSes... ";
+	print "<tr><td>OSes</td>";
     $wpdb->query("UPDATE $table_name SET os = '';");
 	$lines = file(ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/def/os.dat');
 	foreach($lines as $line_num => $os) {
@@ -1259,10 +1288,12 @@ function iriStatPressUpdate() {
 		$qry="UPDATE $table_name SET os = '$nome_os' WHERE os='' AND replace(agent,' ','') LIKE '%".$id_os."%';";
 		$wpdb->query($qry);
 	}
-	print "".__('done','statpress')."<br>";
+	print "<td></td>";
+	print "<td><IMG style='border:0px;width:20px;height:20px;' SRC='/wp-content/plugins/".dirname(plugin_basename(__FILE__))."/images/ok.gif'></td></tr>";
+
 	
 	# Update Browser
-	print "Updating Browsers... ";
+	print "<tr><td>Browsers</td>";
     $wpdb->query("UPDATE $table_name SET browser = '';");
 	$lines = file(ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/def/browser.dat');
 	foreach($lines as $line_num => $browser) {
@@ -1270,10 +1301,12 @@ function iriStatPressUpdate() {
 		$qry="UPDATE $table_name SET browser = '$nome' WHERE browser='' AND replace(agent,' ','') LIKE '%".$id."%';";
 		$wpdb->query($qry);
 	}
-	print "".__('done','statpress')."<br>";
+	print "<td></td>";
+	print "<td><IMG style='border:0px;width:20px;height:20px;' SRC='/wp-content/plugins/".dirname(plugin_basename(__FILE__))."/images/ok.gif'></td></tr>";
+
 
 	# Update Spider
-	print "Updating Spiders... ";
+	print "<tr><td>Spiders</td>";
     $wpdb->query("UPDATE $table_name SET spider = '';");
 	$lines = file(ABSPATH.'wp-content/plugins/'.dirname(plugin_basename(__FILE__)).'/def/spider.dat');
 	foreach($lines as $line_num => $spider) {
@@ -1281,20 +1314,14 @@ function iriStatPressUpdate() {
 		$qry="UPDATE $table_name SET spider = '$nome',os='',browser='' WHERE spider='' AND replace(agent,' ','') LIKE '%".$id."%';";
 		$wpdb->query($qry);
 	}
-	print "".__('done','statpress')."<br>";
+	print "<td></td>";
+	print "<td><IMG style='border:0px;width:20px;height:20px;' SRC='/wp-content/plugins/".dirname(plugin_basename(__FILE__))."/images/ok.gif'></td></tr>";
 
-	# Update feed to ''
-	print "Updating Feeds... ";
-	$wpdb->query("UPDATE $table_name SET feed = '' WHERE isnull(feed);");	
-	print "done<br>";
-	
+
 	# Update Search engine
-	print "Updating Search engines... ";
-	print "<br>";
+	print "<tr><td>Search engines</td>";
 	$wpdb->query("UPDATE $table_name SET searchengine = '', search='';");
-	print "...null-ed!<br>";
 	$qry = $wpdb->get_results("SELECT id, referrer FROM $table_name");
-	print "...select-ed!<br>";
 	foreach ($qry as $rk) {
 		list($searchengine,$search_phrase)=explode("|",iriGetSE($rk->referrer));
 		if($searchengine <> '') {
@@ -1302,12 +1329,14 @@ function iriStatPressUpdate() {
 			$wpdb->query($q);
 		}
 	}
-	print "".__('done','statpress')."<br>";
+	print "<td></td>";
+	print "<td><IMG style='border:0px;width:20px;height:20px;' SRC='/wp-content/plugins/".dirname(plugin_basename(__FILE__))."/images/ok.gif'></td></tr>";
 
-	$wpdb->hide_errors();
 	
-	print "<br>&nbsp;<h1>".__('Updated','statpress')."!</h1>";
+	print "</tbody></table></div><br>\n";
+	$wpdb->hide_errors();
 }
+
 
 function StatPress_Widget($w='') {
 

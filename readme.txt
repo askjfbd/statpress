@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: 
 Donate link: http://www.statpress.org/donate
-Tags: stats, statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche
+Tags: stats,statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche,ip2nation,country
 Requires at least: 2.1
 Tested up to: 2.9
-Stable Tag: 1.3.6
+Stable Tag: 1.4
 
 StatPress is first real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -24,7 +24,8 @@ I invite you to register to <a href="http://forum.irisco.it/forum.php?id=1">Stat
 
 = What's new? =
 
-Chek www.statpress.org blog or "Other notes" tab to find out updates history!
+ip2nation support coping ip2nation.sql in StatPress folder! Check blog!
+Check www.statpress.org blog or "Other notes" tab to find out updates history!
 
 = Ban IP =
 
@@ -315,5 +316,12 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 
 *Version 1.3.6 (19 Dec 2009)*
 
+* Bugs fixed
+* DEFs updated
+
+*Version 1.4 (28 Dec 2009)*
+
+* ip2nation support
+* New country chart
 * Bugs fixed
 * DEFs updated
