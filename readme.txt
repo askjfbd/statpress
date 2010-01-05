@@ -4,7 +4,7 @@ Donate link: http://www.statpress.org/donate
 Tags: stats,statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche,ip2nation,country
 Requires at least: 2.1
 Tested up to: 2.9
-Stable Tag: 1.4
+Stable Tag: 1.4.1
 
 StatPress is first real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -325,3 +325,9 @@ Please post your messages to <a href="http://forum.irisco.it/forum.php?id=1">sta
 * New country chart
 * Bugs fixed
 * DEFs updated
+
+*Version 1.4.1 (5 Jan 2010)*
+
+* Bugs fixed
+* DEFs updated
+* OSes icons
