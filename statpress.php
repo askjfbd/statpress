@@ -1188,9 +1188,14 @@ function iriStatAppend() {
 	if (stristr($urlRequested,"/wp-content/plugins") != FALSE) { return ''; }
 	if (stristr($urlRequested,"/wp-content/themes") != FALSE) { return ''; }
 	if (stristr($urlRequested,"/wp-admin/") != FALSE) { return ''; }
-
+	$urlRequested=mysql_real_escape_string($urlRequested);
+	
 	$referrer = (isset($_SERVER['HTTP_REFERER']) ? htmlentities($_SERVER['HTTP_REFERER']) : '');
+	$referrer=mysql_real_escape_string($referrer);
+	
 	$userAgent = (isset($_SERVER['HTTP_USER_AGENT']) ? htmlentities($_SERVER['HTTP_USER_AGENT']) : '');
+	$userAgent=mysql_real_escape_string($userAgent);
+	
 	$spider=iriGetSpider($userAgent);
 	
    	if(($spider != '') and (get_option('statpress_donotcollectspider')=='checked')) { return ''; }
