@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: 
-Donate link: http://www.statpress.org/donate
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=PNMW3XZQ9677L
 Tags: stats,statistics,widget,admin,sidebar,visits,visitors,pageview,user,agent,referrer,post,posts,spy,statistiche,ip2nation,country
 Requires at least: 2.1
-Tested up to: 3.6
-Stable Tag: 1.4.2
+Tested up to: 3.6.1
+Stable Tag: 1.4.3
 
 StatPress is first real-time plugin dedicated to the management of statistics about blog visits. It collects information about visitors, spiders, search keywords, feeds, browsers etc.
 
@@ -17,6 +17,9 @@ Using StatPress you could spy your visitors while they are surfing your blog or 
 In the Dashboard menu you will find the StatPress page where you could look up the statistics (overview or detailed).
 StatPress also includes a widget one can possibly add to a sidebar (or easy PHP code if you can't use widgets!).
 
+ip2nation support coping ip2nation.sql in StatPress folder!
+You could download or update it from http://www.ip2nation.com/
+
 = Support =
 
 I will be happy to help you!
@@ -24,8 +27,6 @@ I will be happy to help you!
 
 = What's new? =
 
-ip2nation support coping ip2nation.sql in StatPress folder! Check blog!
-Check www.statpress.org blog or "Other notes" tab to find out updates history!
 
 = Ban IP =
 
@@ -58,7 +59,9 @@ Now you could add these values everywhere! StatPress >=0.7.6 offers a new PHP fu
 
 == Installation ==
 
-Upload "statpress" directory in wp-content/plugins/ . Then just activate it on your plugin management page.
+- Upload "statpress" directory in wp-content/plugins/
+- Activate it using WordPress plugins management page.
+
 You are ready!!!
 
 
@@ -331,6 +334,6 @@ You are ready!!!
 * DEFs updated
 * OSes icons
 
-*Version 1.4.2 (2 Oct 2013)*
+*Version 1.4.3 (2 Oct 2013)*
 
 * Security fixes

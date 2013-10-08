@@ -3,9 +3,9 @@
 Plugin Name: StatPress
 Plugin URI: http://www.statpress.org
 Description: Real time stats for your Wordpress blog
-Version: 1.4.1
+Version: 1.4.3
 Author: Daniele Lippi
-Author URI: http://www.irisco.it
+Author URI: http://www.danielelippi.it
 */
 
 $_STATPRESS['version']='1.x';
